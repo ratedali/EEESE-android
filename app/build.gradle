@@ -47,21 +47,20 @@ android {
         }
     }
 
-    // productFlavors {
-    //     mock {
-    //         applicationIdSuffix = ".mock"
-    //     }
-    //     prod {
-    //     }
-    // }
+     productFlavors {
+         mock {
+             applicationIdSuffix = ".mock"
+         }
+         prod {
+         }
+     }
 
-    // android.variantFilter { variant ->
-    //     if(variant.buildType.name.equals('release')
-    //         && variant.getFlavors().get(0).name.equals('mock')) {
-    //             variant.setIgnore(true);
-    //     }
-    // }
-
+     android.variantFilter { variant ->
+         if(variant.buildType.name.equals('release')
+             && variant.getFlavors().get(0).name.equals('mock')) {
+                 variant.setIgnore(true);
+         }
+     }
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {
