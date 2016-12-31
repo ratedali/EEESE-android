@@ -23,16 +23,9 @@
             android:id="@+id/nav_info"
             android:icon="@drawable/ic_info"
             android:title="@string/menu_item_info" />
+        <item
+            android:icon="@drawable/ic_settings"
+            android:title="@string/menu_item_settings"/>
+
     </group>
-
-    <item android:title="@string/menu_item_app_options">
-        <menu>
-            <item
-                android:icon="@drawable/ic_settings"
-                android:title="@string/menu_item_settings" />
-            <item
-                android:title="@string/menu_item_about" />
-        </menu>
-    </item>
-
 </menu>
