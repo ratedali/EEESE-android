@@ -8,18 +8,32 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.projects;
+
+import android.support.annotation.NonNull;
+
+import java.util.List;
 
 import edu.uofk.eeese.eeese.BasePresenter;
 import edu.uofk.eeese.eeese.BaseView;
+import edu.uofk.eeese.eeese.data.Project;
 
-public interface HomeContract {
+public interface ProjectsContract {
     interface View extends BaseView<Presenter> {
-        void showInfo(String basicInfo);
+        void showProjects(@NonNull List<Project> projects);
 
-        void showLoadingError();
+        void showProjectDetails(@NonNull String projectId);
+
+        void setLoadingIndicator(boolean visibility);
+
+        void showNoProjects();
+
+        void showNoConnectionError();
     }
 
     interface Presenter extends BasePresenter {
+        void loadProjects(boolean force);
+
+        void openProjectDetails(@NonNull Project project);
     }
 }

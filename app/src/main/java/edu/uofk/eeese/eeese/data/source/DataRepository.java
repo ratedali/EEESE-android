@@ -11,8 +11,13 @@
 package edu.uofk.eeese.eeese.data.source;
 
 
+import java.util.List;
+
+import edu.uofk.eeese.eeese.data.Project;
 import io.reactivex.Observable;
 
 public interface DataRepository {
     Observable<String> getBasicInfo();
+
+    Observable<List<Project>> getProjects(boolean force);
 }

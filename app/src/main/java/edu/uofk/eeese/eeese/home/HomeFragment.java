@@ -132,7 +132,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         final ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_expandedtoolbar);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

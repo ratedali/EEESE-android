@@ -25,4 +25,9 @@
     <string name="test_title">Test Title</string>
     <string name="test_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="promo_desc">a project image</string>
+    <string name="projects">Projects</string>
+    <string name="no_project_available">There are no Projects available</string>
+    <string name="loading_projects">Loading the projects list</string>
+    <string name="connection_error">Cannot connect to the internet</string>
+    <string name="retry">Retry</string>
 </resources>

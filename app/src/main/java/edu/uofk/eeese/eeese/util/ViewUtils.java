@@ -11,11 +11,16 @@
 package edu.uofk.eeese.eeese.util;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
+
+import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.home.HomeActivity;
+import edu.uofk.eeese.eeese.projects.ProjectsActivity;
 
 public class ViewUtils {
     public static DrawerLayout openDrawer(final DrawerLayout drawerLayout) {
@@ -23,18 +28,59 @@ public class ViewUtils {
         return drawerLayout;
     }
 
-    public static NavigationView setupDrawerContent(NavigationView navView,
-                                                    final DrawerLayout drawerLayout,
-                                                    final Activity sourceActivity) {
+    public static NavigationView setupDrawerListener(NavigationView navView,
+                                                     final DrawerLayout drawerLayout,
+                                                     final Activity sourceActivity) {
+
+        int currentItemId;
+
+        final Class<? extends Activity> sourceActivityClass = sourceActivity.getClass();
+        if (sourceActivityClass.equals(HomeActivity.class)) {
+            currentItemId = R.id.nav_home;
+        } else if (sourceActivityClass.equals(ProjectsActivity.class)) {
+            currentItemId = R.id.nav_projects;
+        } else {
+            currentItemId = -1;
+        }
+
+        if (currentItemId != -1) {
+            navView.setCheckedItem(currentItemId);
+        }
+
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                 item.setChecked(true);
                 drawerLayout.closeDrawers();
-                // TODO: 12/30/16 launch the appropriate activity depending on the item selected
+
+                Class<?> targetActivity = null;
+                boolean allowBack = false;
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        targetActivity = HomeActivity.class;
+                        break;
+                    case R.id.nav_projects:
+                        targetActivity = ProjectsActivity.class;
+                        break;
+                    case R.id.nav_info:
+                    default:
+                        allowBack = true;
+                }
+                if (targetActivity == null || sourceActivityClass.equals(targetActivity)) {
+                    return false;
+                }
+
+                Intent intent = new Intent(sourceActivity, targetActivity);
+                sourceActivity.startActivity(intent);
+                if (!allowBack) {
+                    sourceActivity.finish();
+                }
                 return true;
             }
         });
+
         return navView;
     }
+
 }

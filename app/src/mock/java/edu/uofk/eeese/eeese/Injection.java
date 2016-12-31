@@ -15,6 +15,10 @@ import android.support.annotation.NonNull;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.data.source.FakeDataRepository;
+import edu.uofk.eeese.eeese.home.HomeContract;
+import edu.uofk.eeese.eeese.home.HomePresenter;
+import edu.uofk.eeese.eeese.projects.ProjectsContract;
+import edu.uofk.eeese.eeese.projects.ProjectsPresenter;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProvider;
 
@@ -26,5 +30,23 @@ public class Injection {
 
     public static BaseSchedulerProvider provideSchedulerProvider() {
         return SchedulerProvider.getInstance();
+    }
+
+    public static HomeContract.Presenter provideHomePresenter(@NonNull Context context,
+                                                              @NonNull HomeContract.View view) {
+        return new HomePresenter(
+                provideDataRepository(context),
+                view,
+                provideSchedulerProvider()
+        );
+    }
+
+    public static ProjectsContract.Presenter provideProjectsPresenter(@NonNull Context context,
+                                                                      @NonNull ProjectsContract.View view) {
+        return new ProjectsPresenter(
+                provideDataRepository(context),
+                view,
+                provideSchedulerProvider()
+        );
     }
 }

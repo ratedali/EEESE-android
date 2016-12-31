@@ -11,22 +11,43 @@
 package edu.uofk.eeese.eeese.data.source;
 
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.data.Project;
 import io.reactivex.Observable;
 
 public class FakeDataRepository implements DataRepository {
 
     private static FakeDataRepository sInstance = null;
 
-    private String basicInfo;
-
+    private String mBasicInfo;
+    private List<Project> mProjects;
+    private boolean thrown;
 
     // Prevent direct instantiation
     private FakeDataRepository(@NonNull Context context) {
-        basicInfo = context.getString(R.string.basic_info);
+        mBasicInfo = context.getString(R.string.basic_info);
+
+        Uri imageUri = Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE
+                        + "://"
+                        + context.getPackageName()
+                        + "/mipmap/promo");
+        mProjects = Arrays.asList(
+                new Project("1", "Project 1", "The First Project", imageUri),
+                new Project("2", "Project 2", "The Second Project", imageUri),
+                new Project("3", "Project 3", "The Third Project", imageUri),
+                new Project("4", "Project 4", "The Fourth Project", imageUri)
+        );
+
+        thrown = false;
     }
 
     public static FakeDataRepository getInstance(@NonNull Context context) {
@@ -36,8 +57,17 @@ public class FakeDataRepository implements DataRepository {
         return sInstance;
     }
 
-    @Override
     public Observable<String> getBasicInfo() {
-        return Observable.just(basicInfo);
+        return Observable.just(mBasicInfo);
+    }
+
+    @Override
+    public Observable<List<Project>> getProjects(boolean force) {
+        if (!thrown) {
+            thrown = true;
+            return Observable.error(new Exception());
+        } else {
+            return Observable.just(mProjects);
+        }
     }
 }

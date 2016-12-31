@@ -22,7 +22,7 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.R2;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
-public class AboutActivity extends AppCompatActivity implements HomeFragment.HomeFragmentListener {
+public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentListener {
 
     @BindView(R2.id.drawer_layout)
     public DrawerLayout mDrawerLayout;
@@ -39,10 +39,11 @@ public class AboutActivity extends AppCompatActivity implements HomeFragment.Hom
         ButterKnife.bind(this);
 
         HomeContract.View homeView = (HomeContract.View) getSupportFragmentManager().findFragmentById(R.id.home_fragment);
-        if (homeView != null)
-            homePresenter = new HomePresenter(Injection.provideDataRepository(this), homeView, Injection.provideSchedulerProvider());
+        if (homeView != null) {
+            homePresenter = Injection.provideHomePresenter(this, homeView);
+        }
 
-        ViewUtils.setupDrawerContent(navView, mDrawerLayout, this);
+        ViewUtils.setupDrawerListener(navView, mDrawerLayout, this);
 
     }
 
