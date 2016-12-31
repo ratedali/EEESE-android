@@ -10,15 +10,21 @@
 
 package edu.uofk.eeese.eeese;
 
-import android.support.test.runner.AndroidJUnit4;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
-import org.junit.runner.RunWith;
+import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.FakeDataRepository;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProvider;
 
-/**
- * Instrumentation test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-@RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class Injection {
+
+    public static DataRepository provideDataRepository(@NonNull Context context) {
+        return FakeDataRepository.getInstance(context);
+    }
+
+    public static BaseSchedulerProvider provideSchedulerProvider() {
+        return SchedulerProvider.getInstance();
+    }
 }

@@ -10,7 +10,8 @@
 
 package edu.uofk.eeese.eeese;
 
-public interface BasePresenter<T> {
-    public void subscribe();
-    public void unsubscribe();
+public interface BasePresenter {
+    void subscribe();
+
+    void unsubscribe();
 }

@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese.home;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -20,10 +21,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -36,10 +39,11 @@ import edu.uofk.eeese.eeese.R2;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements HomeContract.View {
 
     private final String TAG = HomeFragment.class.getCanonicalName();
 
+    // ActionBar views
     @BindView(R2.id.appbar)
     public AppBarLayout appBar;
     @BindView(R2.id.collapsing_toolbar)
@@ -47,9 +51,14 @@ public class HomeFragment extends Fragment {
     @BindView(R2.id.toolbar)
     public Toolbar toolbar;
 
+    // Content Views
+    @BindView(R2.id.basic_info_textview)
+    public TextView basicInfoTextView;
+
     @BindString(R2.string.app_name)
     public String titleText;
 
+    private HomeContract.Presenter mPresenter;
     private HomeFragmentListener mListener;
 
     public HomeFragment() {
@@ -96,10 +105,10 @@ public class HomeFragment extends Fragment {
                 boolean isCollapsed = Math.abs(verticalOffset) >= appBarLayout.getTotalScrollRange();
                 if (isCollapsed) {
                     title = titleText;
-                    navDrawable = R.drawable.ic_nav;
+                    navDrawable = R.drawable.ic_menu;
                 } else {
                     title = "";
-                    navDrawable = R.drawable.ic_nav_expandedtoolbar;
+                    navDrawable = R.drawable.ic_menu_expandedtoolbar;
                 }
 
                 collapsingToolbar.setTitle(title);
@@ -123,9 +132,21 @@ public class HomeFragment extends Fragment {
 
         final ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_nav);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.unsubscribe();
     }
 
     @Override
@@ -144,6 +165,22 @@ public class HomeFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void setPresenter(@NonNull HomeContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void showInfo(String basicInfo) {
+        Log.d(TAG, "showInfo: showing " + basicInfo + " on the view");
+        basicInfoTextView.setText(basicInfo);
+    }
+
+    @Override
+    public void showLoadingError() {
+        // TODO: 12/31/16 Show an error message
     }
 
     public interface HomeFragmentListener {

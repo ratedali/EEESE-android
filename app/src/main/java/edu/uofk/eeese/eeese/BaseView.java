@@ -10,6 +10,8 @@
 
 package edu.uofk.eeese.eeese;
 
+import android.support.annotation.NonNull;
+
 public interface BaseView<T> {
-    public void setPresenter(T presenter);
+    void setPresenter(@NonNull T presenter);
 }

@@ -10,17 +10,17 @@
 
 package edu.uofk.eeese.eeese.home;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 
-import butterknife.ButterKnife;
 import butterknife.BindView;
-
+import butterknife.ButterKnife;
+import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.R2;
 
@@ -31,12 +31,18 @@ public class AboutActivity extends AppCompatActivity implements HomeFragment.Hom
     @BindView(R2.id.nav_view)
     public NavigationView navView;
 
+    private HomeContract.Presenter homePresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
         ButterKnife.bind(this);
+
+        HomeContract.View homeView = (HomeContract.View) getSupportFragmentManager().findFragmentById(R.id.home_fragment);
+        if (homeView != null)
+            homePresenter = new HomePresenter(Injection.provideDataRepository(this), homeView, Injection.provideSchedulerProvider());
 
         setupDrawerContent(navView, mDrawerLayout);
 
@@ -51,7 +57,7 @@ public class AboutActivity extends AppCompatActivity implements HomeFragment.Hom
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 drawerLayout.closeDrawers();
-                //TODO launch the appropriate activity depending on the item selected
+                // TODO: 12/30/16 launch the appropriate activity depending on the item selected
                 return true;
             }
         });

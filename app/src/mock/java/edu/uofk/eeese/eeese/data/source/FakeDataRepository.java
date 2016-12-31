@@ -8,17 +8,36 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.data.source;
 
-import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.runner.RunWith;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
-/**
- * Instrumentation test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-@RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+import edu.uofk.eeese.eeese.R;
+import io.reactivex.Observable;
+
+public class FakeDataRepository implements DataRepository {
+
+    private static FakeDataRepository sInstance = null;
+
+    private String basicInfo;
+
+
+    // Prevent direct instantiation
+    private FakeDataRepository(@NonNull Context context) {
+        basicInfo = context.getString(R.string.basic_info);
+    }
+
+    public static FakeDataRepository getInstance(@NonNull Context context) {
+        if (sInstance == null) {
+            sInstance = new FakeDataRepository(context);
+        }
+        return sInstance;
+    }
+
+    @Override
+    public Observable<String> getBasicInfo() {
+        return Observable.just(basicInfo);
+    }
 }

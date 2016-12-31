@@ -8,17 +8,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.home;
 
-import android.support.test.runner.AndroidJUnit4;
+import edu.uofk.eeese.eeese.BasePresenter;
+import edu.uofk.eeese.eeese.BaseView;
 
-import org.junit.runner.RunWith;
+interface HomeContract {
+    interface View extends BaseView<Presenter> {
+        void showInfo(String basicInfo);
 
-/**
- * Instrumentation test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-@RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+        void showLoadingError();
+    }
+
+    interface Presenter extends BasePresenter {
+    }
 }
