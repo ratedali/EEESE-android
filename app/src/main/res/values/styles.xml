@@ -20,6 +20,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingTop">@dimen/cardview_vertical_padding</item>
+        <item name="android:paddingRight">@dimen/cardview_horizontal_padding</item>
+        <item name="android:paddingBottom">@dimen/cardview_vertical_padding</item>
+        <item name="android:paddingLeft">@dimen/cardview_horizontal_padding</item>
+
+    </style>
+
     <style name="ExpandedTitleText" parent="TextAppearance.AppCompat.Title.Inverse">
         <item name="android:textSize">40sp</item>
     </style>
