@@ -15,23 +15,23 @@ import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.data.source.FakeDataRepository;
+import edu.uofk.eeese.eeese.data.source.MockDataRepository;
 import edu.uofk.eeese.eeese.home.HomeContract;
 import edu.uofk.eeese.eeese.home.TestingHomePresenter;
 import edu.uofk.eeese.eeese.projects.ProjectsContract;
 import edu.uofk.eeese.eeese.projects.TestingProjectsPresenter;
 import edu.uofk.eeese.eeese.util.EspressoIdlingResource;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProvider;
+import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
 
 public final class Injection {
 
-    public static DataRepository provideDataRepository(@NonNull Context context) {
-        return FakeDataRepository.getInstance(context);
+    public static DataRepository provideDataRepository(Context context) {
+        return MockDataRepository.getInstance();
     }
 
     public static BaseSchedulerProvider provideSchedulerProvider() {
-        return SchedulerProvider.getInstance();
+        return ImmediateSchedulerProvider.getInstance();
     }
 
     public static CountingIdlingResource provideCountingIdlingResource() {

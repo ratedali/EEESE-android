@@ -12,11 +12,14 @@ package edu.uofk.eeese.eeese.home;
 
 import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
+import android.util.Log;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 public final class TestingHomePresenter extends HomePresenter {
+
+    private static final String TAG = TestingHomePresenter.class.getName();
 
     @NonNull
     private CountingIdlingResource mIdlingResource;
@@ -33,11 +36,14 @@ public final class TestingHomePresenter extends HomePresenter {
 
     @Override
     public void loadBasicInfo(boolean force) {
+        Log.d(TAG, "Incrementing IdlingResource");
         mIdlingResource.increment();
         try {
             super.loadBasicInfo(force);
         } finally {
+            Log.d(TAG, "Decrementing IdlingResource");
             mIdlingResource.decrement();
+            Log.d(TAG, "Idle now? " + mIdlingResource.isIdleNow());
         }
     }
 }
