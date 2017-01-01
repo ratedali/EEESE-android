@@ -42,7 +42,7 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void subscribe() {
+    public void loadBasicInfo(boolean force) {
         Disposable subscription =
                 mSource.getBasicInfo()
                         .subscribeOn(mSchedulerProvider.computation())
@@ -64,6 +64,11 @@ public class HomePresenter implements HomeContract.Presenter {
                                 }
                         );
         mSubscriptions.add(subscription);
+    }
+
+    @Override
+    public void subscribe() {
+        loadBasicInfo(false);
     }
 
     @Override

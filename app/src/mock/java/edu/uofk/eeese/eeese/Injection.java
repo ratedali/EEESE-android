@@ -12,17 +12,19 @@ package edu.uofk.eeese.eeese;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.test.espresso.idling.CountingIdlingResource;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.data.source.FakeDataRepository;
 import edu.uofk.eeese.eeese.home.HomeContract;
-import edu.uofk.eeese.eeese.home.HomePresenter;
+import edu.uofk.eeese.eeese.home.TestingHomePresenter;
 import edu.uofk.eeese.eeese.projects.ProjectsContract;
-import edu.uofk.eeese.eeese.projects.ProjectsPresenter;
+import edu.uofk.eeese.eeese.projects.TestingProjectsPresenter;
+import edu.uofk.eeese.eeese.util.EspressoIdlingResource;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProvider;
 
-public class Injection {
+public final class Injection {
 
     public static DataRepository provideDataRepository(@NonNull Context context) {
         return FakeDataRepository.getInstance(context);
@@ -32,21 +34,24 @@ public class Injection {
         return SchedulerProvider.getInstance();
     }
 
+    public static CountingIdlingResource provideCountingIdlingResource() {
+        return EspressoIdlingResource.getInstance();
+    }
+
     public static HomeContract.Presenter provideHomePresenter(@NonNull Context context,
                                                               @NonNull HomeContract.View view) {
-        return new HomePresenter(
-                provideDataRepository(context),
+        return new TestingHomePresenter(provideDataRepository(context),
                 view,
-                provideSchedulerProvider()
-        );
+                provideSchedulerProvider(),
+                provideCountingIdlingResource());
     }
+
 
     public static ProjectsContract.Presenter provideProjectsPresenter(@NonNull Context context,
                                                                       @NonNull ProjectsContract.View view) {
-        return new ProjectsPresenter(
-                provideDataRepository(context),
+        return new TestingProjectsPresenter(provideDataRepository(context),
                 view,
-                provideSchedulerProvider()
-        );
+                provideSchedulerProvider(),
+                provideCountingIdlingResource());
     }
 }

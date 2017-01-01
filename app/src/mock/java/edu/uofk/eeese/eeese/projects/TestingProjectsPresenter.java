@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Ali Salah Alddin
+ * Copyright 2017 Ali Salah Alddin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -8,19 +8,35 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.projects;
 
-import edu.uofk.eeese.eeese.BasePresenter;
-import edu.uofk.eeese.eeese.BaseView;
+import android.support.annotation.NonNull;
+import android.support.test.espresso.idling.CountingIdlingResource;
 
-public interface HomeContract {
-    interface View extends BaseView<Presenter> {
-        void showInfo(String basicInfo);
+import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-        void showLoadingError();
+public final class TestingProjectsPresenter extends ProjectsPresenter {
+    @NonNull
+    private CountingIdlingResource mIdlingResource;
+
+    public TestingProjectsPresenter(
+            @NonNull DataRepository source,
+            @NonNull ProjectsContract.View view,
+            @NonNull BaseSchedulerProvider schedulerProvider,
+            @NonNull CountingIdlingResource idlingResource) {
+
+        super(source, view, schedulerProvider);
+        mIdlingResource = idlingResource;
     }
 
-    interface Presenter extends BasePresenter {
-        void loadBasicInfo(boolean force);
+    @Override
+    public void loadProjects(boolean force) {
+        mIdlingResource.increment();
+        try {
+            super.loadProjects(force);
+        } finally {
+            mIdlingResource.decrement();
+        }
     }
 }

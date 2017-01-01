@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Ali Salah Alddin
+ * Copyright 2017 Ali Salah Alddin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -10,17 +10,34 @@
 
 package edu.uofk.eeese.eeese.home;
 
-import edu.uofk.eeese.eeese.BasePresenter;
-import edu.uofk.eeese.eeese.BaseView;
+import android.support.annotation.NonNull;
+import android.support.test.espresso.idling.CountingIdlingResource;
 
-public interface HomeContract {
-    interface View extends BaseView<Presenter> {
-        void showInfo(String basicInfo);
+import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-        void showLoadingError();
+public final class TestingHomePresenter extends HomePresenter {
+
+    @NonNull
+    private CountingIdlingResource mIdlingResource;
+
+    public TestingHomePresenter(
+            @NonNull DataRepository source,
+            @NonNull HomeContract.View view,
+            @NonNull BaseSchedulerProvider schedulerProvider,
+            @NonNull CountingIdlingResource idlingResource) {
+
+        super(source, view, schedulerProvider);
+        mIdlingResource = idlingResource;
     }
 
-    interface Presenter extends BasePresenter {
-        void loadBasicInfo(boolean force);
+    @Override
+    public void loadBasicInfo(boolean force) {
+        mIdlingResource.increment();
+        try {
+            super.loadBasicInfo(force);
+        } finally {
+            mIdlingResource.decrement();
+        }
     }
 }
