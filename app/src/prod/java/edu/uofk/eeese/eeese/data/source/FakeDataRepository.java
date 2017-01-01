@@ -50,7 +50,7 @@ public class FakeDataRepository implements DataRepository {
         thrown = false;
     }
 
-    public static FakeDataRepository getInstance(@NonNull Context context) {
+    public static synchronized FakeDataRepository getInstance(@NonNull Context context) {
         if (sInstance == null) {
             sInstance = new FakeDataRepository(context);
         }
