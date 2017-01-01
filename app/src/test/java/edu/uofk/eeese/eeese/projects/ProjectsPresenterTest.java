@@ -20,7 +20,6 @@ import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
 import io.reactivex.Observable;
 
@@ -42,8 +41,7 @@ public class ProjectsPresenterTest {
     @Before
     public void setupPresenter() {
         MockitoAnnotations.initMocks(this);
-        BaseSchedulerProvider schedulerProvider = new ImmediateSchedulerProvider();
-        presenter = new ProjectsPresenter(source, view, schedulerProvider);
+        presenter = new ProjectsPresenter(source, view, ImmediateSchedulerProvider.getInstance());
     }
 
     @Test

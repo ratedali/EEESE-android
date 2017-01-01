@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
 import io.reactivex.Observable;
 
@@ -35,8 +34,7 @@ public class HomePresenterTest {
     @Before
     public void setupPresenter() {
         MockitoAnnotations.initMocks(this);
-        BaseSchedulerProvider schedulerProvider = new ImmediateSchedulerProvider();
-        presenter = new HomePresenter(source, view, schedulerProvider);
+        presenter = new HomePresenter(source, view, ImmediateSchedulerProvider.getInstance());
     }
 
     @Test

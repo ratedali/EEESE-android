@@ -14,6 +14,15 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 public class ImmediateSchedulerProvider implements BaseSchedulerProvider {
+    private static final ImmediateSchedulerProvider sInstance = new ImmediateSchedulerProvider();
+
+    private ImmediateSchedulerProvider() {
+    }
+
+    public static ImmediateSchedulerProvider getInstance() {
+        return sInstance;
+    }
+
     @Override
     public Scheduler immediate() {
         return Schedulers.trampoline();
