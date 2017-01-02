@@ -17,8 +17,6 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.intent.Intents;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.rule.ActivityTestRule;
 import android.util.Log;
 
@@ -34,13 +32,10 @@ import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.util.TestUtils;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -53,10 +48,8 @@ public class NavigationTest {
     private DataRepository source =
             Injection.provideDataRepository(InstrumentationRegistry.getTargetContext());
 
-    private TestRule<ProjectsActivity> testRule =
-            new TestRule<ProjectsActivity>(ProjectsActivity.class, false, false, source);
-//    private ActivityTestRule<ProjectsActivity> testRule =
-//            new ActivityTestRule<>(ProjectsActivity.class, false, false);
+    private ActivityTestRule<ProjectsActivity> testRule =
+            new ActivityTestRule<>(ProjectsActivity.class, false, false);
 
     private static final List<Project> projects =
             Collections.singletonList(new Project("1", "Project 1", "desc"));
@@ -66,8 +59,8 @@ public class NavigationTest {
     @Before
     public void setUp() {
         Espresso.registerIdlingResources(Injection.provideCountingIdlingResource());
-//        when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
-//        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
+        when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
+        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
 
         testRule.launchActivity(null);
     }
