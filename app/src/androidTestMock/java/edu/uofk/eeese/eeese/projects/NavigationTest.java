@@ -54,7 +54,7 @@ public class NavigationTest {
             Injection.provideDataRepository(InstrumentationRegistry.getTargetContext());
 
     private static final List<Project> projects =
-            Collections.singletonList(new Project("1", "Project 1", "desc"));
+            Collections.singletonList(new Project.Builder("1", "Project 1", "head").build());
 
     private static final String basicInfo = "";
 

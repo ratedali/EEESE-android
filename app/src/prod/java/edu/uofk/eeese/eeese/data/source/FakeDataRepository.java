@@ -41,10 +41,14 @@ public class FakeDataRepository implements DataRepository {
                         + context.getPackageName()
                         + "/mipmap/promo");
         mProjects = Arrays.asList(
-                new Project("1", "Project 1", "The First Project", imageUri),
-                new Project("2", "Project 2", "The Second Project", imageUri),
-                new Project("3", "Project 3", "The Third Project", imageUri),
-                new Project("4", "Project 4", "The Fourth Project", imageUri)
+                new Project.Builder("1", "Project 1", "Head 1")
+                        .withDesc("The First Project").withImageUri(imageUri).build(),
+                new Project.Builder("2", "Project 2", "Head 2")
+                        .withDesc("The Second Project").withImageUri(imageUri).build(),
+                new Project.Builder("3", "Project 3", "Head 3")
+                        .withDesc("The Third Project").withImageUri(imageUri).build(),
+                new Project.Builder("4", "Project 4", "Head 4")
+                        .withDesc("The Fourth Project").withImageUri(imageUri).build()
         );
 
         thrown = false;

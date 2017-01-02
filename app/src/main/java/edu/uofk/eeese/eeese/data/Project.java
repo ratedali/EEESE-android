@@ -22,25 +22,63 @@ public class Project {
     private String mId;
     @NonNull
     private String mName;
-    @Nullable
+    @NonNull
     private Uri mImageUrl;
-    @Nullable
+    @NonNull
     private String mDesc;
+    @NonNull
+    private String mProjectHead;
 
-    public Project(@NonNull String id,
-                   @NonNull String name,
-                   @Nullable String desc) {
-        this(id, name, desc, null);
-    }
-
-    public Project(@NonNull String id,
-                   @NonNull String name,
-                   @Nullable String desc,
-                   @Nullable Uri imageUrl) {
+    private Project(@NonNull String id,
+                    @NonNull String name,
+                    @NonNull String projectHead,
+                    @Nullable String desc,
+                    @Nullable Uri imageUrl) {
         mId = id;
         mName = name;
-        mDesc = desc;
-        mImageUrl = imageUrl;
+        mDesc = desc != null ? desc : "";
+        mProjectHead = projectHead;
+        mImageUrl = imageUrl != null ? imageUrl : Uri.EMPTY;
+    }
+
+    public static class Builder {
+        @NonNull
+        private String projectId;
+        @NonNull
+        private String projectName;
+        @Nullable
+        private Uri projectImageUri;
+        @Nullable
+        private String projectDesc;
+        @NonNull
+        private String projectHead;
+
+        public Builder(@NonNull String id, @NonNull String name, @NonNull String head) {
+            projectId = id;
+            projectName = name;
+            projectHead = head;
+            projectImageUri = null;
+            projectDesc = null;
+        }
+
+        public Builder withDesc(@Nullable String desc) {
+            projectDesc = desc;
+            return this;
+        }
+
+        public Builder withImageUri(@Nullable Uri imageUri) {
+            projectImageUri = imageUri;
+            return this;
+        }
+
+        public Project build() {
+            return new Project(
+                    projectId,
+                    projectName,
+                    projectHead,
+                    projectDesc,
+                    projectImageUri);
+        }
     }
 
     @NonNull
@@ -63,6 +101,11 @@ public class Project {
         return mDesc;
     }
 
+    @NonNull
+    public String getProjectHead() {
+        return mProjectHead;
+    }
+
     @Override
     public boolean equals(Object rhs) {
         if (this == rhs)
@@ -72,6 +115,7 @@ public class Project {
         Project project = (Project) rhs;
         return ObjectUtils.equals(mId, project.mId)
                 && ObjectUtils.equals(mName, project.mName)
+                && ObjectUtils.equals(mProjectHead, project.mProjectHead)
                 && ObjectUtils.equals(mDesc, project.mDesc)
                 && ObjectUtils.equals(mImageUrl, project.mImageUrl);
     }

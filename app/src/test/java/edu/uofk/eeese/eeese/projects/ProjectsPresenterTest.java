@@ -36,7 +36,7 @@ public class ProjectsPresenterTest {
 
     private ProjectsPresenter presenter;
 
-    private List<Project> projects = Collections.singletonList(new Project("1", "Project 1", "Project 1 Description"));
+    private List<Project> projects = Collections.singletonList(new Project.Builder("1", "Project 1", "Project 1 Head").build());
 
     @Before
     public void setupPresenter() {
