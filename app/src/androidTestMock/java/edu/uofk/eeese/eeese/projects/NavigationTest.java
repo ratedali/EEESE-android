@@ -17,13 +17,15 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.rule.ActivityTestRule;
-import android.util.Log;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,37 +34,37 @@ import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.home.HomeActivity;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
+@RunWith(AndroidJUnit4.class)
 public class NavigationTest {
 
     private DataRepository source =
             Injection.provideDataRepository(InstrumentationRegistry.getTargetContext());
-
-    private ActivityTestRule<ProjectsActivity> testRule =
-            new ActivityTestRule<>(ProjectsActivity.class, false, false);
 
     private static final List<Project> projects =
             Collections.singletonList(new Project("1", "Project 1", "desc"));
 
     private static final String basicInfo = "";
 
+    @Rule
+    public TestRule<ProjectsActivity> testRule =
+            new TestRule<>(ProjectsActivity.class, source);
+
     @Before
     public void setUp() {
         Espresso.registerIdlingResources(Injection.provideCountingIdlingResource());
-        when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
-
-        testRule.launchActivity(null);
     }
 
     @Test
@@ -70,8 +72,7 @@ public class NavigationTest {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
 
-        onView(withId(R.id.basic_info_textview)).check(matches(isDisplayed()));
-//        intended(toPackage(TestUtils.HOME_PACKAGE));
+        intended(hasComponent(hasClassName(HomeActivity.class.getName())));
     }
 
     @Test
@@ -81,7 +82,8 @@ public class NavigationTest {
                 .perform(RecyclerViewActions.actionOnItem(
                         withText(projects.get(0).getName()),
                         click()));
-//        intended(toPackage(TestUtils.DETAILS_PACKAGE));
+        // TODO: 1/2/17 Enable after adding DetailsActivity
+        //intended(hasComponent(hasClassName(DetailsActivity.class.getName())));
     }
 
     @After
@@ -89,46 +91,23 @@ public class NavigationTest {
         Espresso.unregisterIdlingResources(Injection.provideCountingIdlingResource());
     }
 
-    private static class TestRule<T extends Activity> extends ActivityTestRule<T> {
-        private static final String TAG = TestRule.class.getName();
+
+    private static class TestRule<T extends Activity> extends IntentsTestRule<T> {
         private DataRepository mSource;
 
-        public TestRule(Class<T> activityClass,
-                        @NonNull DataRepository source) {
+        TestRule(Class<T> activityClass,
+                 @NonNull DataRepository source) {
             super(activityClass);
-            mSource = source;
-        }
-
-        public TestRule(Class<T> activityClass, boolean initialTouchMode,
-                        @NonNull DataRepository source) {
-            super(activityClass, initialTouchMode);
-            mSource = source;
-        }
-
-        public TestRule(Class<T> activityClass, boolean initialTouchMode, boolean launchActivity,
-                        @NonNull DataRepository source) {
-            super(activityClass, initialTouchMode, launchActivity);
             mSource = source;
         }
 
         @Override
         protected void beforeActivityLaunched() {
+            super.beforeActivityLaunched();
             when(mSource.getBasicInfo()).thenReturn(Observable.just(basicInfo));
             when(mSource.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
-            super.beforeActivityLaunched();
         }
 
-        @Override
-        protected void afterActivityLaunched() {
-            Log.d(TAG, "Activity Launched");
-            super.afterActivityLaunched();
-        }
-
-        @Override
-        protected void afterActivityFinished() {
-            Log.d(TAG, "Activity Finished");
-            super.afterActivityFinished();
-        }
     }
 
 }
