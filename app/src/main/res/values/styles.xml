@@ -28,10 +28,10 @@
 
     </style>
 
-    <style name="ExpandedTitleText" parent="TextAppearance.AppCompat.Title.Inverse">
+    <style name="ExpandedTitleText" parent="TextAppearance.AppCompat.Title">
         <item name="android:textSize">40sp</item>
     </style>
 
-    <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title.Inverse">
+    <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title">
     </style>
 </resources>
