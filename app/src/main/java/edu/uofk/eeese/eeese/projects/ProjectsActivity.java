@@ -10,6 +10,8 @@
 
 package edu.uofk.eeese.eeese.projects;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -32,6 +34,7 @@ import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.R2;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
 public class ProjectsActivity extends AppCompatActivity implements ProjectsContract.View {
@@ -55,7 +58,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     private ProjectsAdapter mAdapter;
     private ProjectsContract.Presenter mPresenter;
 
-    private Snackbar indicator;
+    private Snackbar mLoadingIndicator;
 
 
     @Override
@@ -78,7 +81,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         ProjectsContract.Presenter presenter = Injection.provideProjectsPresenter(this, this);
         setPresenter(presenter);
 
-        ViewUtils.setupDrawerListener(mNavView, mDrawerLayout, this);
+        setupDrawer(mNavView, mDrawerLayout);
     }
 
     @Override
@@ -91,6 +94,27 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+
+    private void setupDrawer(@NonNull NavigationView navView,
+                             @NonNull final DrawerLayout drawer) {
+        navView.setCheckedItem(R.id.nav_projects);
+        drawer.closeDrawers();
+        final Activity source = this;
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                drawer.closeDrawers();
+                Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
+                if (targetActivity != null && !targetActivity.equals(source.getClass())) {
+                    Intent intent = new Intent(source, targetActivity);
+                    ActivityUtils.startActivityWithTransition(source, intent);
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -113,14 +137,14 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void setLoadingIndicator(boolean visibility) {
-        // TODO: 12/31/16 change to a loading indicator
+        // TODO: 12/31/16 change to a loading mLoadingIndicator
         if (visibility) {
-            if (indicator == null) {
-                indicator = Snackbar.make(mContentView, R.string.loading_projects, Snackbar.LENGTH_INDEFINITE);
+            if (mLoadingIndicator == null) {
+                mLoadingIndicator = Snackbar.make(mContentView, R.string.loading_projects, Snackbar.LENGTH_INDEFINITE);
             }
-            indicator.show();
+            mLoadingIndicator.show();
         } else {
-            indicator.dismiss();
+            mLoadingIndicator.dismiss();
         }
 
     }

@@ -79,6 +79,7 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/basic_info_card"
                 android:layout_marginTop="@dimen/cardview_margin"
                 cardview:cardCornerRadius="@dimen/cardview_default_radius"
                 cardview:cardElevation="@dimen/cardview_default_elevation">
@@ -99,7 +100,7 @@
                         android:id="@+id/basic_info_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="@string/test_content"/>
+                        tools:text="@string/basic_info"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 

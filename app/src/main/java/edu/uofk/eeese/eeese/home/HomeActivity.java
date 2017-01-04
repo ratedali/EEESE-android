@@ -10,16 +10,21 @@
 
 package edu.uofk.eeese.eeese.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.R2;
+import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
 public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentListener {
@@ -43,8 +48,26 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
             homePresenter = Injection.provideHomePresenter(this, homeView);
         }
 
-        ViewUtils.setupDrawerListener(navView, mDrawerLayout, this);
+        setupDrawer(navView, mDrawerLayout);
+    }
 
+    private void setupDrawer(@NonNull NavigationView navView,
+                             @NonNull final DrawerLayout drawer) {
+        navView.setCheckedItem(R.id.nav_home);
+        final Activity source = this;
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                drawer.closeDrawers();
+                Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
+                if (targetActivity != null && !targetActivity.equals(source.getClass())) {
+                    Intent intent = new Intent(source, targetActivity);
+                    ActivityUtils.startActivityWithTransition(source, intent);
+                }
+                return true;
+            }
+        });
     }
 
     @Override

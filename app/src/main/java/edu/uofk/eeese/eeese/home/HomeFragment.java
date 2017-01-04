@@ -21,7 +21,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,11 +33,6 @@ import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.R2;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment implements HomeContract.View {
 
     private final String TAG = HomeFragment.class.getCanonicalName();
@@ -65,12 +59,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment HomeFragment.
-     */
     public static HomeFragment newInstance() {
         return new HomeFragment();
     }
@@ -174,7 +162,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @Override
     public void showInfo(String basicInfo) {
-        Log.d(TAG, "showInfo: showing " + basicInfo + " on the view");
         basicInfoTextView.setText(basicInfo);
     }
 
