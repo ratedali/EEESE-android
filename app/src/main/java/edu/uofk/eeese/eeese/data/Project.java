@@ -10,7 +10,6 @@
 
 package edu.uofk.eeese.eeese.data;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -23,8 +22,6 @@ public class Project {
     @NonNull
     private String mName;
     @NonNull
-    private Uri mImageUrl;
-    @NonNull
     private String mDesc;
     @NonNull
     private String mProjectHead;
@@ -32,13 +29,11 @@ public class Project {
     private Project(@NonNull String id,
                     @NonNull String name,
                     @NonNull String projectHead,
-                    @Nullable String desc,
-                    @Nullable Uri imageUrl) {
+                    @Nullable String desc) {
         mId = id;
         mName = name;
         mDesc = desc != null ? desc : "";
         mProjectHead = projectHead;
-        mImageUrl = imageUrl != null ? imageUrl : Uri.EMPTY;
     }
 
     public static class Builder {
@@ -46,8 +41,6 @@ public class Project {
         private String projectId;
         @NonNull
         private String projectName;
-        @Nullable
-        private Uri projectImageUri;
         @Nullable
         private String projectDesc;
         @NonNull
@@ -57,7 +50,6 @@ public class Project {
             projectId = id;
             projectName = name;
             projectHead = head;
-            projectImageUri = null;
             projectDesc = null;
         }
 
@@ -66,18 +58,12 @@ public class Project {
             return this;
         }
 
-        public Builder withImageUri(@Nullable Uri imageUri) {
-            projectImageUri = imageUri;
-            return this;
-        }
-
         public Project build() {
             return new Project(
                     projectId,
                     projectName,
                     projectHead,
-                    projectDesc,
-                    projectImageUri);
+                    projectDesc);
         }
     }
 
@@ -89,11 +75,6 @@ public class Project {
     @NonNull
     public String getName() {
         return mName;
-    }
-
-    @Nullable
-    public Uri getImageUri() {
-        return mImageUrl;
     }
 
     @Nullable
@@ -116,8 +97,7 @@ public class Project {
         return ObjectUtils.equals(mId, project.mId)
                 && ObjectUtils.equals(mName, project.mName)
                 && ObjectUtils.equals(mProjectHead, project.mProjectHead)
-                && ObjectUtils.equals(mDesc, project.mDesc)
-                && ObjectUtils.equals(mImageUrl, project.mImageUrl);
+                && ObjectUtils.equals(mDesc, project.mDesc);
     }
 
     @Override

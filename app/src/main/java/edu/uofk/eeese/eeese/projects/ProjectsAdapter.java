@@ -17,10 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,11 +57,8 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
 
         holder.title
                 .setText(project.getName());
-        holder.desc
-                .setText(project.getDesc());
-        Picasso.with(mContext)
-                .load(project.getImageUri())
-                .into(holder.image);
+        holder.head
+                .setText(project.getProjectHead());
     }
 
     @Override
@@ -86,10 +80,8 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R2.id.project_name)
         public TextView title;
-        @BindView(R2.id.project_desc)
-        public TextView desc;
-        @BindView(R2.id.project_image)
-        public ImageView image;
+        @BindView(R2.id.project_head)
+        public TextView head;
 
         public ViewHolder(View view) {
             super(view);

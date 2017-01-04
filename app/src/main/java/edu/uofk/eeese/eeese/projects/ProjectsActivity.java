@@ -28,6 +28,7 @@ import android.view.View;
 
 import java.util.List;
 
+import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.Injection;
@@ -55,6 +56,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     @BindView(R2.id.error_view)
     public View mErrorView;
 
+    @BindInt(R2.integer.number_of_columns)
+    public int numOfColumns;
+
     private ProjectsAdapter mAdapter;
     private ProjectsContract.Presenter mPresenter;
 
@@ -76,7 +80,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         }
 
         mAdapter = new ProjectsAdapter(this);
-        mProjectsList.setLayoutManager(new LinearLayoutManager(this));
+        mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mProjectsList.setAdapter(mAdapter);
         ProjectsContract.Presenter presenter = Injection.provideProjectsPresenter(this, this);
         setPresenter(presenter);
