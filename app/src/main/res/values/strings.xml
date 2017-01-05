@@ -22,12 +22,14 @@
     <string name="basic_info">EEESE is an annual event held by the students of the Electrical and Electronics Engineering department of the University of Khartoum, where the participating students showcase their creativity and skills by building various projects.</string>
 
 
-    <string name="test_title">Test Title</string>
-    <string name="test_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
-    <string name="promo_desc">a project image</string>
     <string name="projects">Projects</string>
-    <string name="no_project_available">There are no Projects available</string>
+    <string name="promo_desc">a project image</string>
     <string name="loading_projects">Loading the projects list</string>
+    <string name="no_project_available">There are no projects available</string>
     <string name="connection_error">Cannot connect to the internet</string>
-    <string name="retry">Retry</string>
+    <string name="tap_to_reload">reload</string>
+    <string name="retry">retry</string>
+
+
+    <string name="transitionname_toolbar" translatable="false">toolbar</string>
 </resources>

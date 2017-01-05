@@ -14,5 +14,16 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowActivityTransitions">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- Transitions -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">false</item>
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+        <item name="android:windowEnterTransition">@transition/fade</item>
+        <item name="android:windowExitTransition">@transition/fade</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/changebounds</item>
+        <item name="android:windowSharedElementExitTransition">@transition/changebounds</item>
+        <item name="android:windowSharedElementReenterTransition">@transition/changebounds</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/changebounds</item>
     </style>
 </resources>

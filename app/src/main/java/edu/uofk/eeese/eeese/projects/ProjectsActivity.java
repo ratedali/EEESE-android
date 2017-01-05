@@ -20,20 +20,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
 import java.util.List;
 
 import butterknife.BindInt;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.R2;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
@@ -43,32 +44,39 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     // Navigation views
     @BindView(R.id.drawer_layout)
     public DrawerLayout mDrawerLayout;
-    @BindView(R2.id.nav_view)
+    @BindView(R.id.nav_view)
     public NavigationView mNavView;
-    @BindView(R2.id.toolbar)
+    @BindView(R.id.toolbar)
     public Toolbar toolbar;
+    @BindString(R.string.transitionname_toolbar)
+    public String toolbarTransitionName;
 
     // Content Views
-    @BindView(R2.id.content_view)
+    @BindView(R.id.content_view)
     public CoordinatorLayout mContentView;
-    @BindView(R2.id.projects_list)
+    @BindView(R.id.projects_list)
     public RecyclerView mProjectsList;
-    @BindView(R2.id.error_view)
+    @BindView(R.id.error_view)
     public View mErrorView;
 
-    @BindInt(R2.integer.number_of_columns)
+    @BindInt(R.integer.number_of_columns)
     public int numOfColumns;
+
+    private boolean mExit;
 
     private ProjectsAdapter mAdapter;
     private ProjectsContract.Presenter mPresenter;
-
-    private Snackbar mLoadingIndicator;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
+        ActivityUtils.setEnterTransition(this, R.transition.projects_enter);
+        ActivityUtils.setExitTransition(this, R.transition.projects_exit);
+        ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
+        ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
+
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
@@ -80,12 +88,13 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         }
 
         mAdapter = new ProjectsAdapter(this);
-        mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mProjectsList.setLayoutManager(new StaggeredGridLayoutManager(numOfColumns, StaggeredGridLayoutManager.VERTICAL));
         mProjectsList.setAdapter(mAdapter);
-        ProjectsContract.Presenter presenter = Injection.provideProjectsPresenter(this, this);
-        setPresenter(presenter);
 
         setupDrawer(mNavView, mDrawerLayout);
+
+        ProjectsContract.Presenter presenter = Injection.provideProjectsPresenter(this, this);
+        setPresenter(presenter);
     }
 
     @Override
@@ -100,6 +109,24 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.unsubscribe();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mExit)
+            finish();
+    }
 
     private void setupDrawer(@NonNull NavigationView navView,
                              @NonNull final DrawerLayout drawer) {
@@ -114,7 +141,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
                 Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
                 if (targetActivity != null && !targetActivity.equals(source.getClass())) {
                     Intent intent = new Intent(source, targetActivity);
-                    ActivityUtils.startActivityWithTransition(source, intent);
+                    ActivityUtils.startActivityWithTransition(source, intent,
+                            new Pair<View, String>(toolbar, toolbarTransitionName));
+                    mExit = true;
                 }
                 return true;
             }
@@ -124,7 +153,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     @Override
     public void setPresenter(@NonNull ProjectsContract.Presenter presenter) {
         mPresenter = presenter;
-        presenter.subscribe();
     }
 
     @Override
@@ -132,6 +160,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         mAdapter.changeProjects(projects);
         mProjectsList.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -141,33 +170,22 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void setLoadingIndicator(boolean visibility) {
-        // TODO: 12/31/16 change to a loading mLoadingIndicator
-        if (visibility) {
-            if (mLoadingIndicator == null) {
-                mLoadingIndicator = Snackbar.make(mContentView, R.string.loading_projects, Snackbar.LENGTH_INDEFINITE);
-            }
-            mLoadingIndicator.show();
-        } else {
-            mLoadingIndicator.dismiss();
-        }
-
+        // TODO: 12/31/16 show a loading mLoadingIndicator
     }
 
     @Override
     public void showNoProjects() {
         mProjectsList.setVisibility(View.GONE);
         mErrorView.setVisibility(View.VISIBLE);
+
     }
 
     @Override
     public void showNoConnectionError() {
-        Snackbar.make(mContentView, R.string.connection_error, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.retry, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mPresenter.loadProjects(true);
-                    }
-                })
-                .show();
+        Snackbar.make(mContentView, R.string.connection_error, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void reloadProjects(View view) {
+        mPresenter.loadProjects(true);
     }
 }

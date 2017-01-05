@@ -25,7 +25,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.R2;
 import edu.uofk.eeese.eeese.data.Project;
 
 class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
@@ -78,9 +77,9 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R2.id.project_name)
+        @BindView(R.id.project_name)
         public TextView title;
-        @BindView(R2.id.project_head)
+        @BindView(R.id.project_head)
         public TextView head;
 
         public ViewHolder(View view) {

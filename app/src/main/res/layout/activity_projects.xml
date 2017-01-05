@@ -31,6 +31,7 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                android:transitionName="@string/transitionname_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
@@ -55,20 +56,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:src="@drawable/ic_error"
-                android:id="@+id/error_image"
-                android:layout_width="256dp"
-                android:layout_height="256dp"
-                android:tint="@color/errorIndicator"
-                android:layout_centerInParent="true"/>
-
-            <TextView
-                android:text="@string/no_project_available"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/error_image"
-                android:layout_centerHorizontal="true"/>
+                android:orientation="vertical"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:src="@drawable/ic_error"
+                    android:id="@+id/error_image"
+                    android:layout_width="@dimen/error_image_size"
+                    android:layout_height="@dimen/error_image_size"
+                    android:layout_gravity="center_horizontal"
+                    android:tint="@color/errorIndicator"/>
+
+                <TextView
+                    android:id="@+id/error_message"
+                    android:text="@string/no_project_available"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"/>
+
+                <Button
+                    android:onClick="reloadProjects"
+                    android:text="@string/tap_to_reload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    style="@style/Widget.RetryButton"/>
+            </LinearLayout>
+
+
         </RelativeLayout>
 
     </android.support.design.widget.CoordinatorLayout>

@@ -89,7 +89,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
-//    compile "com.squareup.sqlbrite:sqlbrite:$rootProject.sqlbriteVersion"
+    compile "com.andkulikov:transitionseverywhere:$rootProject.transitionseverywhereVersion"
 
     // Local Unit Tests
     testCompile "junit:junit:$rootProject.junitVersion"

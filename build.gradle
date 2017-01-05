@@ -34,10 +34,10 @@ ext {
     butterknifeVersion = '8.4.0'
     rxJavaVersion = '2.0.3'
     rxAndroidVersion = '2.0.1'
-    sqlbriteVersion = '1.1.1'
     okHttpVersion = '3.5.0'
     retrofitVersion = '2.1.0'
     picassoVersion = '2.5.2'
+    transitionseverywhereVersion = '1.7.0'
 
     runnerVersion = '0.5'
     rulesVersion = '0.5'

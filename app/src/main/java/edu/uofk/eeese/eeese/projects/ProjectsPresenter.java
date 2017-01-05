@@ -50,7 +50,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                 mSource.getProjects(force)
                         .subscribeOn(mSchedulerProvider.io())
                         .observeOn(mSchedulerProvider.ui())
-                        .doAfterTerminate(new Action() {
+                        .doFinally(new Action() {
                             @Override
                             public void run() throws Exception {
                                 mView.setLoadingIndicator(false);

@@ -13,42 +13,118 @@ package edu.uofk.eeese.eeese.home;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.Injection;
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.R2;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
-public class HomeActivity extends AppCompatActivity implements HomeFragment.HomeFragmentListener {
+public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
-    @BindView(R2.id.drawer_layout)
+    // Navigation
+    @BindView(R.id.drawer_layout)
     public DrawerLayout mDrawerLayout;
-    @BindView(R2.id.nav_view)
+    @BindView(R.id.nav_view)
     public NavigationView navView;
 
-    private HomeContract.Presenter homePresenter;
+    // ActionBar views
+    @BindView(R.id.appbar)
+    public AppBarLayout appBar;
+    @BindView(R.id.collapsing_toolbar)
+    public CollapsingToolbarLayout collapsingToolbar;
+    @BindView(R.id.toolbar)
+    public Toolbar toolbar;
+    @BindString(R.string.transitionname_toolbar)
+    public String toolbarTransitionName;
+    @BindString(R.string.app_name)
+    public String titleText;
+
+    // Content
+    @BindView(R.id.basic_info_textview)
+    public TextView basicInfoTextView;
+
+    private boolean mExit;
+
+    private HomeContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        ActivityUtils.setEnterTransition(this, R.transition.home_enter);
+        ActivityUtils.setExitTransition(this, R.transition.home_exit);
+        ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
+        ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
 
         ButterKnife.bind(this);
 
-        HomeContract.View homeView = (HomeContract.View) getSupportFragmentManager().findFragmentById(R.id.home_fragment);
-        if (homeView != null) {
-            homePresenter = Injection.provideHomePresenter(this, homeView);
+        setSupportActionBar(toolbar);
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_expandedtoolbar);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                @DrawableRes int navDrawable;
+                String title;
+                boolean isCollapsed = Math.abs(verticalOffset) >= appBarLayout.getTotalScrollRange();
+                if (isCollapsed) {
+                    title = titleText;
+                    navDrawable = R.drawable.ic_menu;
+                } else {
+                    title = "";
+                    navDrawable = R.drawable.ic_menu_expandedtoolbar;
+                }
+
+                collapsingToolbar.setTitle(title);
+                if (actionBar != null) {
+                    actionBar.setHomeAsUpIndicator(navDrawable);
+                }
+            }
+        });
+
+        mPresenter = Injection.provideHomePresenter(this, this);
+
         setupDrawer(navView, mDrawerLayout);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.unsubscribe();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mExit)
+            finish();
     }
 
     private void setupDrawer(@NonNull NavigationView navView,
@@ -63,15 +139,40 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.Home
                 Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
                 if (targetActivity != null && !targetActivity.equals(source.getClass())) {
                     Intent intent = new Intent(source, targetActivity);
-                    ActivityUtils.startActivityWithTransition(source, intent);
+                    ActivityUtils.startActivityWithTransition(source, intent,
+                            new Pair<View, String>(appBar, toolbarTransitionName));
+                    mExit = true;
                 }
                 return true;
             }
         });
     }
 
+
     @Override
-    public void openDrawer() {
-        ViewUtils.openDrawer(mDrawerLayout);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                ViewUtils.openDrawer(mDrawerLayout);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
+    public void showInfo(String basicInfo) {
+        basicInfoTextView.setText(basicInfo);
+    }
+
+    @Override
+    public void showLoadingError() {
+        // TODO: 12/31/16 Show an error message
+    }
+
+    @Override
+    public void setPresenter(@NonNull HomeContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 }

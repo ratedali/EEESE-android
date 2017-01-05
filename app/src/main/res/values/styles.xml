@@ -28,6 +28,13 @@
 
     </style>
 
+    <style name="Widget.RetryButton" parent="android:Widget">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:background">@color/colorAccent</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Widget.Button.Inverse
+        </item>
+    </style>
+
     <style name="ExpandedTitleText" parent="TextAppearance.AppCompat.Title">
         <item name="android:textSize">40sp</item>
     </style>
