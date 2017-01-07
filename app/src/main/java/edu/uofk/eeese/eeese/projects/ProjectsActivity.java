@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ViewAnimator;
 
 import java.util.List;
 
@@ -157,7 +158,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void showProjects(@NonNull List<Project> projects) {
-        mAdapter.changeProjects(projects);
+        mAdapter = new ProjectsAdapter(this, projects);
+        mProjectsList.swapAdapter(mAdapter, true);
         mProjectsList.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
 

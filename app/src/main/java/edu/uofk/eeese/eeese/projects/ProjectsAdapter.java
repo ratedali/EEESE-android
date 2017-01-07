@@ -65,16 +65,6 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
         return mProjects.size();
     }
 
-    public void changeProjects(@Nullable List<Project> projects) {
-        if (projects != null) {
-            mProjects = projects;
-        } else {
-            mProjects = Collections.emptyList();
-        }
-
-        notifyDataSetChanged();
-    }
-
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.project_name)
