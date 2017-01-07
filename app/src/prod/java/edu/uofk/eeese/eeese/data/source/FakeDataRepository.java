@@ -11,9 +11,7 @@
 package edu.uofk.eeese.eeese.data.source;
 
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.Arrays;
@@ -35,11 +33,6 @@ public class FakeDataRepository implements DataRepository {
     private FakeDataRepository(@NonNull Context context) {
         mBasicInfo = context.getString(R.string.basic_info);
 
-        Uri imageUri = Uri.parse(
-                ContentResolver.SCHEME_ANDROID_RESOURCE
-                        + "://"
-                        + context.getPackageName()
-                        + "/mipmap/promo");
         mProjects = Arrays.asList(
                 new Project.Builder("1", "Project 1", "Head 1")
                         .withDesc("The First Project").build(),
@@ -61,6 +54,7 @@ public class FakeDataRepository implements DataRepository {
         return sInstance;
     }
 
+    @Override
     public Observable<String> getBasicInfo() {
         return Observable.just(mBasicInfo);
     }

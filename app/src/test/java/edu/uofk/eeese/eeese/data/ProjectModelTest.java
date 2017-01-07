@@ -38,7 +38,6 @@ public class ProjectModelTest {
         project1 = new Project
                 .Builder("1", "Project 1", "Mr. Head")
                 .withDesc("desc")
-                .withImageUri(project1Uri)
                 .build();
     }
 
@@ -62,7 +61,6 @@ public class ProjectModelTest {
         Project theSameProject = new Project
                 .Builder(project1.getId(), project1.getName(), project1.getProjectHead())
                 .withDesc(project1.getDesc())
-                .withImageUri(project1.getImageUri())
                 .build();
 
         assertTrue(project1.equals(theSameProject));
@@ -75,7 +73,6 @@ public class ProjectModelTest {
                 project1.getName(),
                 project1.getProjectHead())
                 .withDesc(project1.getDesc())
-                .withImageUri(project1.getImageUri())
                 .build();
 
         assertFalse(project1.equals(withDifferentId));
@@ -88,7 +85,6 @@ public class ProjectModelTest {
                 project1.getName() + " But Different",
                 project1.getProjectHead())
                 .withDesc(project1.getDesc())
-                .withImageUri(project1.getImageUri())
                 .build();
 
         assertFalse(project1.equals(withDifferentName));
@@ -101,7 +97,6 @@ public class ProjectModelTest {
                 project1.getName(),
                 project1.getProjectHead() + " In The Box")
                 .withDesc(project1.getDesc())
-                .withImageUri(project1.getImageUri())
                 .build();
 
         assertFalse(project1.equals(withDifferentHead));
@@ -112,20 +107,8 @@ public class ProjectModelTest {
         Project withDifferentDesc = new Project
                 .Builder(project1.getId(), project1.getName(), project1.getProjectHead())
                 .withDesc(project1.getDesc() + " But Not Exactly The Same!")
-                .withImageUri(project1.getImageUri())
                 .build();
 
         assertFalse(project1.equals(withDifferentDesc));
-    }
-
-    @Test
-    public void notEqualsIfDifferentImageUri() {
-        Project withDifferentImageUri = new Project
-                .Builder(project1.getId(), project1.getName(), project1.getProjectHead())
-                .withDesc(project1.getDesc())
-                .withImageUri(differentUri)
-                .build();
-
-        assertFalse(project1.equals(withDifferentImageUri));
     }
 }
