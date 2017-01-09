@@ -8,38 +8,31 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.util.schedulers;
+package edu.uofk.eeese.eeese.home;
 
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
+import dagger.Module;
+import dagger.Provides;
+import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-public class ImmediateSchedulerProvider implements BaseSchedulerProvider {
-    private static final ImmediateSchedulerProvider sInstance = new ImmediateSchedulerProvider();
+@Module
+public class HomeModule {
 
-    public ImmediateSchedulerProvider() {
+    private HomeContract.View mHomeView;
+
+    public HomeModule(HomeContract.View view) {
+        mHomeView = view;
     }
 
-    public static ImmediateSchedulerProvider getInstance() {
-        return sInstance;
+    @Provides
+    public HomeContract.View provideHomeView() {
+        return mHomeView;
     }
 
-    @Override
-    public Scheduler immediate() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler io() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler computation() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler ui() {
-        return Schedulers.trampoline();
+    @Provides
+    public HomeContract.Presenter providePresenter(DataRepository source,
+                                                   HomeContract.View view,
+                                                   BaseSchedulerProvider schedulerProvide) {
+        return new HomePresenter(source, view, schedulerProvide);
     }
 }

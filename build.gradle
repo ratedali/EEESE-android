@@ -31,6 +31,8 @@ ext {
     targetSdkVersion = 25
 
     supportLibraryVersion = '25.1.0'
+    daggerVersion = '2.8'
+    annotationVersion = '10.0-b28'
     butterknifeVersion = '8.4.0'
     rxJavaVersion = '2.0.3'
     rxAndroidVersion = '2.0.1'

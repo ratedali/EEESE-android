@@ -10,36 +10,9 @@
 
 package edu.uofk.eeese.eeese.util.schedulers;
 
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
+import dagger.Component;
 
-public class ImmediateSchedulerProvider implements BaseSchedulerProvider {
-    private static final ImmediateSchedulerProvider sInstance = new ImmediateSchedulerProvider();
-
-    public ImmediateSchedulerProvider() {
-    }
-
-    public static ImmediateSchedulerProvider getInstance() {
-        return sInstance;
-    }
-
-    @Override
-    public Scheduler immediate() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler io() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler computation() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler ui() {
-        return Schedulers.trampoline();
-    }
+@Component(modules = {SchedulerProviderModule.class})
+public interface SchedulerProviderComponent {
+    BaseSchedulerProvider schedulerProvider();
 }

@@ -14,6 +14,8 @@ import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
@@ -24,6 +26,7 @@ public final class TestingHomePresenter extends HomePresenter {
     @NonNull
     private CountingIdlingResource mIdlingResource;
 
+    @Inject
     public TestingHomePresenter(
             @NonNull DataRepository source,
             @NonNull HomeContract.View view,

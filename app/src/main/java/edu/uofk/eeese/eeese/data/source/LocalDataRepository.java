@@ -10,17 +10,32 @@
 
 package edu.uofk.eeese.eeese.data.source;
 
-import org.mockito.Mockito;
+import android.content.Context;
 
+import java.util.List;
 
-public final class MockDataRepository {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-    private static final DataRepository sInstance = Mockito.mock(DataRepository.class);
+import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import io.reactivex.Observable;
 
-    private MockDataRepository() {
+@Singleton
+public class LocalDataRepository implements DataRepository {
+
+    @Inject
+    public LocalDataRepository(Context context, BaseSchedulerProvider schedulerProvider) {
+        // Stub
     }
 
-    public static DataRepository getInstance() {
-        return sInstance;
+    @Override
+    public Observable<String> getBasicInfo() {
+        return null;
+    }
+
+    @Override
+    public Observable<List<Project>> getProjects(boolean force) {
+        return null;
     }
 }

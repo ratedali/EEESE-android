@@ -27,10 +27,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import edu.uofk.eeese.eeese.Injection;
+import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
@@ -61,7 +63,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private boolean mExit;
 
-    private HomeContract.Presenter mPresenter;
+    @Inject
+    public HomeContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         ActivityUtils.setExitTransition(this, R.transition.home_exit);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
+
+        EEESEapp app = (EEESEapp) getApplication();
+
+        DaggerHomeComponent.builder()
+                .homeModule(new HomeModule(this))
+                .schedulerProviderComponent(app.getSchedulerComponent())
+                .dataRepositoryComponent(app.getRepositoryComponent())
+                .build()
+                .inject(this);
 
         ButterKnife.bind(this);
 
@@ -103,7 +115,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             }
         });
 
-        mPresenter = Injection.provideHomePresenter(this, this);
+        //mPresenter = Injection.provideHomePresenter(this, this);
 
         setupDrawer(navView, mDrawerLayout);
     }

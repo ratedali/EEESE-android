@@ -72,7 +72,8 @@ android {
 
 dependencies {
 
-    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -83,6 +84,8 @@ dependencies {
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
     debugCompile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
 
+    compile "com.google.dagger:dagger:$rootProject.daggerVersion"
+    provided "org.glassfish:javax.annotation:$rootProject.annotationVersion"
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
@@ -93,7 +96,7 @@ dependencies {
 
     // Local Unit Tests
     testCompile "junit:junit:$rootProject.junitVersion"
-    mockCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
+    compile "org.mockito:mockito-all:$rootProject.mockitoVersion"
     testCompile "org.hamcrest:hamcrest-all:$rootProject.hamcrestVersion"
 
     // ATSL's runner and rules

@@ -14,6 +14,8 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
@@ -33,6 +35,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
 
     private CompositeDisposable mSubscriptions;
 
+    @Inject
     public ProjectsPresenter(@NonNull DataRepository source,
                              @NonNull ProjectsContract.View view,
                              @NonNull BaseSchedulerProvider schedulerProvider) {

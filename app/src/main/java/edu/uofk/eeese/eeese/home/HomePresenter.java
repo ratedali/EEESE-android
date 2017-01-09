@@ -12,6 +12,8 @@ package edu.uofk.eeese.eeese.home;
 
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
+
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,6 +30,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private CompositeDisposable mSubscriptions;
 
+    @Inject
     public HomePresenter(@NonNull DataRepository source,
                          @NonNull HomeContract.View view,
                          @NonNull BaseSchedulerProvider schedulerProvider) {

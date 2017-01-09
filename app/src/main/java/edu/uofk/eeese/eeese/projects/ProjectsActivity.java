@@ -26,15 +26,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ViewAnimator;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import edu.uofk.eeese.eeese.Injection;
+import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
@@ -66,7 +67,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     private boolean mExit;
 
     private ProjectsAdapter mAdapter;
-    private ProjectsContract.Presenter mPresenter;
+
+    @Inject
+    public ProjectsContract.Presenter mPresenter;
 
 
     @Override
@@ -77,6 +80,15 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         ActivityUtils.setExitTransition(this, R.transition.projects_exit);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
+
+        EEESEapp app = (EEESEapp) getApplication();
+
+        DaggerProjectsComponent.builder()
+                .projectsModule(new ProjectsModule(this))
+                .dataRepositoryComponent(app.getRepositoryComponent())
+                .schedulerProviderComponent(app.getSchedulerComponent())
+                .build()
+                .inject(this);
 
         ButterKnife.bind(this);
 
@@ -93,9 +105,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         mProjectsList.setAdapter(mAdapter);
 
         setupDrawer(mNavView, mDrawerLayout);
-
-        ProjectsContract.Presenter presenter = Injection.provideProjectsPresenter(this, this);
-        setPresenter(presenter);
     }
 
     @Override

@@ -14,8 +14,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
 
+import org.mockito.Mockito;
+
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.data.source.MockDataRepository;
 import edu.uofk.eeese.eeese.home.HomeContract;
 import edu.uofk.eeese.eeese.home.TestingHomePresenter;
 import edu.uofk.eeese.eeese.projects.ProjectsContract;
@@ -27,7 +28,7 @@ import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
 public final class Injection {
 
     public static DataRepository provideDataRepository(Context context) {
-        return MockDataRepository.getInstance();
+        return Mockito.mock(DataRepository.class);
     }
 
     public static BaseSchedulerProvider provideSchedulerProvider() {

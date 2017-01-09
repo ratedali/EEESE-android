@@ -8,38 +8,26 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.util.schedulers;
+package edu.uofk.eeese.eeese;
 
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
+import android.content.Context;
 
-public class ImmediateSchedulerProvider implements BaseSchedulerProvider {
-    private static final ImmediateSchedulerProvider sInstance = new ImmediateSchedulerProvider();
+import javax.inject.Singleton;
 
-    public ImmediateSchedulerProvider() {
+import dagger.Module;
+import dagger.Provides;
+
+@Singleton
+@Module
+public class AppModule {
+    private Context mContext;
+
+    public AppModule(Context context) {
+        mContext = context;
     }
 
-    public static ImmediateSchedulerProvider getInstance() {
-        return sInstance;
-    }
-
-    @Override
-    public Scheduler immediate() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler io() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler computation() {
-        return Schedulers.trampoline();
-    }
-
-    @Override
-    public Scheduler ui() {
-        return Schedulers.trampoline();
+    @Provides
+    public Context provideContext() {
+        return mContext;
     }
 }
