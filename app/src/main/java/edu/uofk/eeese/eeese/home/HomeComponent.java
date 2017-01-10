@@ -13,10 +13,10 @@ package edu.uofk.eeese.eeese.home;
 import dagger.Component;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryComponent;
 import edu.uofk.eeese.eeese.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderComponent;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 @ActivityScope
-@Component(modules = {HomeModule.class}, dependencies = {DataRepositoryComponent.class, SchedulerProviderComponent.class})
+@Component(modules = {HomeModule.class, SchedulerProviderModule.class}, dependencies = {DataRepositoryComponent.class})
 public interface HomeComponent {
     void inject(HomeActivity activity);
 }

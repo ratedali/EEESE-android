@@ -40,6 +40,7 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class ProjectsActivity extends AppCompatActivity implements ProjectsContract.View {
 
@@ -85,8 +86,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
         DaggerProjectsComponent.builder()
                 .projectsModule(new ProjectsModule(this))
+                .schedulerProviderModule(new SchedulerProviderModule())
                 .dataRepositoryComponent(app.getRepositoryComponent())
-                .schedulerProviderComponent(app.getSchedulerComponent())
                 .build()
                 .inject(this);
 

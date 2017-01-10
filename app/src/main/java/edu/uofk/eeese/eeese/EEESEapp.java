@@ -15,27 +15,20 @@ import android.app.Application;
 import edu.uofk.eeese.eeese.data.source.DaggerDataRepositoryComponent;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryComponent;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
-import edu.uofk.eeese.eeese.util.schedulers.DaggerSchedulerProviderComponent;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderComponent;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class EEESEapp extends Application {
 
-    private SchedulerProviderComponent mSchedulerComponent;
     private DataRepositoryComponent mDataComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mSchedulerComponent = DaggerSchedulerProviderComponent.create();
         mDataComponent = DaggerDataRepositoryComponent.builder()
                 .appModule(new AppModule(getApplicationContext()))
                 .dataRepositoryModule(new DataRepositoryModule())
-                .schedulerProviderComponent(mSchedulerComponent)
+                .schedulerProviderModule(new SchedulerProviderModule())
                 .build();
-    }
-
-    public SchedulerProviderComponent getSchedulerComponent() {
-        return mSchedulerComponent;
     }
 
     public DataRepositoryComponent getRepositoryComponent() {

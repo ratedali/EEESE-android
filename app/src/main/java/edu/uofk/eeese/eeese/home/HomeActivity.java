@@ -36,6 +36,7 @@ import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
@@ -79,8 +80,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
         DaggerHomeComponent.builder()
                 .homeModule(new HomeModule(this))
-                .schedulerProviderComponent(app.getSchedulerComponent())
                 .dataRepositoryComponent(app.getRepositoryComponent())
+                .schedulerProviderModule(new SchedulerProviderModule())
                 .build()
                 .inject(this);
 

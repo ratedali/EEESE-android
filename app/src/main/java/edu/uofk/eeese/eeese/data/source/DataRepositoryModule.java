@@ -14,11 +14,13 @@ import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
 public class DataRepositoryModule {
     @Provides
+    @ApplicationScope
     public DataRepository provideSource(Context context, BaseSchedulerProvider schedulerProvider) {
         return new FakeDataRepository(context, schedulerProvider);
     }
