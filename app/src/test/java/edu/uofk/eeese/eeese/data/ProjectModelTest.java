@@ -14,12 +14,14 @@ import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ProjectModelTest {
 
     @Mock
@@ -32,9 +34,6 @@ public class ProjectModelTest {
 
     @Before
     public void setupProjects() {
-
-        MockitoAnnotations.initMocks(this);
-
         project1 = new Project
                 .Builder("1", "Project 1", "Mr. Head")
                 .withDesc("desc")

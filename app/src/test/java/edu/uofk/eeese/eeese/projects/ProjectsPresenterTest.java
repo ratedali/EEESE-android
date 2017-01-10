@@ -10,38 +10,52 @@
 
 package edu.uofk.eeese.eeese.projects;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
+import edu.uofk.eeese.eeese.util.TestUtils;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ProjectsPresenterTest {
     @Mock
     private DataRepository source;
     @Mock
     private ProjectsContract.View view;
+    @Mock
+    private BaseSchedulerProvider schedulerProvider;
 
+    @InjectMocks
     private ProjectsPresenter presenter;
 
     private List<Project> projects = Collections.singletonList(new Project.Builder("1", "Project 1", "Project 1 Head").build());
 
     @Before
-    public void setupPresenter() {
-        MockitoAnnotations.initMocks(this);
-        presenter = new ProjectsPresenter(source, view, ImmediateSchedulerProvider.getInstance());
+    public void setupSchedulerProvider() {
+        TestUtils.setupMockSchedulerProvider(schedulerProvider, Schedulers.trampoline());
+    }
+
+    @After
+    public void resetMocks() {
+        reset(source, view, schedulerProvider);
     }
 
     @Test

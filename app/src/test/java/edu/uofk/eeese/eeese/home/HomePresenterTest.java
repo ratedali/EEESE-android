@@ -10,31 +10,45 @@
 
 package edu.uofk.eeese.eeese.home;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.util.schedulers.ImmediateSchedulerProvider;
+import edu.uofk.eeese.eeese.util.TestUtils;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HomePresenterTest {
 
     @Mock
     private DataRepository source;
     @Mock
     private HomeContract.View view;
+    @Mock
+    private BaseSchedulerProvider schedulerProvider;
 
+    @InjectMocks
     private HomePresenter presenter;
 
     @Before
-    public void setupPresenter() {
-        MockitoAnnotations.initMocks(this);
-        presenter = new HomePresenter(source, view, ImmediateSchedulerProvider.getInstance());
+    public void setupSchedulerProvider() {
+        TestUtils.setupMockSchedulerProvider(schedulerProvider, Schedulers.trampoline());
+    }
+
+    @After
+    public void resetMocks() {
+        reset(source, view, schedulerProvider);
     }
 
     @Test
