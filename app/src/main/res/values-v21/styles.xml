@@ -23,7 +23,5 @@
         <item name="android:windowExitTransition">@transition/fade</item>
         <item name="android:windowSharedElementEnterTransition">@transition/changebounds</item>
         <item name="android:windowSharedElementExitTransition">@transition/changebounds</item>
-        <item name="android:windowSharedElementReenterTransition">@transition/changebounds</item>
-        <item name="android:windowSharedElementReturnTransition">@transition/changebounds</item>
     </style>
 </resources>

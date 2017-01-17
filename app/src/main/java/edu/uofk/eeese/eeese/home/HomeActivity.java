@@ -71,7 +71,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         ActivityUtils.setEnterTransition(this, R.transition.home_enter);
-        ActivityUtils.setExitTransition(this, R.transition.home_exit);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
 

@@ -77,7 +77,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
         ActivityUtils.setEnterTransition(this, R.transition.projects_enter);
-        ActivityUtils.setExitTransition(this, R.transition.projects_exit);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
 
