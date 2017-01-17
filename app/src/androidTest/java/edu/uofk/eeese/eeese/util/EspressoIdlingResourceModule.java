@@ -14,7 +14,7 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.scopes.ApplicationScope;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
 @Module
 public class EspressoIdlingResourceModule {

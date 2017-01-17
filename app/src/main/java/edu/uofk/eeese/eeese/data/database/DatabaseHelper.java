@@ -14,12 +14,17 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
+import javax.inject.Inject;
 
+import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
+
+@ApplicationScope
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "projects.db";
     private static final int DATABASE_VERSION = 1;
 
+    @Inject
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }

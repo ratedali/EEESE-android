@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.scopes.ApplicationScope;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
 @Module
 class MockDataRepositoryModule {

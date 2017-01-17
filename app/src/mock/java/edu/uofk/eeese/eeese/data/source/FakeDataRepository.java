@@ -17,11 +17,15 @@ import android.support.annotation.NonNull;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
 
+@ApplicationScope
 public class FakeDataRepository implements DataRepository {
 
     private static FakeDataRepository sInstance = null;
@@ -30,6 +34,7 @@ public class FakeDataRepository implements DataRepository {
     private List<Project> mProjects;
     private boolean thrown;
 
+    @Inject
     public FakeDataRepository(@NonNull Context context, @NonNull BaseSchedulerProvider schedulerProvider) {
         mBasicInfo = context.getString(R.string.basic_info);
 

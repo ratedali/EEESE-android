@@ -11,7 +11,7 @@
 package edu.uofk.eeese.eeese.projects;
 
 import dagger.Subcomponent;
-import edu.uofk.eeese.eeese.scopes.ActivityScope;
+import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 
 @ActivityScope
 @Subcomponent(modules = {ProjectsModule.class})

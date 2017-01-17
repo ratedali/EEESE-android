@@ -15,7 +15,7 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.scopes.ActivityScope;
+import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module

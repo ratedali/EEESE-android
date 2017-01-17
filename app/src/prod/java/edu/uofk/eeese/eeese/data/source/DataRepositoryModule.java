@@ -11,17 +11,22 @@
 package edu.uofk.eeese.eeese.data.source;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.scopes.ApplicationScope;
+import edu.uofk.eeese.eeese.di.categories.Local;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
 public class DataRepositoryModule {
     @Provides
     @ApplicationScope
-    public DataRepository provideSource(Context context, BaseSchedulerProvider schedulerProvider) {
-        return new FakeDataRepository(context, schedulerProvider);
+    @Local
+    public DataRepository provideLocalSource(Context context,
+                                             SQLiteOpenHelper dbHelper,
+                                             BaseSchedulerProvider schedulerProvider) {
+        return new LocalDataRepository(context, dbHelper, schedulerProvider);
     }
 }
