@@ -10,31 +10,11 @@
 
 package edu.uofk.eeese.eeese.projects;
 
-import dagger.Module;
-import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import dagger.Subcomponent;
 
-@Module
-public class ProjectsModule {
-    private ProjectsContract.View mHomeView;
+@Subcomponent(modules = {TestProjectsModule.class})
+public interface TestProjectsComponent extends ProjectsComponent {
+    void inject(NavigationTest test);
 
-    ProjectsModule(ProjectsContract.View view) {
-        mHomeView = view;
-    }
-
-    @Provides
-    @ActivityScope
-    ProjectsContract.View provideHomeView() {
-        return mHomeView;
-    }
-
-    @Provides
-    @ActivityScope
-    ProjectsContract.Presenter providePresenter(DataRepository source,
-                                                ProjectsContract.View view,
-                                                BaseSchedulerProvider schedulerProvide) {
-        return new ProjectsPresenter(source, view, schedulerProvide);
-    }
+    void inject(ProjectsScreenTest test);
 }

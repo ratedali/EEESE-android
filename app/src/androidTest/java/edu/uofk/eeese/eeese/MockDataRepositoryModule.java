@@ -8,33 +8,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.projects;
+package edu.uofk.eeese.eeese;
+
+import org.mockito.Mockito;
 
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import edu.uofk.eeese.eeese.scopes.ApplicationScope;
 
 @Module
-public class ProjectsModule {
-    private ProjectsContract.View mHomeView;
-
-    ProjectsModule(ProjectsContract.View view) {
-        mHomeView = view;
-    }
+class MockDataRepositoryModule {
 
     @Provides
-    @ActivityScope
-    ProjectsContract.View provideHomeView() {
-        return mHomeView;
-    }
-
-    @Provides
-    @ActivityScope
-    ProjectsContract.Presenter providePresenter(DataRepository source,
-                                                ProjectsContract.View view,
-                                                BaseSchedulerProvider schedulerProvide) {
-        return new ProjectsPresenter(source, view, schedulerProvide);
+    @ApplicationScope
+    DataRepository provideMockSource() {
+        return Mockito.mock(DataRepository.class);
     }
 }

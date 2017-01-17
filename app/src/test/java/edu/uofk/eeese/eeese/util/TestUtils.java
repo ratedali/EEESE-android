@@ -10,19 +10,16 @@
 
 package edu.uofk.eeese.eeese.util;
 
-import android.support.test.espresso.idling.CountingIdlingResource;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import io.reactivex.Scheduler;
 
-public final class EspressoIdlingResource {
+import static org.mockito.Mockito.when;
 
-    private static CountingIdlingResource sInstance;
-
-    private EspressoIdlingResource() {
-    }
-
-    public static synchronized CountingIdlingResource getInstance() {
-        if (sInstance == null) {
-            sInstance = new CountingIdlingResource("test app");
-        }
-        return sInstance;
+public final class TestUtils {
+    public static void setupMockSchedulerProvider(BaseSchedulerProvider schedulerProvider, Scheduler defaultScheduler) {
+        when(schedulerProvider.computation()).thenReturn(defaultScheduler);
+        when(schedulerProvider.immediate()).thenReturn(defaultScheduler);
+        when(schedulerProvider.io()).thenReturn(defaultScheduler);
+        when(schedulerProvider.ui()).thenReturn(defaultScheduler);
     }
 }

@@ -10,10 +10,9 @@
 
 package edu.uofk.eeese.eeese.projects;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.matcher.ViewMatchers;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -26,10 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.uofk.eeese.eeese.Injection;
+import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.util.TestRule;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -44,17 +45,18 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ProjectsScreenTest {
 
+    private TestAppComponent mAppComponent = DaggerTestAppComponent.create();
 
     @Rule
-    public ActivityTestRule<ProjectsActivity> testRule =
-            new ActivityTestRule<>(ProjectsActivity.class, false, false);
+    public TestRule<ProjectsActivity> testRule =
+            new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
 
-    private DataRepository source;
+    private DataRepository source = mAppComponent.dataRepository();
+    private IdlingResource idlingResource = mAppComponent.idlingResource();
 
     @Before
     public void setUp() {
-        source = Injection.provideDataRepository(InstrumentationRegistry.getTargetContext());
-        Espresso.registerIdlingResources(Injection.provideCountingIdlingResource());
+        Espresso.registerIdlingResources(idlingResource);
     }
 
     @Test
@@ -91,6 +93,6 @@ public class ProjectsScreenTest {
 
     @After
     public void tearDown() {
-        Espresso.unregisterIdlingResources(Injection.provideCountingIdlingResource());
+        Espresso.unregisterIdlingResources(idlingResource);
     }
 }

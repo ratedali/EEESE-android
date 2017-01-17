@@ -8,28 +8,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.projects;
 
 import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Log;
 
-import javax.inject.Inject;
-
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-public final class TestingHomePresenter extends HomePresenter {
-
-    private static final String TAG = TestingHomePresenter.class.getName();
-
+class TestingProjectsPresenter extends ProjectsPresenter {
+    private static final String TAG = TestingProjectsPresenter.class.getName();
     @NonNull
     private CountingIdlingResource mIdlingResource;
 
-    @Inject
-    public TestingHomePresenter(
+    TestingProjectsPresenter(
             @NonNull DataRepository source,
-            @NonNull HomeContract.View view,
+            @NonNull ProjectsContract.View view,
             @NonNull BaseSchedulerProvider schedulerProvider,
             @NonNull CountingIdlingResource idlingResource) {
 
@@ -38,11 +33,11 @@ public final class TestingHomePresenter extends HomePresenter {
     }
 
     @Override
-    public void loadBasicInfo(boolean force) {
+    public void loadProjects(boolean force) {
         Log.d(TAG, "Incrementing IdlingResource");
         mIdlingResource.increment();
         try {
-            super.loadBasicInfo(force);
+            super.loadProjects(force);
         } finally {
             Log.d(TAG, "Decrementing IdlingResource");
             mIdlingResource.decrement();

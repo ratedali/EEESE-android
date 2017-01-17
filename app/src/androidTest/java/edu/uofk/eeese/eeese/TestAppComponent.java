@@ -8,41 +8,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.projects;
+package edu.uofk.eeese.eeese;
 
-import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
-import android.util.Log;
 
+import dagger.Component;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.home.TestingHomePresenter;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import edu.uofk.eeese.eeese.scopes.ApplicationScope;
+import edu.uofk.eeese.eeese.util.EspressoIdlingResourceModule;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
-public final class TestingProjectsPresenter extends ProjectsPresenter {
-    private static final String TAG = TestingHomePresenter.class.getName();
-    @NonNull
-    private CountingIdlingResource mIdlingResource;
+@ApplicationScope
+@Component(modules = {AppModule.class,
+        SchedulerProviderModule.class,
+        MockDataRepositoryModule.class,
+        EspressoIdlingResourceModule.class})
+public interface TestAppComponent extends AppComponent {
+    DataRepository dataRepository();
 
-    public TestingProjectsPresenter(
-            @NonNull DataRepository source,
-            @NonNull ProjectsContract.View view,
-            @NonNull BaseSchedulerProvider schedulerProvider,
-            @NonNull CountingIdlingResource idlingResource) {
-
-        super(source, view, schedulerProvider);
-        mIdlingResource = idlingResource;
-    }
-
-    @Override
-    public void loadProjects(boolean force) {
-        Log.d(TAG, "Incrementing IdlingResource");
-        mIdlingResource.increment();
-        try {
-            super.loadProjects(force);
-        } finally {
-            Log.d(TAG, "Decrementing IdlingResource");
-            mIdlingResource.decrement();
-            Log.d(TAG, "Idle now? " + mIdlingResource.isIdleNow());
-        }
-    }
+    CountingIdlingResource idlingResource();
 }

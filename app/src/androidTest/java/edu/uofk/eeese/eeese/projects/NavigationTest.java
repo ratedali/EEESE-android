@@ -10,14 +10,11 @@
 
 package edu.uofk.eeese.eeese.projects;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -30,11 +27,13 @@ import org.junit.runner.RunWith;
 import java.util.Collections;
 import java.util.List;
 
-import edu.uofk.eeese.eeese.Injection;
+import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
 import edu.uofk.eeese.eeese.home.HomeActivity;
+import edu.uofk.eeese.eeese.util.TestRule;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -50,21 +49,26 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class NavigationTest {
 
-    private DataRepository source =
-            Injection.provideDataRepository(InstrumentationRegistry.getTargetContext());
+    private TestAppComponent mAppComponent = DaggerTestAppComponent.create();
+
+    @Rule
+    public TestRule<ProjectsActivity> testRule =
+            new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
+
+    private DataRepository source = mAppComponent.dataRepository();
+    private IdlingResource idlingResource = mAppComponent.idlingResource();
 
     private static final List<Project> projects =
             Collections.singletonList(new Project.Builder("1", "Project 1", "head").build());
 
     private static final String basicInfo = "";
 
-    @Rule
-    public TestRule<ProjectsActivity> testRule =
-            new TestRule<>(ProjectsActivity.class, source);
-
     @Before
     public void setUp() {
-        Espresso.registerIdlingResources(Injection.provideCountingIdlingResource());
+        Espresso.registerIdlingResources(idlingResource);
+        when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
+        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
+        testRule.launchActivity(null);
     }
 
     @Test
@@ -88,26 +92,8 @@ public class NavigationTest {
 
     @After
     public void tearDown() {
-        Espresso.unregisterIdlingResources(Injection.provideCountingIdlingResource());
+        Espresso.unregisterIdlingResources(idlingResource);
     }
 
-
-    private static class TestRule<T extends Activity> extends IntentsTestRule<T> {
-        private DataRepository mSource;
-
-        TestRule(Class<T> activityClass,
-                 @NonNull DataRepository source) {
-            super(activityClass);
-            mSource = source;
-        }
-
-        @Override
-        protected void beforeActivityLaunched() {
-            super.beforeActivityLaunched();
-            when(mSource.getBasicInfo()).thenReturn(Observable.just(basicInfo));
-            when(mSource.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
-        }
-
-    }
 
 }

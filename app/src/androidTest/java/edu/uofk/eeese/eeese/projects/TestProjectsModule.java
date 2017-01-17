@@ -10,6 +10,8 @@
 
 package edu.uofk.eeese.eeese.projects;
 
+import android.support.test.espresso.idling.CountingIdlingResource;
+
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
@@ -17,24 +19,25 @@ import edu.uofk.eeese.eeese.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
-public class ProjectsModule {
-    private ProjectsContract.View mHomeView;
+class TestProjectsModule {
+    private ProjectsContract.View mProjectsView;
 
-    ProjectsModule(ProjectsContract.View view) {
-        mHomeView = view;
+    public TestProjectsModule(ProjectsContract.View view) {
+        mProjectsView = view;
     }
 
     @Provides
     @ActivityScope
-    ProjectsContract.View provideHomeView() {
-        return mHomeView;
+    ProjectsContract.View provideProjectsView() {
+        return mProjectsView;
     }
 
     @Provides
     @ActivityScope
-    ProjectsContract.Presenter providePresenter(DataRepository source,
-                                                ProjectsContract.View view,
-                                                BaseSchedulerProvider schedulerProvide) {
-        return new ProjectsPresenter(source, view, schedulerProvide);
+    ProjectsContract.Presenter provideMockPresenter(DataRepository source,
+                                                    ProjectsContract.View view,
+                                                    BaseSchedulerProvider schedulerProvide,
+                                                    CountingIdlingResource idlingResource) {
+        return new TestingProjectsPresenter(source, view, schedulerProvide, idlingResource);
     }
 }
