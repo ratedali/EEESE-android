@@ -40,7 +40,6 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class ProjectsActivity extends AppCompatActivity implements ProjectsContract.View {
 
@@ -82,13 +81,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
 
-        EEESEapp app = (EEESEapp) getApplication();
-
-        DaggerProjectsComponent.builder()
-                .projectsModule(new ProjectsModule(this))
-                .schedulerProviderModule(new SchedulerProviderModule())
-                .dataRepositoryComponent(app.getRepositoryComponent())
-                .build()
+        ((EEESEapp) getApplication()).getAppComponent()
+                .projectsComponent(new ProjectsModule(this))
                 .inject(this);
 
         ButterKnife.bind(this);

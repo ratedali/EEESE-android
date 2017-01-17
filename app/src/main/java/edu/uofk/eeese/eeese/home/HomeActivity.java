@@ -36,7 +36,6 @@ import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
@@ -76,13 +75,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
 
-        EEESEapp app = (EEESEapp) getApplication();
-
-        DaggerHomeComponent.builder()
-                .homeModule(new HomeModule(this))
-                .dataRepositoryComponent(app.getRepositoryComponent())
-                .schedulerProviderModule(new SchedulerProviderModule())
-                .build()
+        ((EEESEapp) getApplication()).getAppComponent().homeComponent(new HomeModule(this))
                 .inject(this);
 
         ButterKnife.bind(this);
@@ -115,8 +108,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 }
             }
         });
-
-        //mPresenter = Injection.provideHomePresenter(this, this);
 
         setupDrawer(navView, mDrawerLayout);
     }

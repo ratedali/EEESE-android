@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese.home;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
@@ -30,6 +31,7 @@ public class HomeModule {
     }
 
     @Provides
+    @ActivityScope
     public HomeContract.Presenter providePresenter(DataRepository source,
                                                    HomeContract.View view,
                                                    BaseSchedulerProvider schedulerProvide) {

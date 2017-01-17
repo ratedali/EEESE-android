@@ -12,11 +12,13 @@ package edu.uofk.eeese.eeese.util.schedulers;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.scopes.ApplicationScope;
 
 @Module
 public class SchedulerProviderModule {
 
     @Provides
+    @ApplicationScope
     public BaseSchedulerProvider provideSchedulerProvider() {
         return new SchedulerProvider();
     }

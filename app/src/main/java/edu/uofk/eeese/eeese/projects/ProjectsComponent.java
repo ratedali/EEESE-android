@@ -10,13 +10,11 @@
 
 package edu.uofk.eeese.eeese.projects;
 
-import dagger.Component;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryComponent;
+import dagger.Subcomponent;
 import edu.uofk.eeese.eeese.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 @ActivityScope
-@Component(modules = {ProjectsModule.class, SchedulerProviderModule.class}, dependencies = {DataRepositoryComponent.class})
+@Subcomponent(modules = {ProjectsModule.class})
 public interface ProjectsComponent {
     void inject(ProjectsActivity activity);
 }

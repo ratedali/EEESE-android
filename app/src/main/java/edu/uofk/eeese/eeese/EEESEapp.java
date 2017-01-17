@@ -12,26 +12,25 @@ package edu.uofk.eeese.eeese;
 
 import android.app.Application;
 
-import edu.uofk.eeese.eeese.data.source.DaggerDataRepositoryComponent;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryComponent;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 public class EEESEapp extends Application {
 
-    private DataRepositoryComponent mDataComponent;
+    private AppComponent mAppComponent = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mDataComponent = DaggerDataRepositoryComponent.builder()
+
+        mAppComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplicationContext()))
-                .dataRepositoryModule(new DataRepositoryModule())
                 .schedulerProviderModule(new SchedulerProviderModule())
+                .dataRepositoryModule(new DataRepositoryModule())
                 .build();
     }
 
-    public DataRepositoryComponent getRepositoryComponent() {
-        return mDataComponent;
+    public AppComponent getAppComponent() {
+        return mAppComponent;
     }
 }

@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese.projects;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
@@ -29,6 +30,7 @@ public class ProjectsModule {
     }
 
     @Provides
+    @ActivityScope
     public ProjectsContract.Presenter providePresenter(DataRepository source,
                                                        ProjectsContract.View view,
                                                        BaseSchedulerProvider schedulerProvide) {
