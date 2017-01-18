@@ -21,14 +21,16 @@
 
     <dimen name="cardview_vertical_padding">16dp</dimen>
     <dimen name="cardview_horizontal_padding">24dp</dimen>
+    <dimen name="large_cardview_vertical_padding">32dp</dimen>
+    <dimen name="large_cardview_horizontal_padding">48dp</dimen>
     <dimen name="cardview_margin">20dp</dimen>
+    <dimen name="large_cardview_margin">30dp</dimen>
 
     <dimen name="error_image_size">256dp</dimen>
     <dimen name="project_margin_vertical">10dp</dimen>
     <dimen name="project_margin_horizontal">5dp</dimen>
     <dimen name="head_text_margin">10dp</dimen>
 
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_size">64dp</dimen>
+    <dimen name="fab_margin">10dp</dimen>
 </resources>

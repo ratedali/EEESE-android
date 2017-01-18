@@ -25,15 +25,16 @@
         android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:transitionName="@string/transitionname_toolbar"
             android:fitsSystemWindows="true">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:transitionName="@string/transitionname_toolbar"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Inverse">
@@ -48,9 +49,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="@dimen/content_horizontal_margin"
             android:paddingRight="@dimen/content_horizontal_margin"
-            android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
         <LinearLayout
             android:id="@+id/error_view"
             android:layout_width="wrap_content"
@@ -68,6 +67,7 @@
 
             <TextView
                 android:id="@+id/error_message"
+                android:labelFor="@id/error_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

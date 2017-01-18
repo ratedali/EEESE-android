@@ -54,17 +54,25 @@ public final class ActivityUtils {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SafeVarargs
     public static void startActivityWithTransition(
-            @NonNull Activity activity,
+            @NonNull Activity sourceActivity,
             Intent intent,
             Pair<View, String>... shared) {
         if (atLeastApi(Build.VERSION_CODES.LOLLIPOP)) {
-            activity.startActivity(intent,
+            sourceActivity.startActivity(intent,
                     ActivityOptions
-                            .makeSceneTransitionAnimation(activity, shared)
+                            .makeSceneTransitionAnimation(sourceActivity, shared)
                             .toBundle());
         } else {
-            activity.startActivity(intent);
+            sourceActivity.startActivity(intent);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void setTransitionName(@NonNull View view, @NonNull String transitionName) {
+        if (!atLeastApi(Build.VERSION_CODES.LOLLIPOP)) {
+            return;
+        }
+        view.setTransitionName(transitionName);
     }
 
     /**

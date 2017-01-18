@@ -25,7 +25,13 @@
         <item name="android:paddingRight">@dimen/cardview_horizontal_padding</item>
         <item name="android:paddingBottom">@dimen/cardview_vertical_padding</item>
         <item name="android:paddingLeft">@dimen/cardview_horizontal_padding</item>
+    </style>
 
+    <style name="Widget.LargeCardContent" parent="android:Widget">
+        <item name="android:paddingTop">@dimen/cardview_vertical_padding</item>
+        <item name="android:paddingRight">@dimen/cardview_horizontal_padding</item>
+        <item name="android:paddingBottom">@dimen/cardview_vertical_padding</item>
+        <item name="android:paddingLeft">@dimen/cardview_horizontal_padding</item>
     </style>
 
     <style name="Widget.RetryButton" parent="android:Widget">
@@ -35,10 +41,11 @@
         </item>
     </style>
 
-    <style name="ExpandedTitleText" parent="TextAppearance.AppCompat.Title">
-        <item name="android:textSize">40sp</item>
+    <style name="ExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+    </style>
+    <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title">
     </style>
 
-    <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title">
+    <style name="DetailsExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
     </style>
 </resources>

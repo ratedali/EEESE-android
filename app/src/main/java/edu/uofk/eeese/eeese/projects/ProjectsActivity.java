@@ -38,6 +38,7 @@ import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
@@ -67,6 +68,15 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     private boolean mExit;
 
     private ProjectsAdapter mAdapter;
+    private View mSelectedProjectView;
+    private ProjectsAdapter.OnProjectSelectedListener projectSelectedListener =
+            new ProjectsAdapter.OnProjectSelectedListener() {
+                @Override
+                public void showProjectDetails(Project project, View projectCard) {
+                    mSelectedProjectView = projectCard;
+                    mPresenter.openProjectDetails(project);
+                }
+            };
 
     @Inject
     public ProjectsContract.Presenter mPresenter;
@@ -94,7 +104,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
             actionBar.setTitle(getString(R.string.projects));
         }
 
-        mAdapter = new ProjectsAdapter(this);
+        mAdapter = new ProjectsAdapter(this, projectSelectedListener);
         mProjectsList.setLayoutManager(new StaggeredGridLayoutManager(numOfColumns, StaggeredGridLayoutManager.VERTICAL));
         mProjectsList.setAdapter(mAdapter);
 
@@ -161,7 +171,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void showProjects(@NonNull List<Project> projects) {
-        mAdapter = new ProjectsAdapter(this, projects);
+        mAdapter = new ProjectsAdapter(this, projects, projectSelectedListener);
         mProjectsList.swapAdapter(mAdapter, true);
         mProjectsList.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
@@ -170,7 +180,12 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void showProjectDetails(@NonNull String projectId) {
-        // TODO: 12/31/16 show project details ui
+        String projectCardTransitionName = getString(R.string.transitionname_projectcard);
+        ActivityUtils.setTransitionName(mSelectedProjectView, projectCardTransitionName);
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra(DetailsActivity.RPOJECT_ID_KEY, projectId);
+        ActivityUtils.startActivityWithTransition(this, intent,
+                new Pair<>(mSelectedProjectView, projectCardTransitionName));
     }
 
     @Override

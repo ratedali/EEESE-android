@@ -84,7 +84,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
 
     @Override
     public void openProjectDetails(@NonNull Project project) {
-        // TODO: 12/31/16 select the project id and open project details ui
+        mView.showProjectDetails(project.getId());
     }
 
     @Override

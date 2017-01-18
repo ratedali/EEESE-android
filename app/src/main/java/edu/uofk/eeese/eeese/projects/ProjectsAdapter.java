@@ -12,7 +12,6 @@ package edu.uofk.eeese.eeese.projects;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,14 +32,18 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
     private List<Project> mProjects;
     @NonNull
     private Context mContext;
+    @NonNull
+    private OnProjectSelectedListener mListener;
 
-    ProjectsAdapter(Context context) {
-        this(context, Collections.<Project>emptyList());
+    ProjectsAdapter(Context context, @NonNull OnProjectSelectedListener onProjectClicked) {
+        this(context, Collections.<Project>emptyList(), onProjectClicked);
     }
 
-    ProjectsAdapter(@NonNull Context context, @NonNull List<Project> projects) {
+    ProjectsAdapter(@NonNull Context context, @NonNull List<Project> projects,
+                    @NonNull OnProjectSelectedListener onProjectClicked) {
         mContext = context;
         mProjects = projects;
+        mListener = onProjectClicked;
     }
 
     @Override
@@ -51,8 +54,15 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Project project = mProjects.get(position);
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final Project project = mProjects.get(position);
+
+        holder.card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.showProjectDetails(project, holder.card);
+            }
+        });
 
         holder.title
                 .setText(project.getName());
@@ -67,6 +77,7 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        public View card;
         @BindView(R.id.project_name)
         public TextView title;
         @BindView(R.id.project_head)
@@ -74,7 +85,12 @@ class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ViewHolder> {
 
         public ViewHolder(View view) {
             super(view);
+            card = view;
             ButterKnife.bind(this, view);
         }
+    }
+
+    public interface OnProjectSelectedListener {
+        void showProjectDetails(Project project, View projectCard);
     }
 }
