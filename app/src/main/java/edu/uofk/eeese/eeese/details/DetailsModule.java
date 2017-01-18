@@ -8,18 +8,40 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.data.source;
+package edu.uofk.eeese.eeese.details;
 
+import dagger.Module;
+import dagger.Provides;
+import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-import java.util.List;
+@Module
+public class DetailsModule {
+    private String mProjectId;
+    private DetailsContract.View mView;
 
-import edu.uofk.eeese.eeese.data.Project;
-import io.reactivex.Observable;
+    public DetailsModule(String projectId, DetailsContract.View view) {
+        mProjectId = projectId;
+        mView = view;
+    }
 
-public interface DataRepository {
-    Observable<String> getBasicInfo();
+    @Provides
+    DetailsContract.View provideView() {
+        return mView;
+    }
 
-    Observable<List<Project>> getProjects(boolean forceUpdate);
+    @Provides
+    String provideProjectId() {
+        return mProjectId;
+    }
 
-    Observable<Project> getProject(String projectId, boolean forceUpdate);
+    @Provides
+    @ActivityScope
+    DetailsContract.Presenter providePresenter(DataRepository source,
+                                               BaseSchedulerProvider schedulerProvider,
+                                               DetailsContract.View view,
+                                               String projectId) {
+        return new DetailsPresenter(source, view, schedulerProvider, projectId);
+    }
 }

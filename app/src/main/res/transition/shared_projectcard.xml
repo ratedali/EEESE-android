@@ -17,6 +17,7 @@
     <changeBounds>
         <targets android:targetName="@string/transitionname_toolbar"/>
     </changeBounds>
+
     <changeBounds>
         <targets android:targetName="@string/transitionname_projectcard"/>
     </changeBounds>

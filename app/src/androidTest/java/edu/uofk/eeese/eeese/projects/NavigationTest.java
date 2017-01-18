@@ -19,12 +19,12 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.DaggerTestAppComponent;
@@ -32,62 +32,56 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.home.HomeActivity;
 import edu.uofk.eeese.eeese.util.TestRule;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class NavigationTest {
 
-    private TestAppComponent mAppComponent = DaggerTestAppComponent.create();
+    private static TestAppComponent mAppComponent = DaggerTestAppComponent.create();
 
     @Rule
     public TestRule<ProjectsActivity> testRule =
             new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
 
-    private DataRepository source = mAppComponent.dataRepository();
+    private static DataRepository source = mAppComponent.dataRepository();
     private IdlingResource idlingResource = mAppComponent.idlingResource();
 
     private static final List<Project> projects =
-            Collections.singletonList(new Project.Builder("1", "Project 1", "head").build());
+            Arrays.asList(
+                    new Project.Builder("1", "Project 1", "head 1").build(),
+                    new Project.Builder("2", "Project 2", "head 2").withDesc("desc 2").build()
+            );
 
     private static final String basicInfo = "";
 
-    @Before
-    public void setUp() {
-        Espresso.registerIdlingResources(idlingResource);
+    @BeforeClass
+    public static void setupMocks() {
         when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
         when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
+        for (Project project : projects) {
+            when(source.getProject(eq(project.getId()), anyBoolean())).thenReturn(Observable.just(project));
+        }
+    }
+
+    @Before
+    public void setupTest() {
+        Espresso.registerIdlingResources(idlingResource);
         testRule.launchActivity(null);
-    }
-
-    @Test
-    public void homeItemLeadsToHomeActivity() {
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
-
-        intended(hasComponent(hasClassName(HomeActivity.class.getName())));
-    }
-
-    @Test
-    @Ignore("Not Implemented Yet")
-    public void clickOnProjectOpensDetails() {
-        onView(withId(R.id.projects_list))
-                .perform(RecyclerViewActions.actionOnItem(
-                        withText(projects.get(0).getName()),
-                        click()));
-        // TODO: 1/2/17 Enable after adding DetailsActivity
-        //intended(hasComponent(hasClassName(DetailsActivity.class.getName())));
     }
 
     @After
@@ -95,5 +89,36 @@ public class NavigationTest {
         Espresso.unregisterIdlingResources(idlingResource);
     }
 
+    @Test
+    public void OpensHome_onHomeItemClick() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
+
+        intended(hasComponent(hasClassName(HomeActivity.class.getName())));
+    }
+
+    @Test
+    public void OpensDetails_onProjectClick() {
+        onView(withId(R.id.projects_list))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(
+                        0,
+                        click()));
+        intended(hasComponent(hasClassName(DetailsActivity.class.getName())));
+    }
+
+    @Test
+    public void OpensCorrectProjectDetails_onProjectClick() {
+        int index = 1;
+        Project target = projects.get(index);
+
+        onView(withId(R.id.projects_list))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(
+                        index,
+                        click()));
+
+        onView(withId(R.id.project_name)).check(matches(withText(target.getName())));
+        onView(withId(R.id.project_head)).check(matches(withText(target.getProjectHead())));
+        onView(withId(R.id.project_desc)).check(matches(withText(target.getDesc())));
+    }
 
 }

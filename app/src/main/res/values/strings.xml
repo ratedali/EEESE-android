@@ -31,4 +31,10 @@
     <string name="retry">retry</string>
     <string name="label_project_head">Project Head</string>
     <string name="label_project_description">Description</string>
+
+    <!-- transition names -->
+    <string name="transitionname_toolbar" translatable="false">toolbar</string>
+    <string name="transitionname_projectcard" translatable="false">projectcard</string>
+    <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
+    <string name="transitionname_projectname" translatable="false">projectname</string>
 </resources>

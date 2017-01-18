@@ -31,6 +31,9 @@
     <dimen name="project_margin_horizontal">5dp</dimen>
     <dimen name="head_text_margin">10dp</dimen>
 
+    <dimen name="projectname_card_height">98dp</dimen>
+
     <dimen name="fab_size">64dp</dimen>
     <dimen name="fab_margin">10dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
 </resources>

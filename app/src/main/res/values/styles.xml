@@ -46,6 +46,13 @@
     <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title">
     </style>
 
-    <style name="DetailsExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+    <style name="DetailsProjectName" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+    <style name="DetailsHead" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 </resources>

@@ -72,6 +72,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     private ProjectsAdapter mAdapter;
     private View mSelectedProjectView;
+    @BindString(R.string.transitionname_projectcard)
+    public String projectCardTransitionName;
+
     private ProjectsAdapter.OnProjectSelectedListener projectSelectedListener =
             new ProjectsAdapter.OnProjectSelectedListener() {
                 @Override
@@ -183,10 +186,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void showProjectDetails(@NonNull String projectId) {
-        String projectCardTransitionName = getString(R.string.transitionname_projectcard);
         ActivityUtils.setTransitionName(mSelectedProjectView, projectCardTransitionName);
         Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.RPOJECT_ID_KEY, projectId);
+        intent.putExtra(DetailsActivity.PROJECT_ID_KEY, projectId);
         ActivityUtils.startActivityWithTransition(this, intent,
                 new Pair<View, String>(mAppBar, toolbarTransitionName),
                 new Pair<View, String>(mSelectedProjectView, projectCardTransitionName));

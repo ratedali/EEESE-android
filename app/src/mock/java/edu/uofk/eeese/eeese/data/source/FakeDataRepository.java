@@ -65,12 +65,17 @@ public class FakeDataRepository implements DataRepository {
     }
 
     @Override
-    public Observable<List<Project>> getProjects(boolean force) {
+    public Observable<List<Project>> getProjects(boolean forceUpdate) {
         if (!thrown) {
             thrown = true;
             return Observable.error(new Exception());
         } else {
             return Observable.just(mProjects);
         }
+    }
+
+    @Override
+    public Observable<Project> getProject(String projectId, boolean forceUpdate) {
+        return Observable.just(mProjects.get(Integer.parseInt(projectId) - 1));
     }
 }

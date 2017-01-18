@@ -8,30 +8,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.details;
 
-import dagger.Component;
-import edu.uofk.eeese.eeese.data.database.DatabaseModule;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
-import edu.uofk.eeese.eeese.details.DetailsComponent;
-import edu.uofk.eeese.eeese.details.DetailsModule;
-import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
-import edu.uofk.eeese.eeese.home.HomeComponent;
-import edu.uofk.eeese.eeese.home.HomeModule;
-import edu.uofk.eeese.eeese.projects.ProjectsComponent;
-import edu.uofk.eeese.eeese.projects.ProjectsModule;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
+import android.support.annotation.NonNull;
 
-@ApplicationScope
-@Component(modules = {AppModule.class,
-        SchedulerProviderModule.class,
-        DatabaseModule.class,
-        DataRepositoryModule.class})
+import edu.uofk.eeese.eeese.BasePresenter;
+import edu.uofk.eeese.eeese.BaseView;
+import edu.uofk.eeese.eeese.data.Project;
 
-public interface AppComponent {
-    HomeComponent homeComponent(HomeModule module);
+public interface DetailsContract {
+    interface View extends BaseView<Presenter> {
+        void showProjectInfo(@NonNull Project project);
 
-    ProjectsComponent projectsComponent(ProjectsModule module);
+        void showInvalidProject();
+    }
 
-    DetailsComponent detailsComponent(DetailsModule module);
+    interface Presenter extends BasePresenter {
+        void loadDetails(boolean force);
+
+        void applyForProject();
+    }
 }

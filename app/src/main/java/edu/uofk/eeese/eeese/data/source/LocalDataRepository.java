@@ -65,7 +65,26 @@ public class LocalDataRepository implements DataRepository {
                     projects.add(new Project.Builder(id, name, head).withDesc(desc).build());
                 } while (cursor.moveToNext());
             }
+            cursor.close();
             return projects;
+        }
+    };
+
+    private final Function<Cursor, Project> singleProjectMapper = new Function<Cursor, Project>() {
+        @Override
+        public Project apply(Cursor cursor) throws Exception {
+            if (!cursor.moveToFirst()) {
+                throw new RuntimeException("No project exists");
+            }
+            String id = cursor.getString(
+                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
+            String name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_NAME));
+            String head = cursor.getString(
+                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_HEAD));
+            String desc = cursor.getString(
+                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
+            return new Project.Builder(id, name, head).withDesc(desc).build();
         }
     };
 
@@ -84,7 +103,7 @@ public class LocalDataRepository implements DataRepository {
     }
 
     @Override
-    public Observable<List<Project>> getProjects(boolean force) {
+    public Observable<List<Project>> getProjects(boolean forceUpdate) {
         return Observable.fromCallable(new Callable<SQLiteDatabase>() {
             @Override
             public SQLiteDatabase call() throws Exception {
@@ -93,11 +112,32 @@ public class LocalDataRepository implements DataRepository {
         }).map(new Function<SQLiteDatabase, Cursor>() {
             @Override
             public Cursor apply(SQLiteDatabase sqLiteDatabase) throws Exception {
-                return sqLiteDatabase.query(ProjectEntry.TABLE_NAME,
+                Cursor cursor = sqLiteDatabase.query(ProjectEntry.TABLE_NAME,
                         PROJECTION, null, null,
                         null, null, null);
+                sqLiteDatabase.close();
+                return cursor;
             }
         }).map(projectsMapper).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Observable<Project> getProject(final String projectId, boolean forceUpdate) {
+        return Observable.fromCallable(new Callable<SQLiteDatabase>() {
+            @Override
+            public SQLiteDatabase call() throws Exception {
+                return mDbHelper.getReadableDatabase();
+            }
+        }).map(new Function<SQLiteDatabase, Cursor>() {
+            @Override
+            public Cursor apply(SQLiteDatabase sqLiteDatabase) throws Exception {
+                Cursor cursor = sqLiteDatabase.query(ProjectEntry.TABLE_NAME,
+                        PROJECTION, ProjectEntry.COLUMN_PROJECT_ID + " = ?", new String[]{projectId},
+                        null, null, null);
+                sqLiteDatabase.close();
+                return cursor;
+            }
+        }).map(singleProjectMapper).subscribeOn(mSchedulerProvider.io());
     }
 
 }
