@@ -14,14 +14,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
@@ -49,8 +50,10 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     public DrawerLayout mDrawerLayout;
     @BindView(R.id.nav_view)
     public NavigationView mNavView;
+    @BindView(R.id.appbar)
+    public AppBarLayout mAppBar;
     @BindView(R.id.toolbar)
-    public Toolbar toolbar;
+    public Toolbar mToolbar;
     @BindString(R.string.transitionname_toolbar)
     public String toolbarTransitionName;
 
@@ -87,8 +90,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_projects);
         ActivityUtils.setEnterTransition(this, R.transition.projects_enter);
-        ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
-        ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
+        ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_projectcard);
+        ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_projectcard);
 
         ((EEESEapp) getApplication()).getAppComponent()
                 .projectsComponent(new ProjectsModule(this))
@@ -96,7 +99,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
@@ -105,7 +108,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         }
 
         mAdapter = new ProjectsAdapter(this, projectSelectedListener);
-        mProjectsList.setLayoutManager(new StaggeredGridLayoutManager(numOfColumns, StaggeredGridLayoutManager.VERTICAL));
+        mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mProjectsList.setAdapter(mAdapter);
 
         setupDrawer(mNavView, mDrawerLayout);
@@ -156,7 +159,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
                 if (targetActivity != null && !targetActivity.equals(source.getClass())) {
                     Intent intent = new Intent(source, targetActivity);
                     ActivityUtils.startActivityWithTransition(source, intent,
-                            new Pair<View, String>(toolbar, toolbarTransitionName));
+                            new Pair<View, String>(mAppBar, toolbarTransitionName));
                     mExit = true;
                 }
                 return true;
@@ -185,7 +188,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivity.RPOJECT_ID_KEY, projectId);
         ActivityUtils.startActivityWithTransition(this, intent,
-                new Pair<>(mSelectedProjectView, projectCardTransitionName));
+                new Pair<View, String>(mAppBar, toolbarTransitionName),
+                new Pair<View, String>(mSelectedProjectView, projectCardTransitionName));
     }
 
     @Override

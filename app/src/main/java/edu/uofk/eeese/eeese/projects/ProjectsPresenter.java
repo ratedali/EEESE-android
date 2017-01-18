@@ -33,6 +33,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     @NonNull
     private BaseSchedulerProvider mSchedulerProvider;
 
+    private boolean mGotProjectList = false;
     private CompositeDisposable mSubscriptions;
 
     @Inject
@@ -47,8 +48,9 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     }
 
     @Override
-    public void loadProjects(boolean force) {
+    public void loadProjects(final boolean force) {
         mView.setLoadingIndicator(true);
+        mGotProjectList = false;
         Disposable subscription =
                 mSource.getProjects(force)
                         .subscribeOn(mSchedulerProvider.io())
@@ -64,6 +66,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                                 new Consumer<List<Project>>() {
                                     @Override
                                     public void accept(List<Project> projects) throws Exception {
+                                        mGotProjectList = true;
                                         if (projects.size() > 0) {
                                             mView.showProjects(projects);
                                         } else {
@@ -76,6 +79,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                                     @Override
                                     public void accept(Throwable throwable) throws Exception {
                                         mView.showNoConnectionError();
+                                        mView.showNoProjects();
                                     }
                                 }
                         );
