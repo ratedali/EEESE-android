@@ -30,7 +30,7 @@
     <string name="tap_to_reload">reload</string>
     <string name="retry">retry</string>
     <string name="label_project_head">Project Head</string>
-    <string name="label_project_description">Description</string>
+    <string name="label_project_description">Project Description</string>
 
     <!-- transition names -->
     <string name="transitionname_toolbar" translatable="false">toolbar</string>

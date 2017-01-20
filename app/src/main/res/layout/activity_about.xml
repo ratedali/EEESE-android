@@ -30,18 +30,17 @@
             android:layout_height="@dimen/large_appbar_height"
             android:fitsSystemWindows="true"
             android:transitionName="@string/transitionname_toolbar"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            tools:targetApi="lollipop">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/large_appbar_height"
                 android:fitsSystemWindows="true"
-                app:collapsedTitleTextAppearance="@style/CollapsedTitleText"
+                app:collapsedTitleTextAppearance=
+                    "@style/TextAppearance.AppCompat.Title"
                 app:contentScrim="@color/colorPrimary"
-                app:expandedTitleMarginEnd="@dimen/large_title_end_margin"
-                app:expandedTitleMarginStart="@dimen/large_title_start_margin"
-                app:expandedTitleTextAppearance="@style/ExpandedTitleText"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView

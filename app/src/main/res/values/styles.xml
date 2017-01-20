@@ -28,10 +28,10 @@
     </style>
 
     <style name="Widget.LargeCardContent" parent="android:Widget">
-        <item name="android:paddingTop">@dimen/cardview_vertical_padding</item>
-        <item name="android:paddingRight">@dimen/cardview_horizontal_padding</item>
-        <item name="android:paddingBottom">@dimen/cardview_vertical_padding</item>
-        <item name="android:paddingLeft">@dimen/cardview_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/large_cardview_vertical_padding</item>
+        <item name="android:paddingRight">@dimen/large_cardview_horizontal_padding</item>
+        <item name="android:paddingBottom">@dimen/large_cardview_vertical_padding</item>
+        <item name="android:paddingLeft">@dimen/large_cardview_horizontal_padding</item>
     </style>
 
     <style name="Widget.RetryButton" parent="android:Widget">
@@ -43,16 +43,13 @@
 
     <style name="ExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
     </style>
+
     <style name="CollapsedTitleText" parent="TextAppearance.AppCompat.Title">
     </style>
 
-    <style name="DetailsProjectName" parent="TextAppearance.AppCompat.Headline">
-        <item name="android:textSize">40sp</item>
-        <item name="android:textColor">@color/colorPrimaryText</item>
+    <style name="ProjectName" parent="TextAppearance.AppCompat.Large">
     </style>
 
-    <style name="DetailsHead" parent="TextAppearance.AppCompat.Subhead">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/colorSecondaryText</item>
+    <style name="ProjectHead" parent="TextAppearance.AppCompat.Medium">
     </style>
 </resources>
