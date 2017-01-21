@@ -8,19 +8,26 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.about;
+
+import android.graphics.Bitmap;
+import android.support.v4.util.Pair;
+import android.support.v7.graphics.Palette;
 
 import edu.uofk.eeese.eeese.BasePresenter;
 import edu.uofk.eeese.eeese.BaseView;
+import io.reactivex.Observable;
 
-public interface HomeContract {
+public interface AboutContract {
     interface View extends BaseView<Presenter> {
-        void showInfo(String basicInfo);
+        void openGallery();
 
-        void showLoadingError();
+        void showGalleryImage(Bitmap imageBitmap, Palette.Swatch swatch);
+
+        Observable<Pair<Integer, Integer>> getGalleryViewSize();
     }
 
     interface Presenter extends BasePresenter {
-        void loadBasicInfo(boolean force);
+        void showProjectsGallery();
     }
 }

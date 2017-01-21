@@ -11,10 +11,11 @@
 package edu.uofk.eeese.eeese.home;
 
 import dagger.Subcomponent;
+import edu.uofk.eeese.eeese.about.AboutModule;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 
 @ActivityScope
-@Subcomponent(modules = {HomeModule.class})
+@Subcomponent(modules = {AboutModule.class})
 public interface HomeComponent {
     void inject(HomeActivity activity);
 }

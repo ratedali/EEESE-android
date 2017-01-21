@@ -11,15 +11,17 @@
 package edu.uofk.eeese.eeese.data.source;
 
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 import io.reactivex.Observable;
 
 public interface DataRepository {
-    Observable<String> getBasicInfo();
-
     Observable<List<Project>> getProjects(boolean forceUpdate);
 
     Observable<Project> getProject(String projectId, boolean forceUpdate);
+
+    Observable<Bitmap> getGalleryImageBitmap(int width, int height);
 }

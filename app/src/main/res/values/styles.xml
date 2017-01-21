@@ -20,25 +20,44 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Widget.CardContent" parent="android:Widget">
-        <item name="android:paddingTop">@dimen/cardview_vertical_padding</item>
-        <item name="android:paddingRight">@dimen/cardview_horizontal_padding</item>
-        <item name="android:paddingBottom">@dimen/cardview_vertical_padding</item>
-        <item name="android:paddingLeft">@dimen/cardview_horizontal_padding</item>
+    <style name="BaseCard">
+        <item name="cardCornerRadius">@dimen/cardview_default_radius</item>
+        <item name="cardElevation">@dimen/cardview_default_elevation</item>
+        <item name="cardUseCompatPadding">true</item>
     </style>
 
-    <style name="Widget.LargeCardContent" parent="android:Widget">
-        <item name="android:paddingTop">@dimen/large_cardview_vertical_padding</item>
-        <item name="android:paddingRight">@dimen/large_cardview_horizontal_padding</item>
-        <item name="android:paddingBottom">@dimen/large_cardview_vertical_padding</item>
-        <item name="android:paddingLeft">@dimen/large_cardview_horizontal_padding</item>
+    <style name="ContentCard" parent="BaseCard">
+        <item name="contentPaddingTop">@dimen/cardview_vertical_padding</item>
+        <item name="contentPaddingRight">@dimen/cardview_horizontal_padding</item>
+        <item name="contentPaddingBottom">@dimen/cardview_vertical_padding</item>
+        <item name="contentPaddingLeft">@dimen/cardview_horizontal_padding</item>
     </style>
 
-    <style name="Widget.RetryButton" parent="android:Widget">
-        <item name="android:layout_marginTop">10dp</item>
+    <style name="LargeContentCard">
+        <item name="contentPaddingTop">@dimen/large_cardview_vertical_padding</item>
+        <item name="contentPaddingRight">@dimen/large_cardview_horizontal_padding</item>
+        <item name="contentPaddingBottom">@dimen/large_cardview_vertical_padding</item>
+        <item name="contentPaddingLeft">@dimen/large_cardview_horizontal_padding</item>
+    </style>
+
+    <style name="AboutCard" parent="ContentCard">
+        <item name="android:layout_marginTop">@dimen/cardview_margin</item>
+    </style>
+
+    <style name="RetryButton" parent="android:Widget">
+        <item name="android:layout_marginTop">16dp</item>
         <item name="android:background">@color/colorAccent</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Widget.Button.Inverse
         </item>
+    </style>
+
+    <style name="AboutCardTitle">
+        <item name="android:layout_marginBottom">@dimen/title_margin</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
+    </style>
+
+    <style name="GalleryCardTitle" parent="TextAppearance.AppCompat.Display1">
+        <item name="android:layout_margin">@dimen/title_margin</item>
     </style>
 
     <style name="ExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">

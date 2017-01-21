@@ -10,6 +10,7 @@
 
 package edu.uofk.eeese.eeese.projects;
 
+import android.graphics.Bitmap;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.DrawerActions;
@@ -23,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -66,15 +69,18 @@ public class NavigationTest {
                     new Project.Builder("1", "Project 1", "head 1").build(),
                     new Project.Builder("2", "Project 2", "head 2").withDesc("desc 2").build()
             );
-
-    private static final String basicInfo = "";
+    private static Bitmap mockBitmap;
 
     @BeforeClass
     public static void setupMocks() {
-        when(source.getBasicInfo()).thenReturn(Observable.just(basicInfo));
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
+        mockBitmap = Mockito.mock(Bitmap.class);
+        when(source.getProjects(anyBoolean()))
+                .thenReturn(Observable.just(projects));
+        when(source.getGalleryImageBitmap(anyInt(), anyInt()))
+                .thenReturn(Observable.just(mockBitmap));
         for (Project project : projects) {
-            when(source.getProject(eq(project.getId()), anyBoolean())).thenReturn(Observable.just(project));
+            when(source.getProject(eq(project.getId()), anyBoolean()))
+                    .thenReturn(Observable.just(project));
         }
     }
 

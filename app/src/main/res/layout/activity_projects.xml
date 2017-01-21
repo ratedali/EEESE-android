@@ -74,7 +74,7 @@
                 android:text="@string/no_project_available"/>
 
             <Button
-                style="@style/Widget.RetryButton"
+                style="@style/RetryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

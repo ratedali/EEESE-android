@@ -14,6 +14,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import java.util.LinkedList;
@@ -37,6 +40,8 @@ public class LocalDataRepository implements DataRepository {
 
     @NonNull
     private Context mContext;
+    @DrawableRes
+    private static final int mGalleryRes = R.drawable.gallery;
     @NonNull
     private SQLiteOpenHelper mDbHelper;
     @NonNull
@@ -98,11 +103,6 @@ public class LocalDataRepository implements DataRepository {
     }
 
     @Override
-    public Observable<String> getBasicInfo() {
-        return Observable.just(mContext.getString(R.string.basic_info));
-    }
-
-    @Override
     public Observable<List<Project>> getProjects(boolean forceUpdate) {
         return Observable.fromCallable(new Callable<SQLiteDatabase>() {
             @Override
@@ -138,6 +138,35 @@ public class LocalDataRepository implements DataRepository {
                 return cursor;
             }
         }).map(singleProjectMapper).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Observable<Bitmap> getGalleryImageBitmap(final int width, final int height) {
+
+        return Observable.fromCallable(new Callable<BitmapFactory.Options>() {
+            @Override
+            public BitmapFactory.Options call() throws Exception {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+                return options;
+            }
+        }).map(new Function<BitmapFactory.Options, Bitmap>() {
+            @Override
+            public Bitmap apply(BitmapFactory.Options options) throws Exception {
+                options.inSampleSize = 1;
+                if (options.outHeight > height || options.outWidth > width) {
+                    int halfHeight = options.outHeight / 2;
+                    int halfWidth = options.outWidth / 2;
+                    while ((halfHeight / options.inSampleSize) > height &&
+                            (halfWidth / options.inSampleSize) > width) {
+                        options.inSampleSize *= 2;
+                    }
+                }
+                options.inJustDecodeBounds = false;
+                return BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+            }
+        });
     }
 
 }

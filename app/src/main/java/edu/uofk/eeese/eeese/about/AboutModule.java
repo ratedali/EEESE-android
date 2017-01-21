@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.about;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,24 +17,24 @@ import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
-public class HomeModule {
+public class AboutModule {
 
-    private HomeContract.View mHomeView;
+    private AboutContract.View mHomeView;
 
-    public HomeModule(HomeContract.View view) {
+    public AboutModule(AboutContract.View view) {
         mHomeView = view;
     }
 
     @Provides
-    public HomeContract.View provideHomeView() {
+    AboutContract.View provideHomeView() {
         return mHomeView;
     }
 
     @Provides
     @ActivityScope
-    public HomeContract.Presenter providePresenter(DataRepository source,
-                                                   HomeContract.View view,
-                                                   BaseSchedulerProvider schedulerProvide) {
-        return new HomePresenter(source, view, schedulerProvide);
+    AboutContract.Presenter providePresenter(DataRepository source,
+                                             AboutContract.View view,
+                                             BaseSchedulerProvider schedulerProvide) {
+        return new AboutPresenter(source, view, schedulerProvide);
     }
 }

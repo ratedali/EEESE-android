@@ -37,7 +37,6 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.only;
@@ -70,23 +69,6 @@ public class LocalDataRepositoryTest {
     @After
     public void resetMocks() {
         reset(context, dbHelper, schedulerProvider);
-    }
-
-    @Test
-    public void getsStringFromContext() {
-        String info_string = "BASIC INFO STRING";
-        when(context.getString(anyInt())).thenReturn(info_string);
-
-        Observable<String> answer = dataRepository.getBasicInfo();
-        TestObserver<String> testObserver = TestObserver.create();
-        answer.subscribe(testObserver);
-
-        // Verify interaction with context
-        verify(context).getString(anyInt());
-
-        // Verify that only the string above was returned
-        testObserver.assertValue(info_string);
-        testObserver.assertComplete();
     }
 
     @Test

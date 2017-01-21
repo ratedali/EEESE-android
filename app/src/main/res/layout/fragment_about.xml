@@ -9,24 +9,24 @@
   ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="@dimen/nav_header_height"
-             android:orientation="vertical">
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent">
 
-    <View
-        android:background="@color/colorPrimaryDark"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
-        android:layout_marginStart="@dimen/nav_title_margin"
-        android:layout_marginLeft="@dimen/nav_title_margin"
-        android:layout_marginBottom="@dimen/nav_title_margin"
-        android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title.Inverse"
-        android:textSize="35sp"/>
-</FrameLayout>
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/content_horizontal_margin"
+        android:paddingRight="@dimen/content_horizontal_margin"
+        android:paddingBottom="@dimen/content_vertical_margin">
+
+        <include layout="@layout/about_eeese_card"/>
+
+        <include layout="@layout/vision_card"/>
+
+        <include layout="@layout/eeese_history_card"/>
+
+        <include layout="@layout/project_gallery_card"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

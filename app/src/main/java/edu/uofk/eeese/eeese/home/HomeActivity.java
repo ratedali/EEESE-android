@@ -13,11 +13,14 @@ package edu.uofk.eeese.eeese.home;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +28,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,10 +39,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.about.AboutContract;
+import edu.uofk.eeese.eeese.about.AboutFragment;
+import edu.uofk.eeese.eeese.about.AboutModule;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
-public class HomeActivity extends AppCompatActivity implements HomeContract.View {
+public class HomeActivity extends AppCompatActivity {
 
     // Navigation
     @BindView(R.id.drawer_layout)
@@ -48,34 +56,30 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     // ActionBar views
     @BindView(R.id.appbar)
     public AppBarLayout appBar;
-    @BindView(R.id.collapsing_toolbar)
-    public CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
+    @BindView(R.id.tablayout)
+    public TabLayout tabLayout;
     @BindString(R.string.transitionname_toolbar)
     public String toolbarTransitionName;
-    @BindString(R.string.app_name)
-    public String titleText;
 
     // Content
-    @BindView(R.id.basic_info_textview)
-    public TextView basicInfoTextView;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
 
+    // Content
     private boolean mExit;
 
     @Inject
-    public HomeContract.Presenter mPresenter;
+    public AboutContract.Presenter mAboutPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_home);
         ActivityUtils.setEnterTransition(this, R.transition.home_enter);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
-
-        ((EEESEapp) getApplication()).getAppComponent().homeComponent(new HomeModule(this))
-                .inject(this);
 
         ButterKnife.bind(this);
 
@@ -83,44 +87,25 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_expandedtoolbar);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.app_name);
         }
 
-        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                @DrawableRes int navDrawable;
-                String title;
-                boolean isCollapsed = Math.abs(verticalOffset) >= appBarLayout.getTotalScrollRange();
-                if (isCollapsed) {
-                    title = titleText;
-                    navDrawable = R.drawable.ic_menu;
-                } else {
-                    title = "";
-                    navDrawable = R.drawable.ic_menu_expandedtoolbar;
-                }
+        AboutFragment aboutFragment = AboutFragment.getInstance();
 
-                collapsingToolbar.setTitle(title);
-                if (actionBar != null) {
-                    actionBar.setHomeAsUpIndicator(navDrawable);
-                }
-            }
-        });
+        ((EEESEapp) getApplication()).getAppComponent().homeComponent(new AboutModule(aboutFragment))
+                .inject(this);
+
+        aboutFragment.setPresenter(mAboutPresenter);
+
+        List<Fragment> homeFragments = Collections.<Fragment>singletonList(aboutFragment);
+        List<String> homeTitle = Collections.singletonList(getString(R.string.about_tab_title));
+        mViewPager.setAdapter(new HomePagerAdapter(getSupportFragmentManager(), homeFragments, homeTitle));
+
+        tabLayout.setupWithViewPager(mViewPager);
 
         setupDrawer(navView, mDrawerLayout);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mPresenter.unsubscribe();
     }
 
     @Override
@@ -164,18 +149,40 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         return true;
     }
 
-    @Override
-    public void showInfo(String basicInfo) {
-        basicInfoTextView.setText(basicInfo);
-    }
+    private static class HomePagerAdapter extends FragmentPagerAdapter {
 
-    @Override
-    public void showLoadingError() {
-        // TODO: 12/31/16 Show an error message
-    }
+        private List<Fragment> mFragments;
+        private List<String> mTabTitles;
 
-    @Override
-    public void setPresenter(@NonNull HomeContract.Presenter presenter) {
-        mPresenter = presenter;
+        HomePagerAdapter(FragmentManager fragmentManager) {
+            this(fragmentManager, Collections.<Fragment>emptyList(), Collections.<String>emptyList());
+        }
+
+        HomePagerAdapter(FragmentManager fragmentManager, List<Fragment> fragments, List<String> titles) {
+            super(fragmentManager);
+            mFragments = fragments;
+            mTabTitles = titles;
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragments.add(fragment);
+            mTabTitles.add(title);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragments.get(position);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTabTitles.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragments.size();
+        }
     }
 }

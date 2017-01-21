@@ -12,10 +12,14 @@ package edu.uofk.eeese.eeese.data.source;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -24,19 +28,24 @@ import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 @ApplicationScope
-public class FakeDataRepository implements DataRepository {
+class FakeDataRepository implements DataRepository {
 
-    private static FakeDataRepository sInstance = null;
+    @NonNull
+    private Context mContext;
 
-    private String mBasicInfo;
     private List<Project> mProjects;
     private boolean thrown;
 
+    @DrawableRes
+    private static final int mGalleryRes = R.drawable.gallery;
+
     @Inject
-    public FakeDataRepository(@NonNull Context context, @NonNull BaseSchedulerProvider schedulerProvider) {
-        mBasicInfo = context.getString(R.string.basic_info);
+    FakeDataRepository(@NonNull Context context, @NonNull BaseSchedulerProvider schedulerProvider) {
+
+        mContext = context;
 
         mProjects = Arrays.asList(
                 new Project.Builder("1", "Project 1", "Head 1")
@@ -52,18 +61,6 @@ public class FakeDataRepository implements DataRepository {
         thrown = false;
     }
 
-    public static synchronized FakeDataRepository getInstance(@NonNull Context context, @NonNull BaseSchedulerProvider schedulerProvider) {
-        if (sInstance == null) {
-            sInstance = new FakeDataRepository(context, schedulerProvider);
-        }
-        return sInstance;
-    }
-
-    @Override
-    public Observable<String> getBasicInfo() {
-        return Observable.just(mBasicInfo);
-    }
-
     @Override
     public Observable<List<Project>> getProjects(boolean forceUpdate) {
         if (!thrown) {
@@ -77,5 +74,34 @@ public class FakeDataRepository implements DataRepository {
     @Override
     public Observable<Project> getProject(String projectId, boolean forceUpdate) {
         return Observable.just(mProjects.get(Integer.parseInt(projectId) - 1));
+    }
+
+    @Override
+    public Observable<Bitmap> getGalleryImageBitmap(final int width, final int height) {
+
+        return Observable.fromCallable(new Callable<BitmapFactory.Options>() {
+            @Override
+            public BitmapFactory.Options call() throws Exception {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+                return options;
+            }
+        }).map(new Function<BitmapFactory.Options, Bitmap>() {
+            @Override
+            public Bitmap apply(BitmapFactory.Options options) throws Exception {
+                options.inSampleSize = 1;
+                if (options.outHeight > height || options.outWidth > width) {
+                    int halfHeight = options.outHeight / 2;
+                    int halfWidth = options.outWidth / 2;
+                    while ((halfHeight / options.inSampleSize) > height &&
+                            (halfWidth / options.inSampleSize) > width) {
+                        options.inSampleSize *= 2;
+                    }
+                }
+                options.inJustDecodeBounds = false;
+                return BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+            }
+        });
     }
 }
