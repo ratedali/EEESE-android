@@ -18,6 +18,8 @@
     <string name="menu_item_about">About The App</string>
     <string name="menu_item_settings">Settings</string>
 
+    <string name="about_tab_title">About</string>
+
     <string name="about_eeese_title">About EEESE</string>
     <string name="about_eeese_acronym">
         The acronym EEESE stands for Electrical and Electronic Engineering Students Exhibition
