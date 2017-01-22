@@ -22,7 +22,7 @@ public interface AboutContract {
     interface View extends BaseView<Presenter> {
         void openGallery();
 
-        void showGalleryImage(Bitmap imageBitmap, Palette.Swatch swatch);
+        void showGalleryImage(Bitmap imageBitmap, Palette palette);
 
         Observable<Pair<Integer, Integer>> getGalleryViewSize();
     }

@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +40,13 @@ import io.reactivex.ObservableOnSubscribe;
 public class AboutFragment extends Fragment implements AboutContract.View {
 
     @BindView(R.id.gallery_card)
-    public View mGalleryCard;
+    public CardView mGalleryCard;
     @BindView(R.id.gallery_image)
     public ImageView mGalleryImage;
     @BindView(R.id.gallery_title)
     public TextView mGalleryTitle;
+    @BindView(R.id.gallery_body)
+    public TextView mGalleryBody;
 
     private AboutContract.Presenter mPresenter;
     private Bitmap mGalleryBitmap;
@@ -102,19 +105,26 @@ public class AboutFragment extends Fragment implements AboutContract.View {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void showGalleryImage(@Nullable Bitmap imageBitmap, @Nullable Palette.Swatch swatch) {
+    public void showGalleryImage(@Nullable Bitmap imageBitmap, @NonNull Palette palette) {
         if (mGalleryBitmap != null) {
             mGalleryBitmap.recycle();
         }
         mGalleryBitmap = imageBitmap;
         mGalleryImage.setImageBitmap(mGalleryBitmap);
+
+        Palette.Swatch swatch = palette.getLightVibrantSwatch();
+        @ColorInt int backgroundColor = getResources().getColor(android.R.color.white);
+        @ColorInt int titleColor = getResources().getColor(R.color.colorPrimaryText);
+        @ColorInt int bodyColor = getResources().getColor(R.color.colorSecondaryText);
         if (swatch != null) {
-            @ColorInt int textColor = ColorUtils.setAlphaComponent(swatch.getTitleTextColor(), 255);
-            mGalleryTitle.setTextColor(textColor);
-        } else {
-            // default to white if the swatch is not available
-            mGalleryTitle.setTextColor(getResources().getColor(android.R.color.white));
+            backgroundColor = ColorUtils.setAlphaComponent(swatch.getRgb(), 255);
+            titleColor = ColorUtils.setAlphaComponent(swatch.getTitleTextColor(), 255);
+            bodyColor = ColorUtils.setAlphaComponent(swatch.getBodyTextColor(), 255);
         }
+
+        mGalleryCard.setCardBackgroundColor(backgroundColor);
+        mGalleryTitle.setTextColor(titleColor);
+        mGalleryBody.setTextColor(bodyColor);
     }
 
     @Override

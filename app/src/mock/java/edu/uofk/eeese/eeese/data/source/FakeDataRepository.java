@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -40,7 +41,15 @@ class FakeDataRepository implements DataRepository {
     private boolean thrown;
 
     @DrawableRes
-    private static final int mGalleryRes = R.drawable.gallery;
+    private static final int[] mGalleryRes = {
+            R.drawable.gallery_1,
+            R.drawable.gallery_2,
+            R.drawable.gallery_3,
+            R.drawable.gallery_4,
+            R.drawable.gallery_5,
+            R.drawable.gallery_6,
+            R.drawable.gallery_7
+    };
 
     @Inject
     FakeDataRepository(@NonNull Context context, @NonNull BaseSchedulerProvider schedulerProvider) {
@@ -78,13 +87,13 @@ class FakeDataRepository implements DataRepository {
 
     @Override
     public Observable<Bitmap> getGalleryImageBitmap(final int width, final int height) {
-
+        @DrawableRes final int galleryRes = mGalleryRes[new Random().nextInt(mGalleryRes.length)];
         return Observable.fromCallable(new Callable<BitmapFactory.Options>() {
             @Override
             public BitmapFactory.Options call() throws Exception {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
-                BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+                BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
                 return options;
             }
         }).map(new Function<BitmapFactory.Options, Bitmap>() {
@@ -100,7 +109,7 @@ class FakeDataRepository implements DataRepository {
                     }
                 }
                 options.inJustDecodeBounds = false;
-                return BitmapFactory.decodeResource(mContext.getResources(), mGalleryRes, options);
+                return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
             }
         });
     }

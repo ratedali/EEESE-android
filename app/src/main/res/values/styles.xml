@@ -56,10 +56,6 @@
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
     </style>
 
-    <style name="GalleryCardTitle" parent="TextAppearance.AppCompat.Display1">
-        <item name="android:layout_margin">@dimen/title_margin</item>
-    </style>
-
     <style name="ExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
     </style>
 

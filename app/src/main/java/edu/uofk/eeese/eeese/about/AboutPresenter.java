@@ -58,17 +58,16 @@ public class AboutPresenter implements AboutContract.Presenter {
                 }).subscribeOn(mSchedulerProvider.io());
     }
 
-    private Observable<Pair<Bitmap, Palette.Swatch>> gallerySwatch() {
+    private Observable<Pair<Bitmap, Palette>> galleryBitmapWithPalette() {
         return galleryBitmap()
-                .map(new Function<Bitmap, Pair<Bitmap, Palette.Swatch>>() {
+                .map(new Function<Bitmap, Pair<Bitmap, Palette>>() {
                     @Override
-                    public Pair<Bitmap, Palette.Swatch> apply(Bitmap bitmap) throws Exception {
+                    public Pair<Bitmap, Palette> apply(Bitmap bitmap) throws Exception {
                         return new Pair<>(
                                 bitmap,
                                 Palette
                                         .from(bitmap)
                                         .generate()
-                                        .getDarkVibrantSwatch()
                         );
                     }
                 }).subscribeOn(
@@ -87,16 +86,16 @@ public class AboutPresenter implements AboutContract.Presenter {
         mView.setPresenter(this);
         // TODO: 1/21/17 Add error handling if the image or the swatch cannot be loaded
         Disposable subscription =
-                gallerySwatch()
+                galleryBitmapWithPalette()
                         .observeOn(mSchedulerProvider.ui())
                         .subscribe(
                                 // onNext, show the image on the view
-                                new Consumer<Pair<Bitmap, Palette.Swatch>>() {
+                                new Consumer<Pair<Bitmap, Palette>>() {
                                     @Override
-                                    public void accept(Pair<Bitmap, Palette.Swatch> bitmapSwatchPair) throws Exception {
+                                    public void accept(Pair<Bitmap, Palette> bitmapSwatchPair) throws Exception {
                                         Bitmap bitmap = bitmapSwatchPair.first;
-                                        Palette.Swatch swatch = bitmapSwatchPair.second;
-                                        mView.showGalleryImage(bitmap, swatch);
+                                        Palette palette = bitmapSwatchPair.second;
+                                        mView.showGalleryImage(bitmap, palette);
                                     }
                                 }
                         );
