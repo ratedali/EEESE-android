@@ -28,6 +28,8 @@ import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.transitionseverywhere.TransitionManager;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -179,6 +181,9 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     public void showProjects(@NonNull List<Project> projects) {
         mAdapter = new ProjectsAdapter(this, projects, projectSelectedListener);
         mProjectsList.swapAdapter(mAdapter, true);
+        if (mProjectsList.getVisibility() != View.VISIBLE) {
+            TransitionManager.beginDelayedTransition(mContentView);
+        }
         mProjectsList.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
 
@@ -191,7 +196,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         intent.putExtra(DetailsActivity.PROJECT_ID_KEY, projectId);
         ActivityUtils.startActivityWithTransition(this, intent,
                 new Pair<View, String>(mAppBar, toolbarTransitionName),
-                new Pair<View, String>(mSelectedProjectView, projectCardTransitionName));
+                new Pair<>(mSelectedProjectView, projectCardTransitionName));
     }
 
     @Override
@@ -201,8 +206,11 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void showNoProjects() {
-        mProjectsList.setVisibility(View.GONE);
+        if (mErrorView.getVisibility() != View.VISIBLE) {
+            TransitionManager.beginDelayedTransition(mContentView);
+        }
         mErrorView.setVisibility(View.VISIBLE);
+        mProjectsList.setVisibility(View.GONE);
 
     }
 
