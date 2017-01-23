@@ -42,7 +42,6 @@
             android:layout_marginBottom="@dimen/cardview_margin"
             android:layout_marginLeft="@dimen/cardview_margin"
             android:layout_marginRight="@dimen/cardview_margin"
-            android:minHeight="@dimen/projectname_card_height"
             android:transitionName="@string/transitionname_projectcard"
             cardview:theme="@style/ThemeOverlay.AppCompat.Light">
 

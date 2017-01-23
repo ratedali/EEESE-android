@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/head_text_margin"
+            android:layout_marginTop="@dimen/projecthead_text_margin"
             android:textAppearance="@style/ProjectHead"
             tools:text="The Project Head"/>
 
