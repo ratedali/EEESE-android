@@ -27,8 +27,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -48,7 +51,9 @@ public class AboutFragment extends Fragment implements AboutContract.View {
     @BindView(R.id.gallery_body)
     public TextView mGalleryBody;
 
-    private AboutContract.Presenter mPresenter;
+    @Inject
+    public AboutContract.Presenter mPresenter;
+
     private Bitmap mGalleryBitmap;
 
     public AboutFragment() {
@@ -70,6 +75,10 @@ public class AboutFragment extends Fragment implements AboutContract.View {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((EEESEapp) getActivity().getApplication())
+                .getAppComponent()
+                .aboutComponent(new AboutModule(this))
+                .inject(this);
     }
 
     @Override

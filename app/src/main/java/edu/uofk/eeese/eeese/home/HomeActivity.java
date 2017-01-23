@@ -32,16 +32,11 @@ import android.view.View;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.about.AboutContract;
 import edu.uofk.eeese.eeese.about.AboutFragment;
-import edu.uofk.eeese.eeese.about.AboutModule;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
@@ -67,11 +62,8 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
-    // Content
+    // Control Objects
     private boolean mExit;
-
-    @Inject
-    public AboutContract.Presenter mAboutPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +85,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         AboutFragment aboutFragment = AboutFragment.getInstance();
-
-        ((EEESEapp) getApplication()).getAppComponent().homeComponent(new AboutModule(aboutFragment))
-                .inject(this);
-
-        aboutFragment.setPresenter(mAboutPresenter);
 
         List<Fragment> homeFragments = Collections.<Fragment>singletonList(aboutFragment);
         List<String> homeTitle = Collections.singletonList(getString(R.string.about_tab_title));

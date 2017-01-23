@@ -8,33 +8,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.about;
+package edu.uofk.eeese.eeese.di;
 
-import dagger.Module;
-import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
-import edu.uofk.eeese.eeese.di.FragmentScope;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@Module
-public class AboutModule {
+import javax.inject.Scope;
 
-    private AboutContract.View mHomeView;
-
-    AboutModule(AboutContract.View view) {
-        mHomeView = view;
-    }
-
-    @Provides
-    AboutContract.View provideHomeView() {
-        return mHomeView;
-    }
-
-    @Provides
-    @FragmentScope
-    AboutContract.Presenter providePresenter(DataRepository source,
-                                             AboutContract.View view,
-                                             BaseSchedulerProvider schedulerProvide) {
-        return new AboutPresenter(source, view, schedulerProvide);
-    }
+@Scope
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FragmentScope {
 }

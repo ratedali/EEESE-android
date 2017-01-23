@@ -11,13 +11,13 @@
 package edu.uofk.eeese.eeese;
 
 import dagger.Component;
+import edu.uofk.eeese.eeese.about.AboutComponent;
 import edu.uofk.eeese.eeese.about.AboutModule;
 import edu.uofk.eeese.eeese.data.database.DatabaseModule;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
 import edu.uofk.eeese.eeese.details.DetailsComponent;
 import edu.uofk.eeese.eeese.details.DetailsModule;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
-import edu.uofk.eeese.eeese.home.HomeComponent;
 import edu.uofk.eeese.eeese.projects.ProjectsComponent;
 import edu.uofk.eeese.eeese.projects.ProjectsModule;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
@@ -29,9 +29,9 @@ import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
         DataRepositoryModule.class})
 
 public interface AppComponent {
-    HomeComponent homeComponent(AboutModule module);
-
     ProjectsComponent projectsComponent(ProjectsModule module);
 
     DetailsComponent detailsComponent(DetailsModule module);
+
+    AboutComponent aboutComponent(AboutModule module);
 }
