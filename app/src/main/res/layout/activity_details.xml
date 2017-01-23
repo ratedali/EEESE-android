@@ -16,7 +16,6 @@
     android:id="@+id/activity_details"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="edu.uofk.eeese.eeese.details.DetailsActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -78,8 +77,7 @@
         android:src="@drawable/ic_apply"
         android:transitionName="@string/transitionname_fab"
         app:elevation="@dimen/fab_elevation"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|end"
+        android:layout_gravity="bottom|end"
         tools:targetApi="lollipop"/>
 
 </android.support.design.widget.CoordinatorLayout>
