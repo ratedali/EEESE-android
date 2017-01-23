@@ -61,7 +61,7 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
                 .detailsComponent(new DetailsModule(mProjectId, this))
                 .inject(this);
 
-        ActivityUtils.setEnterTransition(this, R.transition.details_enter);
+        ActivityUtils.setEnterTransition(this, R.transition.details);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_projectcard);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_projectcard);
 

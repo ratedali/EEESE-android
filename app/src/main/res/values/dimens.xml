@@ -34,5 +34,5 @@
 
     <dimen name="fab_size">64dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="fab_elevation">16dp</dimen>
+    <dimen name="fab_elevation">8dp</dimen>
 </resources>
