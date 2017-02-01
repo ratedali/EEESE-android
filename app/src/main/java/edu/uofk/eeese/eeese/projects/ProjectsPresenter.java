@@ -90,8 +90,6 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
 
     @Override
     public void subscribe() {
-
-        loadProjects(false);
     }
 
     @Override

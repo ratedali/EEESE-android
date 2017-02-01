@@ -115,6 +115,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         mAdapter = new ProjectsAdapter(this, projectSelectedListener);
         mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mProjectsList.setAdapter(mAdapter);
+        mPresenter.loadProjects(false);
 
         setupDrawer(mNavView, mDrawerLayout);
     }
