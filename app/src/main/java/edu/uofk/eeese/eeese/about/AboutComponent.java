@@ -16,5 +16,5 @@ import edu.uofk.eeese.eeese.di.FragmentScope;
 @FragmentScope
 @Subcomponent(modules = {AboutModule.class})
 public interface AboutComponent {
-    void inject(AboutFragment fragment);
+    void inject(AboutActivity fragment);
 }

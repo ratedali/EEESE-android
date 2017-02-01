@@ -17,12 +17,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="edu.uofk.eeese.eeese.home.HomeActivity">
+    tools:context="edu.uofk.eeese.eeese.about.AboutActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="edu.uofk.eeese.eeese.home.HomeActivity"
+        tools:context="edu.uofk.eeese.eeese.about.AboutActivity"
         tools:showIn="@layout/activity_home">
 
         <android.support.design.widget.AppBarLayout
@@ -40,12 +40,6 @@
                 android:minHeight="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tablayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_collapseMode="pin"/>
         </android.support.design.widget.AppBarLayout>
 
         <include layout="@layout/home_content"/>

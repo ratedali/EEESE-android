@@ -25,7 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.home.HomeActivity;
+import edu.uofk.eeese.eeese.about.AboutActivity;
 import edu.uofk.eeese.eeese.projects.ProjectsActivity;
 
 public final class ActivityUtils {
@@ -39,7 +39,7 @@ public final class ActivityUtils {
         Class<? extends Activity> targetActivity = null;
         switch (item.getItemId()) {
             case R.id.nav_home:
-                targetActivity = HomeActivity.class;
+                targetActivity = AboutActivity.class;
                 break;
             case R.id.nav_projects:
                 targetActivity = ProjectsActivity.class;

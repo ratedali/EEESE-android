@@ -8,39 +8,44 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.home;
+package edu.uofk.eeese.eeese.about;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.util.Collections;
-import java.util.List;
+import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
-import edu.uofk.eeese.eeese.about.AboutFragment;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 
-public class HomeActivity extends AppCompatActivity {
+public class AboutActivity extends AppCompatActivity implements AboutContract.View {
 
     // Navigation
     @BindView(R.id.drawer_layout)
@@ -53,16 +58,25 @@ public class HomeActivity extends AppCompatActivity {
     public AppBarLayout appBar;
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
-    @BindView(R.id.tablayout)
-    public TabLayout tabLayout;
+
     @BindString(R.string.transitionname_toolbar)
     public String toolbarTransitionName;
 
     // Content
-    @BindView(R.id.viewpager)
-    ViewPager mViewPager;
+    @BindView(R.id.gallery_card)
+    public CardView mGalleryCard;
+    @BindView(R.id.gallery_image)
+    public ImageView mGalleryImage;
+    @BindView(R.id.gallery_title)
+    public TextView mGalleryTitle;
+    @BindView(R.id.gallery_body)
+    public TextView mGalleryBody;
+
+    private Bitmap mGalleryBitmap;
 
     // Control Objects
+    @Inject
+    public AboutContract.Presenter mPresenter;
     private boolean mExit;
 
     @Override
@@ -72,6 +86,11 @@ public class HomeActivity extends AppCompatActivity {
         ActivityUtils.setEnterTransition(this, R.transition.home_enter);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_toolbar);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_toolbar);
+
+        ((EEESEapp) getApplication())
+                .getAppComponent()
+                .aboutComponent(new AboutModule(this))
+                .inject(this);
 
         ButterKnife.bind(this);
 
@@ -84,22 +103,81 @@ public class HomeActivity extends AppCompatActivity {
             actionBar.setTitle(R.string.app_name);
         }
 
-        AboutFragment aboutFragment = AboutFragment.getInstance();
-
-        List<Fragment> homeFragments = Collections.<Fragment>singletonList(aboutFragment);
-        List<String> homeTitle = Collections.singletonList(getString(R.string.about_tab_title));
-        mViewPager.setAdapter(new HomePagerAdapter(getSupportFragmentManager(), homeFragments, homeTitle));
-
-        tabLayout.setupWithViewPager(mViewPager);
-
         setupDrawer(navView, mDrawerLayout);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.unsubscribe();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (mGalleryBitmap != null) {
+            mGalleryBitmap.recycle();
+            mGalleryBitmap = null;
+        }
         if (mExit)
             finish();
+    }
+
+    @Override
+    public void setPresenter(@NonNull AboutContract.Presenter presenter) {
+        mPresenter = presenter;
+    }
+
+    @Override
+    public void openGallery() {
+        // TODO: 1/21/17 show gallery webview
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void showGalleryImage(@Nullable Bitmap imageBitmap, @NonNull Palette palette) {
+        if (mGalleryBitmap != null) {
+            mGalleryBitmap.recycle();
+        }
+        mGalleryBitmap = imageBitmap;
+        mGalleryImage.setImageBitmap(mGalleryBitmap);
+
+        Palette.Swatch swatch = palette.getLightVibrantSwatch();
+        @ColorInt int backgroundColor = getResources().getColor(android.R.color.white);
+        @ColorInt int titleColor = getResources().getColor(R.color.colorPrimaryText);
+        @ColorInt int bodyColor = getResources().getColor(R.color.colorSecondaryText);
+        if (swatch != null) {
+            backgroundColor = ColorUtils.setAlphaComponent(swatch.getRgb(), 255);
+            titleColor = ColorUtils.setAlphaComponent(swatch.getTitleTextColor(), 255);
+            bodyColor = ColorUtils.setAlphaComponent(swatch.getBodyTextColor(), 255);
+        }
+
+        mGalleryCard.setCardBackgroundColor(backgroundColor);
+        mGalleryTitle.setTextColor(titleColor);
+        mGalleryBody.setTextColor(bodyColor);
+    }
+
+    @Override
+    public Single<android.support.v4.util.Pair<Integer, Integer>> getGalleryViewSize() {
+        return Single.create(new SingleOnSubscribe<android.support.v4.util.Pair<Integer, Integer>>() {
+            @Override
+            public void subscribe(final SingleEmitter<android.support.v4.util.Pair<Integer, Integer>> e) throws Exception {
+                mGalleryImage.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int width = mGalleryImage.getMeasuredWidth();
+                        int height = mGalleryImage.getMeasuredHeight();
+                        e.onSuccess(new android.support.v4.util.Pair<>(width, height));
+                    }
+                });
+            }
+        });
     }
 
     private void setupDrawer(@NonNull NavigationView navView,
@@ -134,42 +212,5 @@ public class HomeActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    private static class HomePagerAdapter extends FragmentPagerAdapter {
-
-        private List<Fragment> mFragments;
-        private List<String> mTabTitles;
-
-        HomePagerAdapter(FragmentManager fragmentManager) {
-            this(fragmentManager, Collections.<Fragment>emptyList(), Collections.<String>emptyList());
-        }
-
-        HomePagerAdapter(FragmentManager fragmentManager, List<Fragment> fragments, List<String> titles) {
-            super(fragmentManager);
-            mFragments = fragments;
-            mTabTitles = titles;
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragments.add(fragment);
-            mTabTitles.add(title);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments.get(position);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mTabTitles.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.size();
-        }
     }
 }

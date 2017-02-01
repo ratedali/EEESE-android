@@ -32,10 +32,10 @@ import java.util.List;
 import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
+import edu.uofk.eeese.eeese.about.AboutActivity;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
-import edu.uofk.eeese.eeese.home.HomeActivity;
 import edu.uofk.eeese.eeese.util.TestRule;
 import io.reactivex.Single;
 
@@ -100,7 +100,7 @@ public class NavigationTest {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
 
-        intended(hasComponent(hasClassName(HomeActivity.class.getName())));
+        intended(hasComponent(hasClassName(AboutActivity.class.getName())));
     }
 
     @Test
