@@ -25,7 +25,7 @@ import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.categories.Remote;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 
@@ -73,49 +73,48 @@ public class DataRepository implements BaseDataRepository {
     }
 
     @Override
-    public Observable<List<Project>> getProjects(boolean forceUpdate) {
+    public Single<List<Project>> getProjects(boolean forceUpdate) {
         if (forceUpdate) {
             return getAndSaveRemoteProjects();
         } else if (mCacheDirty) {
-            return getAndCacheLocalProjects().filter(new Predicate<List<Project>>() {
-                @Override
-                public boolean test(List<Project> projects) throws Exception {
-                    return !projects.isEmpty();
-                }
-            }).ambWith(
-                    getAndSaveRemoteProjects()
-            );
+            return getAndCacheLocalProjects().mergeWith(getAndSaveRemoteProjects())
+                    .filter(new Predicate<List<Project>>() {
+                        @Override
+                        public boolean test(List<Project> projects) throws Exception {
+                            return !projects.isEmpty();
+                        }
+                    }).firstOrError();
         } else {
             List<Project> projects = new ArrayList<>(mCache.values());
-            return Observable.just(projects);
+            return Single.just(projects);
         }
     }
 
     @Override
-    public Observable<Project> getProject(String projectId, boolean forceUpdate) {
+    public Single<Project> getProject(String projectId, boolean forceUpdate) {
         // indicates if a sync is currently running
         Completable syncJob = Completable.complete();
         if (forceUpdate) {
             // if an update is forced, fetch from remote
-            syncJob = Completable.fromObservable(getAndSaveRemoteProjects());
+            syncJob = Completable.fromSingle(getAndSaveRemoteProjects());
         } else if (mCacheDirty) {
             // if the cache is dirty but an update is not forced, fetched from local
             syncJob = Completable.fromObservable(
-                    getAndCacheLocalProjects().ambWith(getAndSaveRemoteProjects())
+                    getAndCacheLocalProjects().mergeWith(getAndSaveRemoteProjects()).toObservable()
             );
         }
         // after the sync completes, return from cache
-        return syncJob.andThen(Observable.just(mCache.get(projectId)));
+        return syncJob.andThen(Single.just(mCache.get(projectId)));
     }
 
     @Override
-    public Observable<Bitmap> getGalleryImageBitmap(int width, int height) {
+    public Single<Bitmap> getGalleryImageBitmap(int width, int height) {
         return mLocalRepo.getGalleryImageBitmap(width, height);
     }
 
-    private Observable<List<Project>> getAndSaveRemoteProjects() {
+    private Single<List<Project>> getAndSaveRemoteProjects() {
         return mRemoteRepo.getProjects(true)
-                .doOnNext(new Consumer<List<Project>>() {
+                .doOnSuccess(new Consumer<List<Project>>() {
                     @Override
                     public void accept(List<Project> projects) throws Exception {
                         mLocalRepo.setProjects(projects);
@@ -125,9 +124,9 @@ public class DataRepository implements BaseDataRepository {
                 });
     }
 
-    private Observable<List<Project>> getAndCacheLocalProjects() {
+    private Single<List<Project>> getAndCacheLocalProjects() {
         return mLocalRepo.getProjects(true)
-                .doOnNext(new Consumer<List<Project>>() {
+                .doOnSuccess(new Consumer<List<Project>>() {
                     @Override
                     public void accept(List<Project> projects) throws Exception {
                         cacheProjects(projects);

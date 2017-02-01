@@ -16,7 +16,7 @@ import android.support.v7.graphics.Palette;
 
 import edu.uofk.eeese.eeese.BasePresenter;
 import edu.uofk.eeese.eeese.BaseView;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface AboutContract {
     interface View extends BaseView<Presenter> {
@@ -24,7 +24,7 @@ public interface AboutContract {
 
         void showGalleryImage(Bitmap imageBitmap, Palette palette);
 
-        Observable<Pair<Integer, Integer>> getGalleryViewSize();
+        Single<Pair<Integer, Integer>> getGalleryViewSize();
     }
 
     interface Presenter extends BasePresenter {

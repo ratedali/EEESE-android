@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -46,11 +46,11 @@ public class AboutPresenter implements AboutContract.Presenter {
     }
 
 
-    private Observable<Bitmap> galleryBitmap() {
+    private Single<Bitmap> galleryBitmap() {
         return mView.getGalleryViewSize().subscribeOn(mSchedulerProvider.ui())
-                .flatMap(new Function<Pair<Integer, Integer>, Observable<Bitmap>>() {
+                .flatMap(new Function<Pair<Integer, Integer>, Single<Bitmap>>() {
                     @Override
-                    public Observable<Bitmap> apply(Pair<Integer, Integer> widthHeightPair) throws Exception {
+                    public Single<Bitmap> apply(Pair<Integer, Integer> widthHeightPair) throws Exception {
                         int width = widthHeightPair.first;
                         int height = widthHeightPair.second;
                         return mSource.getGalleryImageBitmap(width, height);
@@ -58,7 +58,7 @@ public class AboutPresenter implements AboutContract.Presenter {
                 }).subscribeOn(mSchedulerProvider.io());
     }
 
-    private Observable<Pair<Bitmap, Palette>> galleryBitmapWithPalette() {
+    private Single<Pair<Bitmap, Palette>> galleryBitmapWithPalette() {
         return galleryBitmap()
                 .map(new Function<Bitmap, Pair<Bitmap, Palette>>() {
                     @Override
@@ -89,7 +89,7 @@ public class AboutPresenter implements AboutContract.Presenter {
                 galleryBitmapWithPalette()
                         .observeOn(mSchedulerProvider.ui())
                         .subscribe(
-                                // onNext, show the image on the view
+                                // OnSuccess, show the image on the view
                                 new Consumer<Pair<Bitmap, Palette>>() {
                                     @Override
                                     public void accept(Pair<Bitmap, Palette> bitmapSwatchPair) throws Exception {

@@ -57,7 +57,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
         Disposable subscription = mSource.getProject(mProjectId, force)
                 .observeOn(mScheduler.ui())
                 .subscribe(
-                        // onNext
+                        // onSuccess
                         new Consumer<Project>() {
                             @Override
                             public void accept(Project project) throws Exception {

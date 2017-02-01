@@ -33,9 +33,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -137,17 +137,16 @@ public class AboutFragment extends Fragment implements AboutContract.View {
     }
 
     @Override
-    public Observable<Pair<Integer, Integer>> getGalleryViewSize() {
-        return Observable.create(new ObservableOnSubscribe<Pair<Integer, Integer>>() {
+    public Single<Pair<Integer, Integer>> getGalleryViewSize() {
+        return Single.create(new SingleOnSubscribe<Pair<Integer, Integer>>() {
             @Override
-            public void subscribe(final ObservableEmitter<Pair<Integer, Integer>> e) throws Exception {
+            public void subscribe(final SingleEmitter<Pair<Integer, Integer>> e) throws Exception {
                 mGalleryImage.post(new Runnable() {
                     @Override
                     public void run() {
                         int width = mGalleryImage.getMeasuredWidth();
                         int height = mGalleryImage.getMeasuredHeight();
-                        e.onNext(new Pair<>(width, height));
-                        e.onComplete();
+                        e.onSuccess(new Pair<>(width, height));
                     }
                 });
             }

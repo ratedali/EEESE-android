@@ -17,7 +17,7 @@ import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface BaseDataRepository {
 
@@ -29,9 +29,9 @@ public interface BaseDataRepository {
 
     Completable clearProjects();
 
-    Observable<List<Project>> getProjects(boolean forceUpdate);
+    Single<List<Project>> getProjects(boolean forceUpdate);
 
-    Observable<Project> getProject(String projectId, boolean forceUpdate);
+    Single<Project> getProject(String projectId, boolean forceUpdate);
 
-    Observable<Bitmap> getGalleryImageBitmap(int width, int height);
+    Single<Bitmap> getGalleryImageBitmap(int width, int height);
 }

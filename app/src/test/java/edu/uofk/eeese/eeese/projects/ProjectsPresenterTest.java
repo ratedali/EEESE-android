@@ -25,12 +25,11 @@ import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.TestUtils;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +60,7 @@ public class ProjectsPresenterTest {
     @Test
     public void shouldCallNoProjectsOnEmptyList() {
         when(source.getProjects(anyBoolean()))
-                .thenReturn(Observable.just(Collections.<Project>emptyList()));
+                .thenReturn(Single.just(Collections.<Project>emptyList()));
         presenter.loadProjects(anyBoolean());
         verify(view).showNoProjects();
     }
@@ -69,7 +68,7 @@ public class ProjectsPresenterTest {
     @Test
     public void shouldCallShowProjectsWithNonEmptyList() {
         when(source.getProjects(anyBoolean()))
-                .thenReturn(Observable.just(projects));
+                .thenReturn(Single.just(projects));
         presenter.loadProjects(anyBoolean());
         verify(view).showProjects(projects);
     }
@@ -77,15 +76,8 @@ public class ProjectsPresenterTest {
     @Test
     public void shouldCallConnectionErrorOnException() {
         when(source.getProjects(anyBoolean()))
-                .thenReturn(Observable.<List<Project>>error(new Exception()));
+                .thenReturn(Single.<List<Project>>error(new Exception()));
         presenter.loadProjects(anyBoolean());
         verify(view).showNoConnectionError();
-    }
-
-    @Test
-    public void shouldSetLoadingIndicatorTwiceOnLoad() {
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.<List<Project>>empty());
-        presenter.loadProjects(anyBoolean());
-        verify(view, times(2)).setLoadingIndicator(anyBoolean());
     }
 }

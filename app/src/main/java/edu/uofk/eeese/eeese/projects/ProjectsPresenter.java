@@ -60,7 +60,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                             }
                         })
                         .subscribe(
-                                // OnNext
+                                // OnSuccess
                                 new Consumer<List<Project>>() {
                                     @Override
                                     public void accept(List<Project> projects) throws Exception {

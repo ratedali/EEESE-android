@@ -37,7 +37,7 @@ import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.home.HomeActivity;
 import edu.uofk.eeese.eeese.util.TestRule;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -75,12 +75,12 @@ public class NavigationTest {
     public static void setupMocks() {
         mockBitmap = Mockito.mock(Bitmap.class);
         when(source.getProjects(anyBoolean()))
-                .thenReturn(Observable.just(projects));
+                .thenReturn(Single.just(projects));
         when(source.getGalleryImageBitmap(anyInt(), anyInt()))
-                .thenReturn(Observable.just(mockBitmap));
+                .thenReturn(Single.just(mockBitmap));
         for (Project project : projects) {
             when(source.getProject(eq(project.getId()), anyBoolean()))
-                    .thenReturn(Observable.just(project));
+                    .thenReturn(Single.just(project));
         }
     }
 

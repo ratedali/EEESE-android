@@ -31,7 +31,7 @@ import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
 import edu.uofk.eeese.eeese.util.TestUtils;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -81,7 +81,7 @@ public class LocalDataRepositoryTest {
         when(cursor.moveToFirst()).thenReturn(false);
         when(cursor.moveToNext()).thenReturn(false);
 
-        Observable<List<Project>> answer = dataRepository.getProjects(false);
+        Single<List<Project>> answer = dataRepository.getProjects(false);
 
         verify(schedulerProvider, only()).io();
     }
@@ -118,7 +118,7 @@ public class LocalDataRepositoryTest {
         when(cursor.getString(COLUMN_PROJECT_HEAD)).thenReturn(head);
         when(cursor.getString(COLUMN_PROJECT_DESC)).thenReturn(desc);
 
-        Observable<List<Project>> answer = dataRepository.getProjects(false);
+        Single<List<Project>> answer = dataRepository.getProjects(false);
         TestObserver<List<Project>> testObserver = TestObserver.create();
         answer.subscribe(testObserver);
 
@@ -158,7 +158,7 @@ public class LocalDataRepositoryTest {
         when(cursor.moveToFirst()).thenReturn(false);
         when(cursor.moveToNext()).thenReturn(false);
 
-        Observable<List<Project>> answer = dataRepository.getProjects(false);
+        Single<List<Project>> answer = dataRepository.getProjects(false);
         TestObserver<List<Project>> testObserver = TestObserver.create();
         answer.subscribe(testObserver);
 

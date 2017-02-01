@@ -31,7 +31,7 @@ import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.TestRule;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -61,7 +61,7 @@ public class ProjectsScreenTest {
 
     @Test
     public void emptyListShowsNoProjectsScreen() {
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(Collections.<Project>emptyList()));
+        when(source.getProjects(anyBoolean())).thenReturn(Single.just(Collections.<Project>emptyList()));
 
         testRule.launchActivity(null);
 
@@ -72,7 +72,7 @@ public class ProjectsScreenTest {
 
     @Test
     public void emptyListHidesProjectsList() {
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(Collections.<Project>emptyList()));
+        when(source.getProjects(anyBoolean())).thenReturn(Single.just(Collections.<Project>emptyList()));
 
         testRule.launchActivity(null);
 
@@ -83,7 +83,7 @@ public class ProjectsScreenTest {
     public void shouldShowListOfProjects() {
         List<Project> projects = new ArrayList<>();
         projects.add(new Project.Builder("1", "Project 1", "head").build());
-        when(source.getProjects(anyBoolean())).thenReturn(Observable.just(projects));
+        when(source.getProjects(anyBoolean())).thenReturn(Single.just(projects));
 
         testRule.launchActivity(null);
 

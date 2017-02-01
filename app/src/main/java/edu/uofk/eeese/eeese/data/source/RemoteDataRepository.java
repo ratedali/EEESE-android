@@ -34,6 +34,7 @@ import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Function;
 
 /*
@@ -48,7 +49,7 @@ public class RemoteDataRepository implements BaseDataRepository {
 
     private final Context mContext;
     private final BaseSchedulerProvider mSchedulerProvider;
-    private final int mProjectsFile = R.raw.projects;
+    private final int PROJECTS_FILE_ID = R.raw.projects;
 
     @Inject
     public RemoteDataRepository(@NonNull Context context,
@@ -78,10 +79,16 @@ public class RemoteDataRepository implements BaseDataRepository {
     }
 
     @Override
-    public Observable<List<Project>> getProjects(boolean forceUpdate) {
+    public Single<List<Project>> getProjects(boolean forceUpdate) {
         // Parse the json file containing the projects data, instead of querying an API
         return
-                Observable.just(mContext.getResources().openRawResource(mProjectsFile))
+                Single.just(PROJECTS_FILE_ID)
+                        .map(new Function<Integer, InputStream>() {
+                            @Override
+                            public InputStream apply(Integer projectsFileId) throws Exception {
+                                return mContext.getResources().openRawResource(projectsFileId);
+                            }
+                        })
                         .map(new Function<InputStream, List<ProjectJSON>>() {
                             @Override
                             public List<ProjectJSON> apply(InputStream inputStream)
@@ -102,9 +109,9 @@ public class RemoteDataRepository implements BaseDataRepository {
                                         type
                                 );
                             }
-                        }).flatMap(new Function<List<ProjectJSON>, Observable<List<Project>>>() {
+                        }).flatMap(new Function<List<ProjectJSON>, Single<List<Project>>>() {
                     @Override
-                    public Observable<List<Project>> apply(List<ProjectJSON> projectJSONs)
+                    public Single<List<Project>> apply(List<ProjectJSON> projectJSONs)
                             throws Exception {
                         return Observable.fromIterable(projectJSONs)
                                 .map(new Function<ProjectJSON, Project>() {
@@ -117,8 +124,7 @@ public class RemoteDataRepository implements BaseDataRepository {
                                                 .withDesc(projectJSON.desc).build();
                                     }
                                 })
-                                .toList()
-                                .toObservable();
+                                .toList();
                     }
                 }).subscribeOn(mSchedulerProvider.io());
 
@@ -129,7 +135,7 @@ public class RemoteDataRepository implements BaseDataRepository {
      * however, under the mentioned circumstances, its just inefficient and useless to do that
      */
     @Override
-    public Observable<Project> getProject(String projectId, boolean forceUpdate) {
+    public Single<Project> getProject(String projectId, boolean forceUpdate) {
         throw new UnsupportedOperationException("Cannot get a single project");
     }
 
@@ -138,7 +144,7 @@ public class RemoteDataRepository implements BaseDataRepository {
      * {@link LocalDataRepository}'s <code>getGalleryImageBitmap(int,int)</code> instead.
      */
     @Override
-    public Observable<Bitmap> getGalleryImageBitmap(int width, int height) {
+    public Single<Bitmap> getGalleryImageBitmap(int width, int height) {
         throw new UnsupportedOperationException("Cannot get a single project");
     }
 
