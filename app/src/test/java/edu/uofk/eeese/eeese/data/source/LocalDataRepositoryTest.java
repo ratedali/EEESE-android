@@ -119,8 +119,7 @@ public class LocalDataRepositoryTest {
         when(cursor.getString(COLUMN_PROJECT_DESC)).thenReturn(desc);
 
         Single<List<Project>> answer = dataRepository.getProjects(false);
-        TestObserver<List<Project>> testObserver = TestObserver.create();
-        answer.subscribe(testObserver);
+        TestObserver<List<Project>> testObserver = answer.test();
 
         verify(dbHelper)
                 .getReadableDatabase();
@@ -159,8 +158,7 @@ public class LocalDataRepositoryTest {
         when(cursor.moveToNext()).thenReturn(false);
 
         Single<List<Project>> answer = dataRepository.getProjects(false);
-        TestObserver<List<Project>> testObserver = TestObserver.create();
-        answer.subscribe(testObserver);
+        TestObserver<List<Project>> testObserver = answer.test();
 
         testObserver.assertValue(new Predicate<List<Project>>() {
             @Override
