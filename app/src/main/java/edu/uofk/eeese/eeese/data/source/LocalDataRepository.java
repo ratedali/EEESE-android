@@ -10,6 +10,7 @@
 
 package edu.uofk.eeese.eeese.data.source;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -32,12 +34,14 @@ import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
 import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 
 @ApplicationScope
 @Local
-public class LocalDataRepository implements DataRepository {
+public class LocalDataRepository implements BaseDataRepository {
 
     @NonNull
     private Context mContext;
@@ -112,6 +116,74 @@ public class LocalDataRepository implements DataRepository {
     }
 
     @Override
+    public Completable insertProject(final Project project) {
+
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                long id = db.insert(ProjectEntry.TABLE_NAME, null, projectValues(project));
+                db.close();
+                if (id < 0) {
+                    // The database returns a negative id if the insertion failed
+                    // in that case, an error is indicated using an exception
+                    throw new IOException("Cannot insert a project to database");
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public Completable setProjects(final List<Project> projects) {
+        return clearProjects().andThen(Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                insertProjects(projects);
+            }
+        }));
+    }
+
+    @Override
+    public Completable insertProjects(final List<Project> projects) {
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                db.beginTransaction();
+                try {
+                    for (Project project : projects) {
+                        ContentValues values = projectValues(project);
+                        long id = db.insert(ProjectEntry.TABLE_NAME, null, values);
+                        if (id < 0) {
+                            // The database returns a negative id if the insertion failed
+                            // in that case, the transaction is aborted by throwing an exception
+                            throw new IOException("Cannot insert projects to database");
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+            }
+        });
+    }
+
+    @Override
+    public Completable clearProjects() {
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                // Delete all projects and close the database
+                db.delete(ProjectEntry.TABLE_NAME, null, null);
+                db.close();
+            }
+        });
+    }
+
+    @Override
     public Observable<List<Project>> getProjects(boolean forceUpdate) {
         return Observable.fromCallable(new Callable<SQLiteDatabase>() {
             @Override
@@ -176,6 +248,15 @@ public class LocalDataRepository implements DataRepository {
                 return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
             }
         });
+    }
+
+    private ContentValues projectValues(Project project) {
+        ContentValues values = new ContentValues();
+        values.put(ProjectEntry.COLUMN_PROJECT_ID, project.getId());
+        values.put(ProjectEntry.COLUMN_PROJECT_NAME, project.getName());
+        values.put(ProjectEntry.COLUMN_PROJECT_HEAD, project.getProjectHead());
+        values.put(ProjectEntry.COLUMN_PROJECT_DESC, project.getDesc());
+        return values;
     }
 
 }

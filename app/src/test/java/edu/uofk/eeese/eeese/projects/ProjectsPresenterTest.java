@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.TestUtils;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectsPresenterTest {
     @Mock
-    private DataRepository source;
+    private BaseDataRepository source;
     @Mock
     private ProjectsContract.View view;
     @Mock

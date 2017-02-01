@@ -28,11 +28,12 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
 @ApplicationScope
-class FakeDataRepository implements DataRepository {
+class FakeDataRepository implements BaseDataRepository {
 
     @NonNull
     private Context mContext;
@@ -68,6 +69,30 @@ class FakeDataRepository implements DataRepository {
         );
 
         thrown = false;
+    }
+
+    @Override
+    public Completable insertProject(Project project) {
+        mProjects.add(project);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable insertProjects(List<Project> projects) {
+        mProjects.addAll(projects);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable setProjects(List<Project> projects) {
+        mProjects = projects;
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable clearProjects() {
+        mProjects.clear();
+        return Completable.complete();
     }
 
     @Override

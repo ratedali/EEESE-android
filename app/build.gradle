@@ -89,11 +89,10 @@ dependencies {
 
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     provided "org.glassfish:javax.annotation:$rootProject.annotationVersion"
+    compile "com.google.code.gson:gson:$rootProject.gsonVersion"
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
-    compile "com.squareup.okhttp3:okhttp:$rootProject.okHttpVersion"
-    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     compile "com.andkulikov:transitionseverywhere:$rootProject.transitionseverywhereVersion"
 

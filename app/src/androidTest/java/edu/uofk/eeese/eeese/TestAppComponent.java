@@ -13,7 +13,8 @@ package edu.uofk.eeese.eeese;
 import android.support.test.espresso.idling.CountingIdlingResource;
 
 import dagger.Component;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
+import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.EspressoIdlingResourceModule;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
@@ -24,7 +25,8 @@ import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
         MockDataRepositoryModule.class,
         EspressoIdlingResourceModule.class})
 public interface TestAppComponent extends AppComponent {
-    DataRepository dataRepository();
+    @Cache
+    BaseDataRepository dataRepository();
 
     CountingIdlingResource idlingResource();
 }

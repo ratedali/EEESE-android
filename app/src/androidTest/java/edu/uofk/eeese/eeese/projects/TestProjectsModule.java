@@ -14,7 +14,7 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
@@ -34,7 +34,7 @@ class TestProjectsModule {
 
     @Provides
     @ActivityScope
-    ProjectsContract.Presenter provideMockPresenter(DataRepository source,
+    ProjectsContract.Presenter provideMockPresenter(BaseDataRepository source,
                                                     ProjectsContract.View view,
                                                     BaseSchedulerProvider schedulerProvide,
                                                     CountingIdlingResource idlingResource) {

@@ -33,7 +33,7 @@ import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.home.HomeActivity;
 import edu.uofk.eeese.eeese.util.TestRule;
@@ -61,7 +61,7 @@ public class NavigationTest {
     public TestRule<ProjectsActivity> testRule =
             new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
 
-    private static DataRepository source = mAppComponent.dataRepository();
+    private static BaseDataRepository source = mAppComponent.dataRepository();
     private IdlingResource idlingResource = mAppComponent.idlingResource();
 
     private static final List<Project> projects =

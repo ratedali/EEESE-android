@@ -15,7 +15,7 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,7 +28,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     @NonNull
     private DetailsContract.View mView;
     @NonNull
-    private DataRepository mSource;
+    private BaseDataRepository mSource;
     @NonNull
     private BaseSchedulerProvider mScheduler;
     @NonNull
@@ -37,7 +37,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     private CompositeDisposable mSubscriptions;
 
     @Inject
-    public DetailsPresenter(@NonNull DataRepository source,
+    public DetailsPresenter(@NonNull BaseDataRepository source,
                             @NonNull DetailsContract.View view,
                             @NonNull BaseSchedulerProvider schedulerProvider,
                             @NonNull String projectId) {

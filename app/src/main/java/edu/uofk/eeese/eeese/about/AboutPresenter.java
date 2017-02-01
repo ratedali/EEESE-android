@@ -17,7 +17,7 @@ import android.support.v7.graphics.Palette;
 
 import javax.inject.Inject;
 
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Observable;
@@ -29,14 +29,14 @@ import io.reactivex.functions.Function;
 @ActivityScope
 public class AboutPresenter implements AboutContract.Presenter {
 
-    private DataRepository mSource;
+    private BaseDataRepository mSource;
     private AboutContract.View mView;
     private BaseSchedulerProvider mSchedulerProvider;
 
     private CompositeDisposable mSubscriptions;
 
     @Inject
-    public AboutPresenter(@NonNull DataRepository source,
+    public AboutPresenter(@NonNull BaseDataRepository source,
                           @NonNull AboutContract.View view,
                           @NonNull BaseSchedulerProvider schedulerProvider) {
         mSource = source;

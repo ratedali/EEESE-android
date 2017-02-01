@@ -8,34 +8,30 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.about;
+package edu.uofk.eeese.eeese.data.source;
 
-import dagger.Module;
-import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.FragmentScope;
-import edu.uofk.eeese.eeese.di.categories.Cache;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-@Module
-public class AboutModule {
+import android.graphics.Bitmap;
 
-    private AboutContract.View mHomeView;
+import java.util.List;
 
-    AboutModule(AboutContract.View view) {
-        mHomeView = view;
-    }
+import edu.uofk.eeese.eeese.data.Project;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 
-    @Provides
-    AboutContract.View provideHomeView() {
-        return mHomeView;
-    }
+public interface BaseDataRepository {
 
-    @Provides
-    @FragmentScope
-    AboutContract.Presenter providePresenter(@Cache BaseDataRepository source,
-                                             AboutContract.View view,
-                                             BaseSchedulerProvider schedulerProvide) {
-        return new AboutPresenter(source, view, schedulerProvide);
-    }
+    Completable insertProject(Project project);
+
+    Completable insertProjects(List<Project> projects);
+
+    Completable setProjects(List<Project> projects);
+
+    Completable clearProjects();
+
+    Observable<List<Project>> getProjects(boolean forceUpdate);
+
+    Observable<Project> getProject(String projectId, boolean forceUpdate);
+
+    Observable<Bitmap> getGalleryImageBitmap(int width, int height);
 }

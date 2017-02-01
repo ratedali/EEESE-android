@@ -29,7 +29,7 @@ import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.TestRule;
 import io.reactivex.Observable;
 
@@ -51,7 +51,7 @@ public class ProjectsScreenTest {
     public TestRule<ProjectsActivity> testRule =
             new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
 
-    private DataRepository source = mAppComponent.dataRepository();
+    private BaseDataRepository source = mAppComponent.dataRepository();
     private IdlingResource idlingResource = mAppComponent.idlingResource();
 
     @Before

@@ -14,6 +14,7 @@ import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
@@ -21,7 +22,8 @@ import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 public class DataRepositoryModule {
     @Provides
     @ApplicationScope
-    public DataRepository provideFakeSource(Context context, BaseSchedulerProvider schedulerProvider) {
+    @Cache
+    public BaseDataRepository provideFakeSource(Context context, BaseSchedulerProvider schedulerProvider) {
         return new FakeDataRepository(context, schedulerProvider);
     }
 }

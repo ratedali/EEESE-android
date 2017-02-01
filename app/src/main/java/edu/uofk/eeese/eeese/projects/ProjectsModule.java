@@ -12,7 +12,8 @@ package edu.uofk.eeese.eeese.projects;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
+import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
@@ -32,7 +33,7 @@ public class ProjectsModule {
 
     @Provides
     @ActivityScope
-    ProjectsContract.Presenter providePresenter(DataRepository source,
+    ProjectsContract.Presenter providePresenter(@Cache BaseDataRepository source,
                                                 ProjectsContract.View view,
                                                 BaseSchedulerProvider schedulerProvide) {
         return new ProjectsPresenter(source, view, schedulerProvide);

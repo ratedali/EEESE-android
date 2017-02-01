@@ -1,0 +1,378 @@
+[
+  {
+    "name": "Interactive house",
+    "desc": "Automated house that interact with user using android phone app",
+    "prereq": [
+      "Arduino",
+      "IOT",
+      "Android"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Life bangle",
+    "desc": "Bracelet that response to sudden change in heart rate by sending S.O.S signal.",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Water system",
+    "desc": "Economic water consumption system.",
+    "prereq": [
+      "IOT"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Modern street",
+    "desc": "Control traffic lights and street lights based-on traffic and detects the vehicles at speed higher than the allowed speed",
+    "prereq": [
+      "Arduino",
+      "simple circuit skills"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "MMG",
+    "desc": "device that displays data from Bluetooth-enabled multimeter on glasses.",
+    "prereq": [
+      "Arduino",
+      "OLED display"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Conference glove",
+    "desc": "A glove which would help speakers in conference hall to open/close the lights, control sound, etc.",
+    "prereq": [
+      "IR",
+      "controller"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Dumbs talk",
+    "desc": "Gloves that convert sign language to spoken words",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Air drums",
+    "desc": "Utilities that produce sound with certain movements.",
+    "prereq": [
+      "Arduino",
+      "MIDI"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "I see",
+    "desc": "accessories to help blind people navigate and identify people",
+    "prereq": [
+      "Arduino",
+      "Image Processing"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Magnetic Screen",
+    "desc": "A screen that uses metallic spheres with magnetic properties instead of pixels to display pictures.",
+    "prereq": [
+      "Arduino",
+      "Magnetism theorems"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Robotic Arm",
+    "decs": "Home maid robotic arm that copies user hand gestures.",
+    "prereq": [
+      "Robotics"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Rubik cube solver",
+    "desc": "A robot solves the Rubik Cube by itself",
+    "prereq": [
+      "Robotics"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "2D Plotter",
+    "desc": "A robotic hand that draws any picture you send it to.",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Sorting machine",
+    "desc": "A machine that distinguish things according to their colors and sort them.",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "MINI_ME",
+    "desc": "A robot that respond to your voice command and talk with you",
+    "prereq": [
+      "Robotics",
+      "voice recognition"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "QuadCopter",
+    "desc": "Designing quad copter that has a camera and control it by android app",
+    "prereq": [
+      "Robotics",
+      "Android"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "K-code Car",
+    "desc": "A car you control it with your phone by drawing a path or designing an algorithm and the car apply it",
+    "prereq": [
+      "Arduino",
+      "Android"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Self-balancing Scooter",
+    "desc": "A scooter that balances itself during turns",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Pharmacy",
+    "desc": "Automated pharmacy that give you the medicine you want or what the doctor write to you",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Gravity flow meter",
+    "desc": "A machine that determines solid and liquids weights depending on their flow time",
+    "prereq": [
+      "Arduino"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Robotic maid",
+    "desc": "A robot that identifies objects and put them where they should be.",
+    "prereq": [
+      "Raspberry Pi",
+      "OpenCV",
+      "Robotics"
+    ],
+    "category": "electronics & control"
+  },
+  {
+    "name": "Hydroelectric air condition",
+    "desc": "An air condition that generate its electricity by itself using the water flow.",
+    "prereq": [
+      "Electromechanics",
+      "Water flow"
+    ],
+    "category": "power"
+  },
+  {
+    "name": "Pyrolysis Energy Unit",
+    "desc": "Generating electric power from fuel generated from burning dumps.",
+    "prereq": [
+      "Renewable Energy"
+    ],
+    "category": "power"
+  },
+  {
+    "name": "Solar Cell Phone Charging",
+    "desc": "A Charger that use solar energy to charge phones",
+    "prereq": [
+      "Renewable Energy"
+    ],
+    "category": "power"
+  },
+  {
+    "name": "Magnetic Control",
+    "desc": "Controlling a small metal ball by changing the flux density of four electric magnetics to move the ball up ,down ,right and left",
+    "prereq": [
+      "Magnetism",
+      "Arduino"
+    ],
+    "category": "power"
+  },
+  {
+    "name": "Protect my objects",
+    "desc": "A Device that used to find your objects in your home and remind you if you forget it when you want to go out",
+    "prereq": [
+      "Android",
+      "Transmitting & Receiving Circuits"
+    ],
+    "category": "telecom"
+  },
+  {
+    "name": "Phone Detector",
+    "desc": "A device that use to know if there is a phone in the area",
+    "prereq": [],
+    "category": "telecom"
+  },
+  {
+    "name": "Wireless Remote Control FM",
+    "desc": "A Remote that use FM waves instead of Infrared waves to control devices  at any part of the building",
+    "prereq": [
+      "Arduino",
+      "Electronics basics",
+      "FM Receiving ^ Transmitting"
+    ],
+    "category": "telecom"
+  },
+  {
+    "name": "E-Commerce",
+    "desc": "Web page store for selling & buying",
+    "prereq": [
+      "Web"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "أثاث",
+    "desc": "Furniture marketing",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "CarSouq",
+    "desc": "Cars Marketing",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Call 911",
+    "desc": "requesting help from nearby people",
+    "prereq": [
+      "android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "وجهتي",
+    "desc": "App help you to find the best transport line for reaching any location.",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "My medicine",
+    "desc": "Locate the closest pharmacy that has the medicine you want and then be a reminder to you for your doses.",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Interview to text",
+    "desc": "Transfer interview speech to text",
+    "prereq": [
+      "Voice recognition"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "SimpleServe",
+    "desc": "Application used to do the governmental procedures or at least allow you to get a date for you to end your procedures.",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "LOF",
+    "desc": "android app which is a connection between those who lose things and those who find them.",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "شيتاتك",
+    "desc": "contains sheets & old exams for all grades and departments within the university",
+    "prereq": [
+      "Android"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Noise separation",
+    "desc": "Separate noise from speech",
+    "prereq": [
+      "Machine learning"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Face detection attendance",
+    "desc": "Attendance by face recognition",
+    "prereq": [
+      "OpenCV"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Eye tracking",
+    "desc": "Control the mouse cursor by tracking the eye movement",
+    "prereq": [
+      "Eye tracking"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Flight Simulator",
+    "desc": "Simulation for flight using virtual reality.",
+    "prereq": [
+      "VR"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Crops",
+    "desc": "A website that allows the government to know where crop should be planted and how much of it.",
+    "prereq": [
+      "Web design"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Age predictor",
+    "desc": "Predict your age by face features.",
+    "prereq": [
+      "Machine learning"
+    ],
+    "category": "software"
+  },
+  {
+    "name": "Arm tracking",
+    "desc": "Track your arm by showing it in the pc in a game which you play in it by moving your arm.",
+    "prereq": [
+      "AR"
+    ],
+    "category": "software"
+  }
+]

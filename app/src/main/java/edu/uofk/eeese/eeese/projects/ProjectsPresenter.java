@@ -17,7 +17,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.DataRepository;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -27,17 +27,16 @@ import io.reactivex.functions.Consumer;
 public class ProjectsPresenter implements ProjectsContract.Presenter {
 
     @NonNull
-    private DataRepository mSource;
+    private BaseDataRepository mSource;
     @NonNull
     private ProjectsContract.View mView;
     @NonNull
     private BaseSchedulerProvider mSchedulerProvider;
 
-    private boolean mGotProjectList = false;
     private CompositeDisposable mSubscriptions;
 
     @Inject
-    public ProjectsPresenter(@NonNull DataRepository source,
+    public ProjectsPresenter(@NonNull BaseDataRepository source,
                              @NonNull ProjectsContract.View view,
                              @NonNull BaseSchedulerProvider schedulerProvider) {
         mSource = source;
@@ -50,7 +49,6 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     @Override
     public void loadProjects(final boolean force) {
         mView.setLoadingIndicator(true);
-        mGotProjectList = false;
         Disposable subscription =
                 mSource.getProjects(force)
                         .subscribeOn(mSchedulerProvider.io())
@@ -66,7 +64,6 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                                 new Consumer<List<Project>>() {
                                     @Override
                                     public void accept(List<Project> projects) throws Exception {
-                                        mGotProjectList = true;
                                         if (projects.size() > 0) {
                                             mView.showProjects(projects);
                                         } else {
@@ -93,6 +90,7 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
 
     @Override
     public void subscribe() {
+
         loadProjects(false);
     }
 
