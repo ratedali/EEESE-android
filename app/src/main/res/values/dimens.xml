@@ -28,6 +28,7 @@
     <dimen name="about_paragraph_separation">8dp</dimen>
 
     <dimen name="error_image_size">256dp</dimen>
+    <dimen name="error_message_size">25sp</dimen>
     <dimen name="project_margin_vertical">16dp</dimen>
     <dimen name="project_margin_horizontal">8dp</dimen>
     <dimen name="projecthead_text_margin">8dp</dimen>

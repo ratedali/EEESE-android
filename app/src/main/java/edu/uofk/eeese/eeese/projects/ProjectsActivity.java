@@ -19,6 +19,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,7 +46,8 @@ import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
-public class ProjectsActivity extends AppCompatActivity implements ProjectsContract.View {
+public class ProjectsActivity extends AppCompatActivity
+        implements ProjectsContract.View, SwipeRefreshLayout.OnRefreshListener {
 
     // Navigation views
     @BindView(R.id.drawer_layout)
@@ -62,6 +64,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
     // Content Views
     @BindView(R.id.content_view)
     public CoordinatorLayout mContentView;
+    @BindView(R.id.swipe_refresh)
+    public SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.projects_list)
     public RecyclerView mProjectsList;
     @BindView(R.id.error_view)
@@ -111,6 +115,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getString(R.string.projects));
         }
+
+        mSwipeRefresh.setOnRefreshListener(this);
 
         mAdapter = new ProjectsAdapter(this, projectSelectedListener);
         mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -202,7 +208,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
 
     @Override
     public void setLoadingIndicator(boolean visibility) {
-        // TODO: 12/31/16 show a loading mLoadingIndicator
+        mSwipeRefresh.setRefreshing(visibility);
     }
 
     @Override
@@ -220,7 +226,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsContr
         Snackbar.make(mContentView, R.string.connection_error, Snackbar.LENGTH_SHORT).show();
     }
 
-    public void reloadProjects(View view) {
+    @Override
+    public void onRefresh() {
         mPresenter.loadProjects(true);
     }
 }

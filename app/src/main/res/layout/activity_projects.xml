@@ -28,8 +28,8 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:transitionName="@string/transitionname_toolbar"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:transitionName="@string/transitionname_toolbar">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -43,43 +43,45 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/projects_list"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="@dimen/content_horizontal_margin"
-            android:paddingRight="@dimen/content_horizontal_margin"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/projects_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/content_horizontal_margin"
+                android:paddingRight="@dimen/content_horizontal_margin"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <!-- Not using a compound drawable, because its size cannot be set in xml, so
+         it'll have to be done in code, and I want to minimize mixing code and UI -->
         <LinearLayout
             android:id="@+id/error_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/error_image"
-                android:layout_width="@dimen/error_image_size"
-                android:layout_height="@dimen/error_image_size"
-                android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_error"
-                android:tint="@color/errorIndicator"/>
+                android:tint="@color/errorIndicator"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="@dimen/error_image_size"
+                android:layout_height="@dimen/error_image_size"/>
 
             <TextView
-                android:id="@+id/error_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:labelFor="@id/error_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/no_project_available"/>
-
-            <Button
-                style="@style/RetryButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:onClick="reloadProjects"
-                android:text="@string/tap_to_reload"/>
+                android:text="@string/no_project_available"
+                android:textSize="@dimen/error_message_size"/>
         </LinearLayout>
 
     </android.support.design.widget.CoordinatorLayout>
