@@ -28,6 +28,8 @@ public class Project {
     public @interface ProjectCategory {
     }
 
+
+    public static final int NUM_OF_CATEGORIES = 4;
     public static final int SOFTWARE = 0;
     public static final int POWER = 1;
     public static final int TELECOM = 2;

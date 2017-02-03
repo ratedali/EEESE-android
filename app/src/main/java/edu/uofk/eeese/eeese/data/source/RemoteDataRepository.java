@@ -36,6 +36,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 
 /*
  * Implementation note:
@@ -149,6 +150,23 @@ public class RemoteDataRepository implements BaseDataRepository {
                     }
                 }).subscribeOn(mSchedulerProvider.io());
 
+    }
+
+    @Override
+    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
+        // Get all projects, and filter the wanted category
+        return getProjects(forceUpdate)
+                .flatMapObservable(new Function<List<Project>, Observable<Project>>() {
+                    @Override
+                    public Observable<Project> apply(List<Project> projects) throws Exception {
+                        return Observable.fromIterable(projects);
+                    }
+                }).filter(new Predicate<Project>() {
+                    @Override
+                    public boolean test(Project project) throws Exception {
+                        return project.getCategory() == category;
+                    }
+                }).toList();
     }
 
     /**

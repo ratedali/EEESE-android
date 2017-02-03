@@ -31,6 +31,9 @@ public interface BaseDataRepository {
 
     Single<List<Project>> getProjects(boolean forceUpdate);
 
+    Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
+                                                  @Project.ProjectCategory int category);
+
     Single<Project> getProject(String projectId, boolean forceUpdate);
 
     Single<Bitmap> getGalleryImageBitmap(int width, int height);

@@ -29,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:transitionName="@string/transitionname_toolbar">
 
             <android.support.v7.widget.Toolbar
@@ -36,53 +37,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Inverse">
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-            </android.support.v7.widget.Toolbar>
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tablayout"
+                app:layout_collapseMode="pin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/projects_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/content_horizontal_margin"
-                android:paddingRight="@dimen/content_horizontal_margin"/>
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-        <!-- Not using a compound drawable, because its size cannot be set in xml, so
-         it'll have to be done in code, and I want to minimize mixing code and UI -->
-        <LinearLayout
-            android:id="@+id/error_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:id="@+id/error_image"
-                android:src="@drawable/ic_error"
-                android:tint="@color/errorIndicator"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="@dimen/error_image_size"
-                android:layout_height="@dimen/error_image_size"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:labelFor="@id/error_image"
-                android:text="@string/no_project_available"
-                android:textSize="@dimen/error_message_size"/>
-        </LinearLayout>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

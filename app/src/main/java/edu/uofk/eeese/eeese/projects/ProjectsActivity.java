@@ -14,40 +14,37 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.transitionseverywhere.TransitionManager;
-
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
-public class ProjectsActivity extends AppCompatActivity
-        implements ProjectsContract.View, SwipeRefreshLayout.OnRefreshListener {
+public class ProjectsActivity extends AppCompatActivity implements ProjectsFragment.OnProjectSelectedListener {
 
     // Navigation views
     @BindView(R.id.drawer_layout)
@@ -60,39 +57,19 @@ public class ProjectsActivity extends AppCompatActivity
     public Toolbar mToolbar;
     @BindString(R.string.transitionname_toolbar)
     public String toolbarTransitionName;
+    @BindView(R.id.tablayout)
+    public TabLayout mTabLayout;
 
     // Content Views
     @BindView(R.id.content_view)
     public CoordinatorLayout mContentView;
-    @BindView(R.id.swipe_refresh)
-    public SwipeRefreshLayout mSwipeRefresh;
-    @BindView(R.id.projects_list)
-    public RecyclerView mProjectsList;
-    @BindView(R.id.error_view)
-    public View mErrorView;
+    @BindView(R.id.viewpager)
+    public ViewPager mViewPager;
 
-    @BindInt(R.integer.number_of_columns)
-    public int numOfColumns;
-
+    // Control
     private boolean mExit;
-
-    private ProjectsAdapter mAdapter;
-    private View mSelectedProjectView;
     @BindString(R.string.transitionname_projectcard)
     public String projectCardTransitionName;
-
-    private ProjectsAdapter.OnProjectSelectedListener projectSelectedListener =
-            new ProjectsAdapter.OnProjectSelectedListener() {
-                @Override
-                public void showProjectDetails(Project project, View projectCard) {
-                    mSelectedProjectView = projectCard;
-                    mPresenter.openProjectDetails(project);
-                }
-            };
-
-    @Inject
-    public ProjectsContract.Presenter mPresenter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +78,6 @@ public class ProjectsActivity extends AppCompatActivity
         ActivityUtils.setEnterTransition(this, R.transition.projects_enter);
         ActivityUtils.setSharedElementEnterTransition(this, R.transition.shared_projectcard);
         ActivityUtils.setSharedElementExitTransition(this, R.transition.shared_projectcard);
-
-        ((EEESEapp) getApplication()).getAppComponent()
-                .projectsComponent(new ProjectsModule(this))
-                .inject(this);
 
         ButterKnife.bind(this);
 
@@ -116,12 +89,22 @@ public class ProjectsActivity extends AppCompatActivity
             actionBar.setTitle(getString(R.string.projects));
         }
 
-        mSwipeRefresh.setOnRefreshListener(this);
-
-        mAdapter = new ProjectsAdapter(this, projectSelectedListener);
-        mProjectsList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mProjectsList.setAdapter(mAdapter);
-        mPresenter.loadProjects(false);
+        List<ProjectsFragment> projects = Arrays.asList(
+                ProjectsFragment.getInstance(Project.POWER),
+                ProjectsFragment.getInstance(Project.TELECOM),
+                ProjectsFragment.getInstance(Project.SOFTWARE),
+                ProjectsFragment.getInstance(Project.ELECTRONICS_CONTROL));
+        List<String> categories = Arrays.asList(
+                getString(R.string.power_category),
+                getString(R.string.telecom_category),
+                getString(R.string.software_category),
+                getString(R.string.electronics_control_category)
+        );
+        mViewPager.setAdapter(new ProjectsPagerAdapter(
+                getSupportFragmentManager(),
+                projects,
+                categories));
+        mTabLayout.setupWithViewPager(mViewPager);
 
         setupDrawer(mNavView, mDrawerLayout);
     }
@@ -136,18 +119,6 @@ public class ProjectsActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mPresenter.unsubscribe();
     }
 
     @Override
@@ -180,54 +151,48 @@ public class ProjectsActivity extends AppCompatActivity
     }
 
     @Override
-    public void setPresenter(@NonNull ProjectsContract.Presenter presenter) {
-        mPresenter = presenter;
-    }
-
-    @Override
-    public void showProjects(@NonNull List<Project> projects) {
-        mAdapter = new ProjectsAdapter(this, projects, projectSelectedListener);
-        mProjectsList.swapAdapter(mAdapter, true);
-        if (mProjectsList.getVisibility() != View.VISIBLE) {
-            TransitionManager.beginDelayedTransition(mContentView);
-        }
-        mProjectsList.setVisibility(View.VISIBLE);
-        mErrorView.setVisibility(View.GONE);
-
-    }
-
-    @Override
-    public void showProjectDetails(@NonNull String projectId) {
-        ActivityUtils.setTransitionName(mSelectedProjectView, projectCardTransitionName);
+    public void onProjectSelected(String projectId, View projectView) {
+        ActivityUtils.setTransitionName(projectView, projectCardTransitionName);
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivity.PROJECT_ID_KEY, projectId);
         ActivityUtils.startActivityWithTransition(this, intent,
                 new Pair<View, String>(mAppBar, toolbarTransitionName),
-                new Pair<>(mSelectedProjectView, projectCardTransitionName));
+                new Pair<>(projectView, projectCardTransitionName));
     }
 
-    @Override
-    public void setLoadingIndicator(boolean visibility) {
-        mSwipeRefresh.setRefreshing(visibility);
-    }
+    class ProjectsPagerAdapter extends FragmentPagerAdapter {
 
-    @Override
-    public void showNoProjects() {
-        if (mErrorView.getVisibility() != View.VISIBLE) {
-            TransitionManager.beginDelayedTransition(mContentView);
+        @NonNull
+        private List<ProjectsFragment> mProjectsFragments;
+        @NonNull
+        private List<String> mCategories;
+
+        public ProjectsPagerAdapter(FragmentManager fm,
+                                    @Nullable List<ProjectsFragment> projectsFragments,
+                                    @Nullable List<String> categories) {
+            super(fm);
+            mProjectsFragments = projectsFragments != null ?
+                    projectsFragments : Collections.<ProjectsFragment>emptyList();
+            mCategories = categories != null ? categories : Collections.<String>emptyList();
+            // use empty categories for unspecified ones
+            for (int i = 0; i < mProjectsFragments.size() - mCategories.size(); ++i) {
+                mCategories.add("");
+            }
         }
-        mErrorView.setVisibility(View.VISIBLE);
-        mProjectsList.setVisibility(View.GONE);
 
-    }
+        @Override
+        public Fragment getItem(int position) {
+            return mProjectsFragments.get(position);
+        }
 
-    @Override
-    public void showNoConnectionError() {
-        Snackbar.make(mContentView, R.string.connection_error, Snackbar.LENGTH_SHORT).show();
-    }
+        @Override
+        public int getCount() {
+            return mProjectsFragments.size();
+        }
 
-    @Override
-    public void onRefresh() {
-        mPresenter.loadProjects(true);
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mCategories.get(position);
+        }
     }
 }

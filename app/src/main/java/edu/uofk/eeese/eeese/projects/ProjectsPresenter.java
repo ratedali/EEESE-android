@@ -12,6 +12,8 @@ package edu.uofk.eeese.eeese.projects;
 
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +25,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public class ProjectsPresenter implements ProjectsContract.Presenter {
 
@@ -32,17 +35,21 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     private ProjectsContract.View mView;
     @NonNull
     private BaseSchedulerProvider mSchedulerProvider;
+    private
+    @Project.ProjectCategory
+    int mCategory;
 
     private CompositeDisposable mSubscriptions;
 
     @Inject
     public ProjectsPresenter(@NonNull BaseDataRepository source,
                              @NonNull ProjectsContract.View view,
-                             @NonNull BaseSchedulerProvider schedulerProvider) {
+                             @NonNull BaseSchedulerProvider schedulerProvider,
+                             @Project.ProjectCategory int category) {
         mSource = source;
         mView = view;
         mSchedulerProvider = schedulerProvider;
-
+        mCategory = category;
         mSubscriptions = new CompositeDisposable();
     }
 
@@ -50,8 +57,22 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     public void loadProjects(final boolean force) {
         mView.setLoadingIndicator(true);
         Disposable subscription =
-                mSource.getProjects(force)
+                mSource.getProjectsWithCategory(force, mCategory)
                         .subscribeOn(mSchedulerProvider.io())
+                        // sort by name
+                        .map(new Function<List<Project>, List<Project>>() {
+                            @Override
+                            public List<Project> apply(List<Project> projects) throws Exception {
+                                Collections.sort(projects, new Comparator<Project>() {
+                                    @Override
+                                    public int compare(Project lhs, Project rhs) {
+                                        return lhs.getName().compareToIgnoreCase(rhs.getName());
+                                    }
+                                });
+                                return projects;
+                            }
+                        })
+                        .subscribeOn(mSchedulerProvider.computation())
                         .observeOn(mSchedulerProvider.ui())
                         .doFinally(new Action() {
                             @Override

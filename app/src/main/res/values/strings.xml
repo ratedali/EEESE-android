@@ -73,4 +73,11 @@
     <string name="transitionname_projectcard" translatable="false">projectcard</string>
     <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
     <string name="transitionname_projectname" translatable="false">projectname</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="power_category">Power</string>
+    <string name="telecom_category">Telecom</string>
+    <string name="software_category">Software</string>
+    <string name="electronics_control_category"><![CDATA[Electronics & Control]]></string>
 </resources>

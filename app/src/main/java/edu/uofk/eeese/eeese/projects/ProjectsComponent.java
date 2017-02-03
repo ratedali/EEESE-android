@@ -11,10 +11,10 @@
 package edu.uofk.eeese.eeese.projects;
 
 import dagger.Subcomponent;
-import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
+import edu.uofk.eeese.eeese.di.FragmentScope;
 
-@ActivityScope
+@FragmentScope
 @Subcomponent(modules = {ProjectsModule.class})
 public interface ProjectsComponent {
-    void inject(ProjectsActivity activity);
+    void inject(ProjectsFragment activity);
 }

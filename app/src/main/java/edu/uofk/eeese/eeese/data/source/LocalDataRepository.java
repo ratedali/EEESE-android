@@ -210,6 +210,28 @@ public class LocalDataRepository implements BaseDataRepository {
     }
 
     @Override
+    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
+        return Single.fromCallable(new Callable<SQLiteDatabase>() {
+            @Override
+            public SQLiteDatabase call() throws Exception {
+                return mDbHelper.getReadableDatabase();
+            }
+        }).map(new Function<SQLiteDatabase, Pair<Cursor, SQLiteDatabase>>() {
+            @Override
+            public Pair<Cursor, SQLiteDatabase> apply(SQLiteDatabase db) throws Exception {
+                // The cursor will be closed along with the database by the mapper
+                @SuppressLint("Recycle")
+                Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                        PROJECTION,
+                        ProjectEntry.COLUMN_PROJECT_CATEGORY + " = " + category, // filter using the category
+                        null,
+                        null, null, null);
+                return new Pair<>(cursor, db);
+            }
+        }).map(projectsMapper).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
     public Single<Project> getProject(final String projectId, boolean forceUpdate) {
         return Single.fromCallable(new Callable<SQLiteDatabase>() {
             @Override
@@ -264,6 +286,9 @@ public class LocalDataRepository implements BaseDataRepository {
         values.put(ProjectEntry.COLUMN_PROJECT_NAME, project.getName());
         values.put(ProjectEntry.COLUMN_PROJECT_HEAD, project.getProjectHead());
         values.put(ProjectEntry.COLUMN_PROJECT_DESC, project.getDesc());
+        values.put(ProjectEntry.COLUMN_PROJECT_CATEGORY, project.getCategory());
+        values.put(ProjectEntry.COLUMN_PROJECT_PREREQS,
+                DatabaseContract.databasePrerequistes(project.getPrerequisites()));
         return values;
     }
 
