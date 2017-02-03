@@ -26,7 +26,7 @@ public class ProjectModelTest {
     @Before
     public void setupProjects() {
         project1 = new Project
-                .Builder("1", "Project 1", "Mr. Head")
+                .Builder("1", "Project 1", "Mr. Head", Project.POWER)
                 .withDesc("desc")
                 .build();
     }
@@ -49,7 +49,7 @@ public class ProjectModelTest {
     @Test
     public void equalsProjectsWithTheSameFields() {
         Project theSameProject = new Project
-                .Builder(project1.getId(), project1.getName(), project1.getProjectHead())
+                .Builder(project1.getId(), project1.getName(), project1.getProjectHead(), project1.getCategory())
                 .withDesc(project1.getDesc())
                 .build();
 
@@ -61,7 +61,8 @@ public class ProjectModelTest {
         Project withDifferentId = new Project
                 .Builder(project1.getId() + "_but_different",
                 project1.getName(),
-                project1.getProjectHead())
+                project1.getProjectHead(),
+                project1.getCategory())
                 .withDesc(project1.getDesc())
                 .build();
 
@@ -73,7 +74,8 @@ public class ProjectModelTest {
         Project withDifferentName = new Project
                 .Builder(project1.getId(),
                 project1.getName() + " But Different",
-                project1.getProjectHead())
+                project1.getProjectHead(),
+                project1.getCategory())
                 .withDesc(project1.getDesc())
                 .build();
 
@@ -85,7 +87,8 @@ public class ProjectModelTest {
         Project withDifferentHead = new Project
                 .Builder(project1.getId(),
                 project1.getName(),
-                project1.getProjectHead() + " In The Box")
+                project1.getProjectHead() + " In The Box",
+                project1.getCategory())
                 .withDesc(project1.getDesc())
                 .build();
 
@@ -95,7 +98,11 @@ public class ProjectModelTest {
     @Test
     public void notEqualsIfDifferentDesc() {
         Project withDifferentDesc = new Project
-                .Builder(project1.getId(), project1.getName(), project1.getProjectHead())
+                .Builder(
+                project1.getId(),
+                project1.getName(),
+                project1.getProjectHead(),
+                project1.getCategory())
                 .withDesc(project1.getDesc() + " But Not Exactly The Same!")
                 .build();
 

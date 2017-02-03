@@ -45,7 +45,9 @@ public class ProjectsPresenterTest {
     @InjectMocks
     private ProjectsPresenter presenter;
 
-    private List<Project> projects = Collections.singletonList(new Project.Builder("1", "Project 1", "Project 1 Head").build());
+    private List<Project> projects = Collections.singletonList(
+            new Project.Builder("1", "Project 1", "Project 1 Head", Project.POWER)
+                    .build());
 
     @Before
     public void setupSchedulerProvider() {

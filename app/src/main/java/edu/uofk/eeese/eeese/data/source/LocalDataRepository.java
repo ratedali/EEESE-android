@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.data.database.DatabaseContract;
 import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
 import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
@@ -86,15 +87,7 @@ public class LocalDataRepository implements BaseDataRepository {
                     List<Project> projects = new LinkedList<>();
                     if (cursor.moveToFirst()) {
                         do {
-                            String id = cursor.getString(
-                                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
-                            String name = cursor.getString(
-                                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_NAME));
-                            String head = cursor.getString(
-                                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_HEAD));
-                            String desc = cursor.getString(
-                                    cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
-                            projects.add(new Project.Builder(id, name, head).withDesc(desc).build());
+                            projects.add(projectFromCursor(cursor));
                         } while (cursor.moveToNext());
                     }
                     cursor.close();
@@ -109,22 +102,13 @@ public class LocalDataRepository implements BaseDataRepository {
                 public Project apply(Pair<Cursor, SQLiteDatabase> cursorDbPair) throws Exception {
                     Cursor cursor = cursorDbPair.first;
                     SQLiteDatabase db = cursorDbPair.second;
-
                     if (!cursor.moveToFirst()) {
                         throw new RuntimeException("No project exists");
                     }
-                    String id = cursor.getString(
-                            cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
-                    String name = cursor.getString(
-                            cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_NAME));
-                    String head = cursor.getString(
-                            cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_HEAD));
-                    String desc = cursor.getString(
-                            cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
-
+                    Project project = projectFromCursor(cursor);
                     cursor.close();
                     db.close();
-                    return new Project.Builder(id, name, head).withDesc(desc).build();
+                    return project;
                 }
             };
 
@@ -283,4 +267,36 @@ public class LocalDataRepository implements BaseDataRepository {
         return values;
     }
 
+    /**
+     * Reads project data from the current row in the cursor and returns it as a Project object
+     * The method expects the cursor to be pointing to an appropriate row,
+     * and it does not close the cursor after it it reads the data
+     *
+     * @param cursor the cursor to read the data from
+     * @return a Project object representing the data read from the cursor row
+     */
+    // category will always be a legal value because its always saved as one
+    @SuppressWarnings("WrongConstant")
+    private Project projectFromCursor(Cursor cursor) {
+        String id = cursor.getString(
+                cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
+        String name = cursor.getString(
+                cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_NAME));
+        String head = cursor.getString(
+                cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_HEAD));
+        String desc = cursor.getString(
+                cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
+        int category = cursor.getInt(
+                cursor.getColumnIndexOrThrow(
+                        ProjectEntry.COLUMN_PROJECT_CATEGORY));
+        List<String> prereqs = DatabaseContract.databasePrerequisitesToList(
+                cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                                ProjectEntry.COLUMN_PROJECT_PREREQS)));
+        return new Project
+                .Builder(id, name, head, category)
+                .withDesc(desc)
+                .withPrerequisites(prereqs)
+                .build();
+    }
 }

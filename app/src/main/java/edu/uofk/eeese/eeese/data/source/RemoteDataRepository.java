@@ -117,11 +117,32 @@ public class RemoteDataRepository implements BaseDataRepository {
                                 .map(new Function<ProjectJSON, Project>() {
                                     @Override
                                     public Project apply(ProjectJSON projectJSON) throws Exception {
-                                        return new Project.Builder(
-                                                projectJSON.name, //use the name as an ID
-                                                projectJSON.name,
-                                                projectJSON.head)
-                                                .withDesc(projectJSON.desc).build();
+                                        //use the name as an ID
+                                        String id = projectJSON.name;
+                                        String name = projectJSON.name;
+                                        String head = projectJSON.head;
+                                        String desc = projectJSON.desc;
+                                        List<String> prereq = projectJSON.prereq;
+                                        @Project.ProjectCategory
+                                        int category = -1;
+                                        switch (projectJSON.category) {
+                                            case ELECTRONICS_CONTROL:
+                                                category = Project.ELECTRONICS_CONTROL;
+                                                break;
+                                            case POWER:
+                                                category = Project.POWER;
+                                                break;
+                                            case TELECOM:
+                                                category = Project.TELECOM;
+                                                break;
+                                            case SOFTWARE:
+                                                category = Project.SOFTWARE;
+                                                break;
+                                        }
+                                        return new Project.Builder(id, name, head, category)
+                                                .withDesc(desc)
+                                                .withPrerequisites(prereq)
+                                                .build();
                                     }
                                 })
                                 .toList();
@@ -150,12 +171,16 @@ public class RemoteDataRepository implements BaseDataRepository {
 
     private static class ProjectJSON {
         /**
-         * The model of the json file, some field may not be used
+         * The model of the json file
          */
         String name;
         String desc;
         String head;
         List<String> prereq;
-        String category;
+        CategoryJSON category;
+    }
+
+    enum CategoryJSON {
+        POWER, TELECOM, ELECTRONICS_CONTROL, SOFTWARE
     }
 }

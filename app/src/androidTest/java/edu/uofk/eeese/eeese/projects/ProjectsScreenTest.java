@@ -82,7 +82,7 @@ public class ProjectsScreenTest {
     @Test
     public void shouldShowListOfProjects() {
         List<Project> projects = new ArrayList<>();
-        projects.add(new Project.Builder("1", "Project 1", "head").build());
+        projects.add(new Project.Builder("1", "Project 1", "head", Project.POWER).build());
         when(source.getProjects(anyBoolean())).thenReturn(Single.just(projects));
 
         testRule.launchActivity(null);

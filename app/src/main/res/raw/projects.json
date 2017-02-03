@@ -7,7 +7,7 @@
       "IOT",
       "Android"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Life bangle",
@@ -15,7 +15,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Water system",
@@ -23,7 +23,7 @@
     "prereq": [
       "IOT"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Modern street",
@@ -32,7 +32,7 @@
       "Arduino",
       "simple circuit skills"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "MMG",
@@ -41,7 +41,7 @@
       "Arduino",
       "OLED display"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Conference glove",
@@ -50,7 +50,7 @@
       "IR",
       "controller"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Dumbs talk",
@@ -58,7 +58,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Air drums",
@@ -67,7 +67,7 @@
       "Arduino",
       "MIDI"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "I see",
@@ -76,7 +76,7 @@
       "Arduino",
       "Image Processing"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Magnetic Screen",
@@ -85,15 +85,15 @@
       "Arduino",
       "Magnetism theorems"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Robotic Arm",
-    "decs": "Home maid robotic arm that copies user hand gestures.",
+    "desc": "Home maid robotic arm that copies user hand gestures.",
     "prereq": [
       "Robotics"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Rubik cube solver",
@@ -101,7 +101,7 @@
     "prereq": [
       "Robotics"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "2D Plotter",
@@ -109,7 +109,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Sorting machine",
@@ -117,7 +117,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "MINI_ME",
@@ -126,7 +126,7 @@
       "Robotics",
       "voice recognition"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "QuadCopter",
@@ -135,7 +135,7 @@
       "Robotics",
       "Android"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "K-code Car",
@@ -144,7 +144,7 @@
       "Arduino",
       "Android"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Self-balancing Scooter",
@@ -152,7 +152,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Pharmacy",
@@ -160,7 +160,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Gravity flow meter",
@@ -168,7 +168,7 @@
     "prereq": [
       "Arduino"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Robotic maid",
@@ -178,7 +178,7 @@
       "OpenCV",
       "Robotics"
     ],
-    "category": "electronics & control"
+    "category": "ELECTRONICS_CONTROL"
   },
   {
     "name": "Hydroelectric air condition",
@@ -187,7 +187,7 @@
       "Electromechanics",
       "Water flow"
     ],
-    "category": "power"
+    "category": "POWER"
   },
   {
     "name": "Pyrolysis Energy Unit",
@@ -195,7 +195,7 @@
     "prereq": [
       "Renewable Energy"
     ],
-    "category": "power"
+    "category": "POWER"
   },
   {
     "name": "Solar Cell Phone Charging",
@@ -203,7 +203,7 @@
     "prereq": [
       "Renewable Energy"
     ],
-    "category": "power"
+    "category": "POWER"
   },
   {
     "name": "Magnetic Control",
@@ -212,7 +212,7 @@
       "Magnetism",
       "Arduino"
     ],
-    "category": "power"
+    "category": "POWER"
   },
   {
     "name": "Protect my objects",
@@ -221,13 +221,13 @@
       "Android",
       "Transmitting & Receiving Circuits"
     ],
-    "category": "telecom"
+    "category": "TELECOM"
   },
   {
     "name": "Phone Detector",
     "desc": "A device that use to know if there is a phone in the area",
     "prereq": [],
-    "category": "telecom"
+    "category": "TELECOM"
   },
   {
     "name": "Wireless Remote Control FM",
@@ -237,7 +237,7 @@
       "Electronics basics",
       "FM Receiving ^ Transmitting"
     ],
-    "category": "telecom"
+    "category": "TELECOM"
   },
   {
     "name": "E-Commerce",
@@ -245,7 +245,7 @@
     "prereq": [
       "Web"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "أثاث",
@@ -253,7 +253,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "CarSouq",
@@ -261,7 +261,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Call 911",
@@ -269,7 +269,7 @@
     "prereq": [
       "android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "وجهتي",
@@ -277,7 +277,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "My medicine",
@@ -285,7 +285,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Interview to text",
@@ -293,7 +293,7 @@
     "prereq": [
       "Voice recognition"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "SimpleServe",
@@ -301,7 +301,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "LOF",
@@ -309,7 +309,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "شيتاتك",
@@ -317,7 +317,7 @@
     "prereq": [
       "Android"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Noise separation",
@@ -325,7 +325,7 @@
     "prereq": [
       "Machine learning"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Face detection attendance",
@@ -333,7 +333,7 @@
     "prereq": [
       "OpenCV"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Eye tracking",
@@ -341,7 +341,7 @@
     "prereq": [
       "Eye tracking"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Flight Simulator",
@@ -349,7 +349,7 @@
     "prereq": [
       "VR"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Crops",
@@ -357,7 +357,7 @@
     "prereq": [
       "Web design"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Age predictor",
@@ -365,7 +365,7 @@
     "prereq": [
       "Machine learning"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   },
   {
     "name": "Arm tracking",
@@ -373,6 +373,6 @@
     "prereq": [
       "AR"
     ],
-    "category": "software"
+    "category": "SOFTWARE"
   }
 ]

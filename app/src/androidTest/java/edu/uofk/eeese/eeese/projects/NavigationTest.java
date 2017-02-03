@@ -66,8 +66,8 @@ public class NavigationTest {
 
     private static final List<Project> projects =
             Arrays.asList(
-                    new Project.Builder("1", "Project 1", "head 1").build(),
-                    new Project.Builder("2", "Project 2", "head 2").withDesc("desc 2").build()
+                    new Project.Builder("1", "Project 1", "head 1", Project.POWER).build(),
+                    new Project.Builder("2", "Project 2", "head 2", Project.SOFTWARE).withDesc("desc 2").build()
             );
     private static Bitmap mockBitmap;
 
