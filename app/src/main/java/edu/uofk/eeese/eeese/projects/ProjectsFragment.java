@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindColor;
 import butterknife.BindDimen;
 import butterknife.BindInt;
 import butterknife.BindView;
@@ -47,6 +48,8 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
     // Content
     @BindView(R.id.swipe_refresh)
     public SwipeRefreshLayout mSwipeRefresh;
+    @BindColor(R.color.colorAccent)
+    public int refreshColor;
     @BindView(R.id.projects_list)
     public RecyclerView mProjectsList;
     @BindView(R.id.error_view)
@@ -118,6 +121,7 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
         ButterKnife.bind(this, rootView);
 
         mSwipeRefresh.setOnRefreshListener(this);
+        mSwipeRefresh.setColorSchemeColors(refreshColor);
 
         mAdapter = new ProjectsAdapter(getContext(), projectSelectedListener);
         mProjectsList.setLayoutManager(

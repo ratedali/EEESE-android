@@ -16,8 +16,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="@dimen/prereq_item_margin"
                                     android:layout_marginRight="@dimen/prereq_item_margin"
-                                    android:theme="@style/ThemeOverlay.AppCompat.Light"
-                                    cardview:cardBackgroundColor="@color/colorAccent"
+                                    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                                    cardview:cardBackgroundColor="@color/colorPrimaryDark"
                                     cardview:cardCornerRadius="@dimen/prereq_item_radius"
                                     cardview:cardElevation="0dp"
                                     cardview:contentPadding="@dimen/prereq_item_padding">
@@ -26,6 +26,6 @@
         android:id="@+id/prereq_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textAppearance="@style/Prerequisite"
         tools:text="Prerequisite"/>
 </android.support.v7.widget.CardView>

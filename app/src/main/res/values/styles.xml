@@ -67,4 +67,10 @@
 
     <style name="ProjectHead" parent="TextAppearance.AppCompat.Medium">
     </style>
+
+    <style name="Prerequisite" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:textSize">@dimen/prereq_item_size</item>
+    </style>
+
+    <dimen name="prereq_item_size">16sp</dimen>
 </resources>
