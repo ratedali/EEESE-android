@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +29,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindDimen;
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.util.ViewUtils;
 
 /**
  * A fragment that displays a list of projects with a specific ProjectCategory
@@ -47,10 +49,17 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.projects_list)
     public RecyclerView mProjectsList;
-    @BindInt(R.integer.number_of_columns)
-    public int numOfColumns;
     @BindView(R.id.error_view)
     public View mErrorView;
+
+    @BindInt(R.integer.number_of_columns)
+    public int mNumOfColumns;
+    @BindDimen(R.dimen.project_margin_horizontal)
+    public int mProjectHorizontalOffset;
+    @BindDimen(R.dimen.project_margin_vertical)
+    public int mProjectVerticalOffset;
+    @BindInt(R.integer.short_duration)
+    public int mProjectsAnimationDuration;
 
     //  Control
     private ProjectsAdapter mAdapter;
@@ -111,8 +120,14 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeRefresh.setOnRefreshListener(this);
 
         mAdapter = new ProjectsAdapter(getContext(), projectSelectedListener);
-        mProjectsList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mProjectsList.setLayoutManager(
+                new GridLayoutManager(getContext(), mNumOfColumns));
         mProjectsList.setAdapter(mAdapter);
+        mProjectsList.addItemDecoration(
+                new ProjectsItemDecorator(
+                        mProjectVerticalOffset,
+                        mProjectHorizontalOffset,
+                        mNumOfColumns));
         mPresenter.loadProjects(false);
 
         return rootView;

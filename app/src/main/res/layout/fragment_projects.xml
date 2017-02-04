@@ -14,14 +14,16 @@
                                               android:id="@+id/swipe_refresh"
                                               android:layout_width="match_parent"
                                               android:layout_height="match_parent"
+                                              android:paddingLeft="@dimen/content_horizontal_margin"
+                                              android:paddingTop="@dimen/content_vertical_margin"
+                                              android:paddingRight="@dimen/content_horizontal_margin"
+                                              android:paddingBottom="@dimen/content_vertical_margin"
                                               app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/projects_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/content_horizontal_margin"
-        android:paddingRight="@dimen/content_horizontal_margin"/>
+        android:layout_height="match_parent"/>
 
     <!-- Not using a compound drawable, because its size cannot be set in xml, so
      it'll have to be done in code, and I want to minimize mixing code and UI -->
