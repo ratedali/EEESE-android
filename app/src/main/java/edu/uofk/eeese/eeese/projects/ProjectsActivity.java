@@ -12,6 +12,7 @@ package edu.uofk.eeese.eeese.projects;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
@@ -45,6 +47,8 @@ import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 
 public class ProjectsActivity extends AppCompatActivity implements ProjectsFragment.OnProjectSelectedListener {
+
+    private static final String APPLICATION_FORM_URL = "https://bit.ly/Projects-Participation";
 
     // Navigation views
     @BindView(R.id.drawer_layout)
@@ -160,13 +164,19 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
                 new Pair<>(projectView, projectCardTransitionName));
     }
 
+    @OnClick(R.id.fab)
+    public void participate(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(APPLICATION_FORM_URL));
+        startActivity(intent);
+    }
+
     class ProjectsPagerAdapter extends FragmentPagerAdapter {
 
         @NonNull
         private List<ProjectsFragment> mProjectsFragments;
+
         @NonNull
         private List<String> mCategories;
-
         public ProjectsPagerAdapter(FragmentManager fm,
                                     @Nullable List<ProjectsFragment> projectsFragments,
                                     @Nullable List<String> categories) {

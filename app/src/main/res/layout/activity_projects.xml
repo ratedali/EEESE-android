@@ -53,6 +53,17 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:src="@drawable/ic_apply"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:background="@color/colorAccent"
+            android:layout_margin="@dimen/fab_margin"
+            app:elevation="@dimen/fab_elevation"
+            app:layout_anchor="@id/viewpager"
+            app:layout_anchorGravity="bottom|end"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
@@ -62,5 +73,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_view"/>
-
 </android.support.v4.widget.DrawerLayout>
