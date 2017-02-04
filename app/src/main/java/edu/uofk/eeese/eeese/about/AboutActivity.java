@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese.about;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
@@ -78,6 +80,8 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
     @Inject
     public AboutContract.Presenter mPresenter;
     private boolean mExit;
+
+    private static final String PROJECT_GALLERY_URL = "http://eeese.uofk.edu#project";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,7 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
         if (mGalleryBitmap != null) {
             mGalleryBitmap.recycle();
             mGalleryBitmap = null;
+            mGalleryImage.setImageBitmap(null);
         }
         if (mExit)
             finish();
@@ -212,5 +217,11 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @OnClick(R.id.gallery_card)
+    public void openGallery(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PROJECT_GALLERY_URL));
+        startActivity(intent);
     }
 }
