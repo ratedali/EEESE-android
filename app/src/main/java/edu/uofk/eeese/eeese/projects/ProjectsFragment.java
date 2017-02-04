@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 import edu.uofk.eeese.eeese.EEESEapp;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.util.ViewUtils;
+import edu.uofk.eeese.eeese.util.OffsetItemDecorator;
 
 /**
  * A fragment that displays a list of projects with a specific ProjectCategory
@@ -124,7 +124,7 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
                 new GridLayoutManager(getContext(), mNumOfColumns));
         mProjectsList.setAdapter(mAdapter);
         mProjectsList.addItemDecoration(
-                new ProjectsItemDecorator(
+                new OffsetItemDecorator(
                         mProjectVerticalOffset,
                         mProjectHorizontalOffset,
                         mNumOfColumns));
