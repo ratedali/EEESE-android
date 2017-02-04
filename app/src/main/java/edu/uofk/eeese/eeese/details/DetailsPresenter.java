@@ -81,7 +81,6 @@ public class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void subscribe() {
-        loadDetails(false);
     }
 
     @Override

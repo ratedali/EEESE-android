@@ -80,4 +80,5 @@
     <string name="telecom_category">Telecom</string>
     <string name="software_category">Software</string>
     <string name="electronics_control_category"><![CDATA[Electronics & Control]]></string>
+    <string name="prerequisites_title">Prerequisites</string>
 </resources>

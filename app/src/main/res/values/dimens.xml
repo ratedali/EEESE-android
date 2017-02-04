@@ -33,6 +33,10 @@
     <dimen name="project_margin_horizontal">8dp</dimen>
     <dimen name="projecthead_text_margin">8dp</dimen>
 
+    <dimen name="prereq_item_padding">8dp</dimen>
+    <dimen name="prereq_item_radius">8dp</dimen>
+    <dimen name="prereq_item_margin">8dp</dimen>
+
     <dimen name="fab_size">64dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_elevation">8dp</dimen>

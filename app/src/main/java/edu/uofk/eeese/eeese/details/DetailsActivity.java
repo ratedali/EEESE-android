@@ -16,8 +16,15 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -48,6 +55,8 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
     public TextView mProjectHead;
     @BindView(R.id.project_desc)
     public TextView mProjectDesc;
+    @BindView(R.id.prereq_list)
+    public RecyclerView mPrereqList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +81,10 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
             mActionBar.setDisplayShowTitleEnabled(false);
             mActionBar.setDisplayHomeAsUpEnabled(true);
         }
+        mPrereqList.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        mPresenter.loadDetails(false);
     }
 
     @Override
@@ -90,7 +103,8 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
     public void showProjectInfo(@NonNull Project project) {
         mProjectName.setText(project.getName());
         mProjectHead.setText(project.getProjectHead());
-        mProjectDesc.setText(project.getDesc()); //TODO check if description is empty
+        mProjectDesc.setText(project.getDesc());
+        mPrereqList.swapAdapter(new PrereqAdapter(project.getPrerequisites()), false);
     }
 
     @Override
@@ -101,5 +115,45 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
     @Override
     public void setPresenter(@NonNull DetailsContract.Presenter presenter) {
         mPresenter = presenter;
+    }
+
+    /**
+     * Adapter for the prerequisites list, simply puts the prerequisite text in a TextView
+     */
+    static class PrereqAdapter extends RecyclerView.Adapter<PrereqAdapter.ViewHolder> {
+
+        @NonNull
+        private List<String> mPrerequisites;
+
+        public PrereqAdapter(@NonNull List<String> prerequisites) {
+            mPrerequisites = prerequisites;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.prereq_list_item, parent, false);
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.text.setText(mPrerequisites.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mPrerequisites.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.prereq_textview)
+            public TextView text;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+        }
     }
 }
