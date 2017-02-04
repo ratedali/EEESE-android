@@ -14,11 +14,7 @@
     <string name="menu_item_home">Home</string>
     <string name="menu_item_info">Event Information</string>
     <string name="menu_item_projects">Projects</string>
-    <string name="menu_item_app_options">App Settings</string>
     <string name="menu_item_about">About The App</string>
-    <string name="menu_item_settings">Settings</string>
-
-    <string name="about_tab_title">About</string>
 
     <string name="about_eeese_title">About EEESE</string>
     <string name="about_eeese_acronym">
@@ -68,17 +64,18 @@
     <string name="label_project_head">Project Head</string>
     <string name="label_project_description">Project Description</string>
 
+    <string name="prerequisites_title">Prerequisites</string>
+
+    <!-- categories -->
+    <string name="power_category">Power</string>
+    <string name="telecom_category">Telecom</string>
+    <string name="software_category">Software</string>
+    <string name="electronics_control_category">Electronics</string>
+
     <!-- transition names -->
     <string name="transitionname_toolbar" translatable="false">toolbar</string>
     <string name="transitionname_projectcard" translatable="false">projectcard</string>
     <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
     <string name="transitionname_projectname" translatable="false">projectname</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="power_category">Power</string>
-    <string name="telecom_category">Telecom</string>
-    <string name="software_category">Software</string>
-    <string name="electronics_control_category"><![CDATA[Electronics & Control]]></string>
-    <string name="prerequisites_title">Prerequisites</string>
 </resources>
