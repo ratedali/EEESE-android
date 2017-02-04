@@ -8,31 +8,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.data.participation;
 
-import dagger.Component;
-import edu.uofk.eeese.eeese.about.AboutComponent;
-import edu.uofk.eeese.eeese.about.AboutModule;
-import edu.uofk.eeese.eeese.data.database.DatabaseModule;
-import edu.uofk.eeese.eeese.data.participation.ParticipationModule;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
-import edu.uofk.eeese.eeese.details.DetailsComponent;
-import edu.uofk.eeese.eeese.details.DetailsModule;
+import dagger.Module;
+import dagger.Provides;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
-import edu.uofk.eeese.eeese.projects.ProjectsComponent;
-import edu.uofk.eeese.eeese.projects.ProjectsModule;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
-@ApplicationScope
-@Component(modules = {AppModule.class,
-        SchedulerProviderModule.class,
-        DatabaseModule.class,
-        DataRepositoryModule.class})
+@Module
+public class ParticipationModule {
+    private String mFormUrl;
 
-public interface AppComponent {
-    ProjectsComponent projectsComponent(ProjectsModule module);
+    public ParticipationModule(String formUrl) {
+        mFormUrl = formUrl;
+    }
 
-    DetailsComponent detailsComponent(DetailsModule module);
-
-    AboutComponent aboutComponent(AboutModule module);
+    @Provides
+    @ApplicationScope
+    public String provideFormUrl() {
+        return mFormUrl;
+    }
 }

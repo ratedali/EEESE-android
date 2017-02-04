@@ -10,29 +10,17 @@
 
 package edu.uofk.eeese.eeese;
 
-import dagger.Component;
-import edu.uofk.eeese.eeese.about.AboutComponent;
-import edu.uofk.eeese.eeese.about.AboutModule;
-import edu.uofk.eeese.eeese.data.database.DatabaseModule;
-import edu.uofk.eeese.eeese.data.participation.ParticipationModule;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
-import edu.uofk.eeese.eeese.details.DetailsComponent;
-import edu.uofk.eeese.eeese.details.DetailsModule;
+import dagger.Module;
+import dagger.Provides;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
-import edu.uofk.eeese.eeese.projects.ProjectsComponent;
-import edu.uofk.eeese.eeese.projects.ProjectsModule;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
+import okhttp3.OkHttpClient;
 
-@ApplicationScope
-@Component(modules = {AppModule.class,
-        SchedulerProviderModule.class,
-        DatabaseModule.class,
-        DataRepositoryModule.class})
+@Module
+public class HttpModule {
 
-public interface AppComponent {
-    ProjectsComponent projectsComponent(ProjectsModule module);
-
-    DetailsComponent detailsComponent(DetailsModule module);
-
-    AboutComponent aboutComponent(AboutModule module);
+    @Provides
+    @ApplicationScope
+    OkHttpClient provideHttpClient() {
+        return new OkHttpClient();
+    }
 }
