@@ -40,21 +40,21 @@ import io.reactivex.functions.Predicate;
 
 /*
  * Implementation note:
- * since the web developer want expose an API, a local copy of the projects will be used.
+ * since the web developer won't expose an API, a local copy of the projects will be used.
  *
  * Well, sorry for the misleading name.
  */
 @ApplicationScope
 @Remote
-public class RemoteDataRepository implements BaseDataRepository {
+class RemoteDataRepository implements BaseDataRepository {
 
     private final Context mContext;
     private final BaseSchedulerProvider mSchedulerProvider;
     private final int PROJECTS_FILE_ID = R.raw.projects;
 
     @Inject
-    public RemoteDataRepository(@NonNull Context context,
-                                @NonNull BaseSchedulerProvider schedulerProvider) {
+    RemoteDataRepository(@NonNull Context context,
+                         @NonNull BaseSchedulerProvider schedulerProvider) {
         mContext = context;
         mSchedulerProvider = schedulerProvider;
     }
@@ -198,7 +198,7 @@ public class RemoteDataRepository implements BaseDataRepository {
         CategoryJSON category;
     }
 
-    enum CategoryJSON {
+    private enum CategoryJSON {
         POWER, TELECOM, ELECTRONICS_CONTROL, SOFTWARE
     }
 }

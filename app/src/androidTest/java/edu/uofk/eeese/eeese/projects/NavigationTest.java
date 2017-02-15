@@ -18,15 +18,14 @@ import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.DaggerTestAppComponent;
@@ -45,11 +44,15 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
@@ -61,38 +64,46 @@ public class NavigationTest {
     public TestRule<ProjectsActivity> testRule =
             new TestRule<>(ProjectsActivity.class, false, false, mAppComponent);
 
-    private static BaseDataRepository source = mAppComponent.dataRepository();
+    private BaseDataRepository source = mAppComponent.dataRepository();
     private IdlingResource idlingResource = mAppComponent.idlingResource();
 
-    private static final List<Project> projects =
-            Arrays.asList(
-                    new Project.Builder("1", "Project 1", "head 1", Project.POWER).build(),
-                    new Project.Builder("2", "Project 2", "head 2", Project.SOFTWARE).withDesc("desc 2").build()
-            );
-    private static Bitmap mockBitmap;
+    private static final Project project = new Project.Builder("1", "Project 1", "head 1", Project.POWER)
+            .build();
+    private static final List<Project> projects = Collections.singletonList(project);
 
-    @BeforeClass
-    public static void setupMocks() {
-        mockBitmap = Mockito.mock(Bitmap.class);
-        when(source.getProjects(anyBoolean()))
-                .thenReturn(Single.just(projects));
-        when(source.getGalleryImageBitmap(anyInt(), anyInt()))
-                .thenReturn(Single.just(mockBitmap));
-        for (Project project : projects) {
-            when(source.getProject(eq(project.getId()), anyBoolean()))
-                    .thenReturn(Single.just(project));
-        }
-    }
+    // empty bitmap
+    private static final int[] colors = new int[]{0xf000};
+    private static final Bitmap bitmap =
+            Bitmap.createBitmap(colors, 1, 1, Bitmap.Config.ARGB_8888);
 
+    @SuppressWarnings("WrongConstant")
     @Before
-    public void setupTest() {
-        Espresso.registerIdlingResources(idlingResource);
+    public void setup() {
+        when(source.getProjectsWithCategory(anyBoolean(), anyInt()))
+                .thenReturn(Single.just(projects));
+
+        when(source.getProject(eq(project.getId()), anyBoolean()))
+                .thenReturn(Single.just(project));
+
+        when(source.getGalleryImageBitmap(anyInt(), anyInt()))
+                .thenReturn(Single.just(bitmap));
+
         testRule.launchActivity(null);
     }
 
+    @Before
+    public void registerIdlingResource() {
+        Espresso.registerIdlingResources(idlingResource);
+    }
+
     @After
-    public void tearDown() {
+    public void unregisterIdlingResource() {
         Espresso.unregisterIdlingResources(idlingResource);
+    }
+
+    @After
+    public void resetMocks() {
+        reset(source);
     }
 
     @Test
@@ -105,26 +116,32 @@ public class NavigationTest {
 
     @Test
     public void OpensDetails_onProjectClick() {
-        onView(withId(R.id.projects_list))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(
-                        0,
-                        click()));
+        onView(allOf(withId(R.id.projects_list),
+                isDescendantOfA(
+                        withTagKey(R.string.tag_projectslist,
+                                Matchers.<Object>equalTo(project.getCategory()))
+                )
+        )).perform(RecyclerViewActions.actionOnItemAtPosition(
+                0,
+                click()));
         intended(hasComponent(hasClassName(DetailsActivity.class.getName())));
     }
 
     @Test
     public void OpensCorrectProjectDetails_onProjectClick() {
-        int index = 1;
-        Project target = projects.get(index);
+        onView(allOf(withId(R.id.projects_list),
+                isDescendantOfA(
+                        withTagKey(R.string.tag_projectslist,
+                                Matchers.<Object>equalTo(project.getCategory()))
+                )
+        )).perform(RecyclerViewActions.actionOnItemAtPosition(
+                0,
+                click()));
 
-        onView(withId(R.id.projects_list))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(
-                        index,
-                        click()));
 
-        onView(withId(R.id.project_name)).check(matches(withText(target.getName())));
-        onView(withId(R.id.project_head)).check(matches(withText(target.getProjectHead())));
-        onView(withId(R.id.project_desc)).check(matches(withText(target.getDesc())));
+        onView(withId(R.id.project_name)).check(matches(withText(project.getName())));
+        onView(withId(R.id.project_head)).check(matches(withText(project.getProjectHead())));
+        onView(withId(R.id.project_desc)).check(matches(withText(project.getDesc())));
     }
 
 }

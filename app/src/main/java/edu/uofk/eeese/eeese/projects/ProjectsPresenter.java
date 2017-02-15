@@ -12,6 +12,7 @@ package edu.uofk.eeese.eeese.projects;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -54,6 +55,11 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
     }
 
     @Override
+    public int getCategory() {
+        return mCategory;
+    }
+
+    @Override
     public void loadProjects(final boolean force) {
         mView.setLoadingIndicator(true);
         Disposable subscription =
@@ -63,13 +69,14 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                         .map(new Function<List<Project>, List<Project>>() {
                             @Override
                             public List<Project> apply(List<Project> projects) throws Exception {
-                                Collections.sort(projects, new Comparator<Project>() {
+                                List<Project> sortedProjects = new ArrayList<>(projects);
+                                Collections.sort(sortedProjects, new Comparator<Project>() {
                                     @Override
                                     public int compare(Project lhs, Project rhs) {
                                         return lhs.getName().compareToIgnoreCase(rhs.getName());
                                     }
                                 });
-                                return projects;
+                                return sortedProjects;
                             }
                         })
                         .subscribeOn(mSchedulerProvider.computation())

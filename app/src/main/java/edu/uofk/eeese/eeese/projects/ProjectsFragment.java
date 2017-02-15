@@ -118,6 +118,9 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_projects, container, false);
 
+        // to identify the fragment with its category
+        rootView.setTag(R.string.tag_projectslist, mPresenter.getCategory());
+
         ButterKnife.bind(this, rootView);
 
         mSwipeRefresh.setOnRefreshListener(this);

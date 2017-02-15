@@ -77,5 +77,6 @@
     <string name="transitionname_projectcard" translatable="false">projectcard</string>
     <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
     <string name="transitionname_projectname" translatable="false">projectname</string>
+    <string name="tag_projectslist" translatable="false">projects-category</string>
 
 </resources>

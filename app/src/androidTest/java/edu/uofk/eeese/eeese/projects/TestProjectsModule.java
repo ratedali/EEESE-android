@@ -14,6 +14,7 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
@@ -21,9 +22,13 @@ import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 @Module
 class TestProjectsModule {
     private ProjectsContract.View mProjectsView;
+    private
+    @Project.ProjectCategory
+    int mCategory;
 
-    public TestProjectsModule(ProjectsContract.View view) {
+    public TestProjectsModule(ProjectsContract.View view, int category) {
         mProjectsView = view;
+        mCategory = category;
     }
 
     @Provides
@@ -38,6 +43,7 @@ class TestProjectsModule {
                                                     ProjectsContract.View view,
                                                     BaseSchedulerProvider schedulerProvide,
                                                     CountingIdlingResource idlingResource) {
-        return new TestingProjectsPresenter(source, view, schedulerProvide, idlingResource);
+        return new TestingProjectsPresenter(source, view, schedulerProvide, mCategory,
+                idlingResource);
     }
 }

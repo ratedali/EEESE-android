@@ -33,7 +33,7 @@ import io.reactivex.functions.Predicate;
 
 @ApplicationScope
 @Cache
-public class DataRepository implements BaseDataRepository {
+class DataRepository implements BaseDataRepository {
 
     private BaseDataRepository mLocalRepo;
     private BaseDataRepository mRemoteRepo;
@@ -42,12 +42,12 @@ public class DataRepository implements BaseDataRepository {
     private SparseBooleanArray mCacheDirty;
 
     @Inject
-    public DataRepository(@Local BaseDataRepository localRepo,
-                          @Remote BaseDataRepository remoteRepo) {
+    DataRepository(@Local BaseDataRepository localRepo,
+                   @Remote BaseDataRepository remoteRepo) {
         mLocalRepo = localRepo;
         mRemoteRepo = remoteRepo;
         mCache = new HashMap<>();
-        mCacheDirty = new SparseBooleanArray(Project.NUM_OF_CATEGORIES);
+        mCacheDirty = new SparseBooleanArray();
         markCacheDirty();
 
     }
@@ -83,13 +83,21 @@ public class DataRepository implements BaseDataRepository {
         if (forceUpdate) {
             return getAndSaveRemoteProjects();
         } else if (checkCacheDirty()) {
-            return getAndCacheLocalProjects().mergeWith(getAndSaveRemoteProjects())
+            return mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
                     .filter(new Predicate<List<Project>>() {
                         @Override
                         public boolean test(List<Project> projects) throws Exception {
                             return !projects.isEmpty();
                         }
-                    }).firstOrError();
+                    })
+                    .firstOrError()
+                    .doOnSuccess(new Consumer<List<Project>>() {
+                        @Override
+                        public void accept(List<Project> projects) throws Exception {
+                            cacheProjects(projects);
+                            markCacheValid();
+                        }
+                    });
         } else {
             List<Project> projects = new ArrayList<>(mCache.values());
             return Single.just(projects);
@@ -129,9 +137,15 @@ public class DataRepository implements BaseDataRepository {
             syncJob = Completable.fromSingle(getAndSaveRemoteProjects());
         } else if (checkCacheDirty()) {
             // if the cache is dirty but an update is not forced, fetched from local
-            syncJob = Completable.fromObservable(
-                    getAndCacheLocalProjects().mergeWith(getAndSaveRemoteProjects()).toObservable()
-            );
+            syncJob = Completable
+                    .fromSingle(mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
+                            .firstOrError().doOnSuccess(new Consumer<List<Project>>() {
+                                @Override
+                                public void accept(List<Project> projects) throws Exception {
+                                    cacheProjects(projects);
+                                    markCacheValid();
+                                }
+                            }));
         }
         // after the sync completes, return from cache
         return syncJob.andThen(Single.just(mCache.get(projectId)));
@@ -148,19 +162,6 @@ public class DataRepository implements BaseDataRepository {
                     @Override
                     public void accept(List<Project> projects) throws Exception {
                         mLocalRepo.setProjects(projects);
-                        cacheProjects(projects);
-                        markCacheValid();
-                    }
-                });
-    }
-
-    private Single<List<Project>> getAndCacheLocalProjects() {
-        return mLocalRepo.getProjects(true)
-                .doOnSuccess(new Consumer<List<Project>>() {
-                    @Override
-                    public void accept(List<Project> projects) throws Exception {
-                        cacheProjects(projects);
-                        markCacheValid();
                     }
                 });
     }
@@ -195,15 +196,22 @@ public class DataRepository implements BaseDataRepository {
     }
 
     private void markCacheDirty() {
-        setCacheDirtiness(true);
+        mCacheDirty.clear();
     }
 
     private void markCacheDirty(@Project.ProjectCategory int category) {
-        mCacheDirty.put(category, true);
+        mCacheDirty.delete(category);
     }
 
     private void markCacheValid() {
-        setCacheDirtiness(false);
+        for (int category : new int[]{
+                Project.POWER,
+                Project.SOFTWARE,
+                Project.ELECTRONICS_CONTROL,
+                Project.TELECOM
+        }) {
+            mCacheDirty.put(category, false);
+        }
     }
 
     private void markCacheValid(@Project.ProjectCategory int category) {
@@ -211,23 +219,8 @@ public class DataRepository implements BaseDataRepository {
     }
 
 
-    private void setCacheDirtiness(boolean status) {
-        for (int category : new int[]{
-                Project.POWER,
-                Project.SOFTWARE,
-                Project.ELECTRONICS_CONTROL,
-                Project.TELECOM
-        }) {
-            mCacheDirty.put(category, status);
-        }
-    }
-
     private boolean checkCacheDirty() {
-        for (int i = 0; i < mCacheDirty.size(); ++i) {
-            if (mCacheDirty.valueAt(i))
-                return true;
-        }
-        return false;
+        return mCacheDirty.size() < Project.NUM_OF_CATEGORIES;
     }
 
     private boolean checkCacheDirty(@Project.ProjectCategory int category) {

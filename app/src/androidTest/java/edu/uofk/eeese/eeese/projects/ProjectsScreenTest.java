@@ -14,7 +14,10 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.View;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,13 +38,18 @@ import io.reactivex.Single;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("WrongConstant")
 @RunWith(AndroidJUnit4.class)
 public class ProjectsScreenTest {
 
@@ -54,45 +62,56 @@ public class ProjectsScreenTest {
     private BaseDataRepository source = mAppComponent.dataRepository();
     private IdlingResource idlingResource = mAppComponent.idlingResource();
 
+    private final Matcher<View> targetRoot = withTagKey(
+            R.string.tag_projectslist,
+            Matchers.<Object>equalTo(Project.POWER));
+
     @Before
-    public void setUp() {
+    public void registerIdlingResource() {
         Espresso.registerIdlingResources(idlingResource);
+    }
+
+    @After
+    public void unregisterIdlingResource() {
+        Espresso.unregisterIdlingResources(idlingResource);
+    }
+
+    @After
+    public void resetSource() {
+        reset(source);
     }
 
     @Test
     public void emptyListShowsNoProjectsScreen() {
-        when(source.getProjects(anyBoolean())).thenReturn(Single.just(Collections.<Project>emptyList()));
+        when(source.getProjectsWithCategory(anyBoolean(), anyInt())).thenReturn(Single.just(Collections.<Project>emptyList()));
 
         testRule.launchActivity(null);
 
-        onView(withId(R.id.error_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.error_image)).check(matches(isDisplayed()));
-        onView(withText(R.string.no_project_available)).check(matches(isDisplayed()));
-    }
+        onView(allOf(withId(R.id.error_view), isDescendantOfA(targetRoot)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-    @Test
-    public void emptyListHidesProjectsList() {
-        when(source.getProjects(anyBoolean())).thenReturn(Single.just(Collections.<Project>emptyList()));
+        onView(allOf(withId(R.id.error_image), isDescendantOfA(targetRoot)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        testRule.launchActivity(null);
-
-        onView(withId(R.id.projects_list)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(allOf(withText(R.string.no_project_available), isDescendantOfA(targetRoot)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
     @Test
     public void shouldShowListOfProjects() {
+        Project project = new Project.Builder("1", "Project 1", "head", Project.POWER).build();
         List<Project> projects = new ArrayList<>();
-        projects.add(new Project.Builder("1", "Project 1", "head", Project.POWER).build());
-        when(source.getProjects(anyBoolean())).thenReturn(Single.just(projects));
+        projects.add(project);
+
+        when(source.getProjectsWithCategory(anyBoolean(), anyInt()))
+                .thenReturn(Single.just(projects));
 
         testRule.launchActivity(null);
 
-        onView(withId(R.id.projects_list)).check(matches(isDisplayed()));
-        onView(withId(R.id.project_name)).check(matches(withText(projects.get(0).getName())));
-    }
+        onView(allOf(withId(R.id.projects_list), isDescendantOfA(targetRoot)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-    @After
-    public void tearDown() {
-        Espresso.unregisterIdlingResources(idlingResource);
+        onView(allOf(withId(R.id.project_name), isDescendantOfA(targetRoot)))
+                .check(matches(withText(projects.get(0).getName())));
     }
 }

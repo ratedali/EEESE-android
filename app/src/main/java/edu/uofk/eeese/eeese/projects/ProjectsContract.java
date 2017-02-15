@@ -35,5 +35,8 @@ public interface ProjectsContract {
         void loadProjects(boolean force);
 
         void openProjectDetails(@NonNull Project project);
+
+        @Project.ProjectCategory
+        int getCategory();
     }
 }

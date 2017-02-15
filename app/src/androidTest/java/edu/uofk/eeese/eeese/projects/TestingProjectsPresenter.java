@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Log;
 
+import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
@@ -26,9 +27,10 @@ class TestingProjectsPresenter extends ProjectsPresenter {
             @NonNull BaseDataRepository source,
             @NonNull ProjectsContract.View view,
             @NonNull BaseSchedulerProvider schedulerProvider,
+            @Project.ProjectCategory int category,
             @NonNull CountingIdlingResource idlingResource) {
 
-        super(source, view, schedulerProvider);
+        super(source, view, schedulerProvider, category);
         mIdlingResource = idlingResource;
     }
 

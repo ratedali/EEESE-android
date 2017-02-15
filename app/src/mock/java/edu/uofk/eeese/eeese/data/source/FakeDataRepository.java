@@ -18,6 +18,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -30,7 +31,9 @@ import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 
 @ApplicationScope
 class FakeDataRepository implements BaseDataRepository {
@@ -57,16 +60,23 @@ class FakeDataRepository implements BaseDataRepository {
 
         mContext = context;
 
-        mProjects = Arrays.asList(
-                new Project.Builder("1", "Project 1", "Head 1")
-                        .withDesc("The First Project").build(),
-                new Project.Builder("2", "Project 2", "Head 2")
-                        .withDesc("The Second Project").build(),
-                new Project.Builder("3", "Project 3", "Head 3")
-                        .withDesc("The Third Project").build(),
-                new Project.Builder("4", "Project 4", "Head 4")
-                        .withDesc("The Fourth Project").build()
-        );
+        int[] categories = new int[]{
+                Project.POWER,
+                Project.TELECOM,
+                Project.ELECTRONICS_CONTROL,
+                Project.SOFTWARE
+        };
+        mProjects = new LinkedList<>();
+        for (int category : categories) {
+            for (int i = 1; i <= 5; ++i)
+                mProjects.add(
+                        new Project.Builder(category + "-" + i, "Project " + i, "Head " + i,
+                                category)
+                                .withDesc("Project description")
+                                .withPrerequisites(
+                                        Arrays.asList("Prereq1", "Prereq2", "Prereq3", "Prereq5")
+                                ).build());
+        }
 
         thrown = false;
     }
@@ -96,24 +106,37 @@ class FakeDataRepository implements BaseDataRepository {
     }
 
     @Override
-    public Observable<List<Project>> getProjects(boolean forceUpdate) {
+    public Single<List<Project>> getProjects(boolean forceUpdate) {
         if (!thrown) {
             thrown = true;
-            return Observable.error(new Exception());
+            return Single.error(new Exception());
         } else {
-            return Observable.just(mProjects);
+            return Single.just(mProjects);
         }
     }
 
     @Override
-    public Observable<Project> getProject(String projectId, boolean forceUpdate) {
-        return Observable.just(mProjects.get(Integer.parseInt(projectId) - 1));
+    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
+                                                         @Project.ProjectCategory
+                                                         final int category) {
+        return Observable.fromIterable(mProjects)
+                .filter(new Predicate<Project>() {
+                    @Override
+                    public boolean test(Project project) throws Exception {
+                        return project.getCategory() == category;
+                    }
+                }).toList();
     }
 
     @Override
-    public Observable<Bitmap> getGalleryImageBitmap(final int width, final int height) {
+    public Single<Project> getProject(String projectId, boolean forceUpdate) {
+        return Single.just(mProjects.get(Integer.parseInt(projectId) - 1));
+    }
+
+    @Override
+    public Single<Bitmap> getGalleryImageBitmap(final int width, final int height) {
         @DrawableRes final int galleryRes = mGalleryRes[new Random().nextInt(mGalleryRes.length)];
-        return Observable.fromCallable(new Callable<BitmapFactory.Options>() {
+        return Single.fromCallable(new Callable<BitmapFactory.Options>() {
             @Override
             public BitmapFactory.Options call() throws Exception {
                 BitmapFactory.Options options = new BitmapFactory.Options();

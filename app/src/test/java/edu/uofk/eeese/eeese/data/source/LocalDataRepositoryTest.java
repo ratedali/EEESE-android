@@ -41,7 +41,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +53,7 @@ public class LocalDataRepositoryTest {
     @Mock
     private BaseSchedulerProvider schedulerProvider;
     @InjectMocks
-    private LocalDataRepository dataRepository;
+    private LocalDataRepository source;
 
     @Mock
     SQLiteDatabase database;
@@ -66,6 +65,19 @@ public class LocalDataRepositoryTest {
         TestUtils.setupMockSchedulerProvider(schedulerProvider, Schedulers.trampoline());
     }
 
+    @Before
+    public void setupDatabaseHelper() {
+        when(dbHelper.getReadableDatabase()).thenReturn(database);
+        when(dbHelper.getWritableDatabase()).thenReturn(database);
+    }
+
+    @Before
+    public void setupDatabase() {
+        when(database.query(anyString(),
+                any(String[].class), anyString(), any(String[].class),
+                anyString(), anyString(), anyString())).thenReturn(cursor);
+    }
+
     @After
     public void resetMocks() {
         reset(context, dbHelper, schedulerProvider);
@@ -73,26 +85,16 @@ public class LocalDataRepositoryTest {
 
     @Test
     public void usesIOScheduler() {
-        when(dbHelper.getReadableDatabase()).thenReturn(database);
-        when(database.query(anyString(),
-                any(String[].class), anyString(), any(String[].class),
-                anyString(), anyString(), anyString())).thenReturn(cursor);
-
         when(cursor.moveToFirst()).thenReturn(false);
         when(cursor.moveToNext()).thenReturn(false);
 
-        Single<List<Project>> answer = dataRepository.getProjects(false);
+        source.getProjects(false);
 
         verify(schedulerProvider, only()).io();
     }
 
     @Test
     public void getsProjectsFromDatabase() {
-        when(dbHelper.getReadableDatabase()).thenReturn(database);
-        when(database.query(anyString(),
-                any(String[].class), anyString(), any(String[].class),
-                anyString(), anyString(), anyString())).thenReturn(cursor);
-
         when(cursor.moveToFirst()).thenReturn(true);
         when(cursor.moveToNext()).thenReturn(false);
 
@@ -118,7 +120,7 @@ public class LocalDataRepositoryTest {
         when(cursor.getString(COLUMN_PROJECT_HEAD)).thenReturn(head);
         when(cursor.getString(COLUMN_PROJECT_DESC)).thenReturn(desc);
 
-        Single<List<Project>> answer = dataRepository.getProjects(false);
+        Single<List<Project>> answer = source.getProjects(false);
         TestObserver<List<Project>> testObserver = answer.test();
 
         verify(dbHelper)
@@ -127,9 +129,6 @@ public class LocalDataRepositoryTest {
                 .query(eq(ProjectEntry.TABLE_NAME),
                         any(String[].class), anyString(), any(String[].class),
                         anyString(), anyString(), anyString());
-        // there shouldn't be any redundant calls
-        verify(cursor, times(4)).getColumnIndexOrThrow(anyString());
-
 
         // only one value returned
         testObserver.assertValue(new Predicate<List<Project>>() {
@@ -149,22 +148,23 @@ public class LocalDataRepositoryTest {
 
     @Test
     public void returnsEmptyList_ifDatabaseIsEmpty() {
-        when(dbHelper.getReadableDatabase()).thenReturn(database);
-        when(database.query(anyString(),
-                any(String[].class), anyString(), any(String[].class),
-                anyString(), anyString(), anyString())).thenReturn(cursor);
-
         when(cursor.moveToFirst()).thenReturn(false);
         when(cursor.moveToNext()).thenReturn(false);
 
-        Single<List<Project>> answer = dataRepository.getProjects(false);
-        TestObserver<List<Project>> testObserver = answer.test();
+        Single<List<Project>> answer = source.getProjects(false);
 
-        testObserver.assertValue(new Predicate<List<Project>>() {
+        answer.test().assertValue(new Predicate<List<Project>>() {
             @Override
             public boolean test(List<Project> projects) throws Exception {
                 return projects.isEmpty();
             }
         });
     }
+
+    @Test
+    public void clearAlwaysCompletes() {
+        // On the assumption that SQLiteDatabase.delete never throws
+        source.clearProjects().test().assertComplete();
+    }
+
 }

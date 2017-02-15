@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -28,6 +30,7 @@ public class ProjectModelTest {
         project1 = new Project
                 .Builder("1", "Project 1", "Mr. Head", Project.POWER)
                 .withDesc("desc")
+                .withPrerequisites(Collections.<String>emptyList())
                 .build();
     }
 
@@ -51,6 +54,7 @@ public class ProjectModelTest {
         Project theSameProject = new Project
                 .Builder(project1.getId(), project1.getName(), project1.getProjectHead(), project1.getCategory())
                 .withDesc(project1.getDesc())
+                .withPrerequisites(project1.getPrerequisites())
                 .build();
 
         assertTrue(project1.equals(theSameProject));
@@ -64,6 +68,7 @@ public class ProjectModelTest {
                 project1.getProjectHead(),
                 project1.getCategory())
                 .withDesc(project1.getDesc())
+                .withPrerequisites(project1.getPrerequisites())
                 .build();
 
         assertFalse(project1.equals(withDifferentId));
@@ -77,6 +82,7 @@ public class ProjectModelTest {
                 project1.getProjectHead(),
                 project1.getCategory())
                 .withDesc(project1.getDesc())
+                .withPrerequisites(project1.getPrerequisites())
                 .build();
 
         assertFalse(project1.equals(withDifferentName));
@@ -90,6 +96,7 @@ public class ProjectModelTest {
                 project1.getProjectHead() + " In The Box",
                 project1.getCategory())
                 .withDesc(project1.getDesc())
+                .withPrerequisites(project1.getPrerequisites())
                 .build();
 
         assertFalse(project1.equals(withDifferentHead));
@@ -104,6 +111,37 @@ public class ProjectModelTest {
                 project1.getProjectHead(),
                 project1.getCategory())
                 .withDesc(project1.getDesc() + " But Not Exactly The Same!")
+                .withPrerequisites(project1.getPrerequisites())
+                .build();
+
+        assertFalse(project1.equals(withDifferentDesc));
+    }
+
+    @Test
+    public void notEqualsIfDifferentCategory() {
+        Project withDifferentDesc = new Project
+                .Builder(
+                project1.getId(),
+                project1.getName(),
+                project1.getProjectHead(),
+                Project.SOFTWARE)    // So much different, no?
+                .withDesc(project1.getDesc())
+                .withPrerequisites(project1.getPrerequisites())
+                .build();
+
+        assertFalse(project1.equals(withDifferentDesc));
+    }
+
+    @Test
+    public void notEqualsIfDifferentPrereqs() {
+        Project withDifferentDesc = new Project
+                .Builder(
+                project1.getName(),
+                project1.getId(),
+                project1.getProjectHead(),
+                project1.getCategory())
+                .withDesc(project1.getDesc())
+                .withPrerequisites(Collections.singletonList("Prereq"))
                 .build();
 
         assertFalse(project1.equals(withDifferentDesc));

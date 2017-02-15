@@ -8,16 +8,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.projects;
+package edu.uofk.eeese.eeese.details;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Collections;
-import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
@@ -32,23 +29,19 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("WrongConstant")
-public class ProjectsPresenterTest {
+public class DetailsPresenterTest {
     @Mock
     private BaseDataRepository source;
     @Mock
-    private ProjectsContract.View view;
+    private DetailsContract.View view;
     @Mock
     private BaseSchedulerProvider schedulerProvider;
 
-    @Project.ProjectCategory
-    private int category = Project.POWER;
+    private String projectId = "";
 
-    private ProjectsPresenter presenter;
+    private Project project;
 
-    private List<Project> projects = Collections.singletonList(
-            new Project.Builder("1", "Project 1", "Project 1 Head", Project.POWER)
-                    .build());
+    private DetailsPresenter presenter;
 
     @Before
     public void setupSchedulerProvider() {
@@ -56,9 +49,14 @@ public class ProjectsPresenterTest {
     }
 
     @Before
+    public void setupProject() {
+        project = new Project.Builder(projectId, "Project", "Head", Project.POWER).build();
+    }
+
+    @Before
     public void setupPresenter() {
         MockitoAnnotations.initMocks(this);
-        presenter = new ProjectsPresenter(source, view, schedulerProvider, category);
+        presenter = new DetailsPresenter(source, view, schedulerProvider, projectId);
     }
 
     @After
@@ -67,26 +65,23 @@ public class ProjectsPresenterTest {
     }
 
     @Test
-    public void shouldCallNoProjects_OnEmptyList() {
-        when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
-                .thenReturn(Single.just(Collections.<Project>emptyList()));
-        presenter.loadProjects(anyBoolean());
-        verify(view).showNoProjects();
+    public void showProjectInfo_ifProjectExists() {
+        when(source.getProject(eq(projectId), anyBoolean()))
+                .thenReturn(Single.just(project));
+
+        presenter.loadDetails(true);
+
+        verify(view).showProjectInfo(project);
     }
 
-    @Test
-    public void shouldCallShowProjects_OnNonEmptyList() {
-        when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
-                .thenReturn(Single.just(projects));
-        presenter.loadProjects(anyBoolean());
-        verify(view).showProjects(projects);
-    }
 
     @Test
-    public void shouldCallConnectionError_OnException() {
-        when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
-                .thenReturn(Single.<List<Project>>error(new Exception()));
-        presenter.loadProjects(anyBoolean());
-        verify(view).showNoConnectionError();
+    public void showInvalidProject_ifProjectDoesNotExists() {
+        when(source.getProject(eq(projectId), anyBoolean()))
+                .thenReturn(Single.<Project>error(new Exception()));
+        presenter.loadDetails(true);
+        verify(view).showInvalidProject();
+
     }
+
 }
