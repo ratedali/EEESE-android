@@ -61,22 +61,32 @@ class RemoteDataRepository implements BaseDataRepository {
 
     @Override
     public Completable insertProject(Project project) {
-        throw new UnsupportedOperationException("insert shouldn't be called for a remote repo");
+        // Cannot insert, so fail immediately
+        return Completable.error(
+                new UnsupportedOperationException("cannot insert to a remote repository")
+        );
     }
 
     @Override
     public Completable insertProjects(List<Project> projects) {
-        throw new UnsupportedOperationException("insert shouldn't be called for a remote repo");
+        // Cannot insert, so fail immediately
+        return Completable.error(
+                new UnsupportedOperationException("cannot insert to a remote repository")
+        );
     }
 
     @Override
     public Completable setProjects(List<Project> projects) {
-        throw new UnsupportedOperationException("set shouldn't be called for a remote repo");
+        return Completable.error(
+                new UnsupportedOperationException("cannot set projects for a remote repository")
+        );
     }
 
     @Override
     public Completable clearProjects() {
-        throw new UnsupportedOperationException("clear shouldn't be called for a remote repo");
+        return Completable.error(
+                new UnsupportedOperationException("cannot clear projects for a remote repository")
+        );
     }
 
     @Override
@@ -175,7 +185,9 @@ class RemoteDataRepository implements BaseDataRepository {
      */
     @Override
     public Single<Project> getProject(String projectId, boolean forceUpdate) {
-        throw new UnsupportedOperationException("Cannot get a single project");
+        return Single.error(
+                new UnsupportedOperationException(
+                        "Cannot get a single project for this implementation"));
     }
 
     /**
@@ -184,7 +196,9 @@ class RemoteDataRepository implements BaseDataRepository {
      */
     @Override
     public Single<Bitmap> getGalleryImageBitmap(int width, int height) {
-        throw new UnsupportedOperationException("Cannot get a single project");
+        return Single.error(
+                new UnsupportedOperationException(
+                        "cannot get a gallery image for this implementation"));
     }
 
     private static class ProjectJSON {
