@@ -29,7 +29,7 @@ public final class DatabaseContract {
         // using a comma separated list as the representation
         StringBuilder dbPrereqs = new StringBuilder();
         for (String item : prereqs) {
-            dbPrereqs.append(dbPrereqs).append(",");
+            dbPrereqs.append(item).append(",");
         }
         if (dbPrereqs.length() > 0) {
             // remove the trailing comma
