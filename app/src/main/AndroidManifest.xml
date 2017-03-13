@@ -11,6 +11,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="edu.uofk.eeese.eeese">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".EEESEapp"
         android:allowBackup="true"

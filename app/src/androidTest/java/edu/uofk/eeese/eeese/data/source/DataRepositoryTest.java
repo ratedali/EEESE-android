@@ -51,7 +51,7 @@ public class DataRepositoryTest {
     private BaseDataRepository remote;
 
     private DataRepository source;
-    private final Project project = new Project.Builder("id", "name", "head", Project.POWER).build();
+    private final Project project = new Project.Builder("ID", "name", "head", Project.POWER).build();
 
     @Before
     public void setupSource() {

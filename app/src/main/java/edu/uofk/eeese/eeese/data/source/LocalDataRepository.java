@@ -131,7 +131,7 @@ public class LocalDataRepository implements BaseDataRepository {
                 long id = db.insert(ProjectEntry.TABLE_NAME, null, projectValues(project));
                 db.close();
                 if (id < 0) {
-                    // The database returns a negative id if the insertion failed
+                    // The database returns a negative ID if the insertion failed
                     // in that case, an error is indicated using an exception
                     throw new IOException("Cannot insert a project to database");
                 }
@@ -162,7 +162,7 @@ public class LocalDataRepository implements BaseDataRepository {
                         ContentValues values = projectValues(project);
                         long id = db.insert(ProjectEntry.TABLE_NAME, null, values);
                         if (id < 0) {
-                            // The database returns a negative id if the insertion failed
+                            // The database returns a negative ID if the insertion failed
                             // in that case, the transaction is aborted by throwing an exception
                             throw new IOException("Cannot insert projects to database");
                         }

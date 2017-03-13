@@ -14,29 +14,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.data.backend.ApiWrapper;
+import edu.uofk.eeese.eeese.data.backend.BackendApi;
 import edu.uofk.eeese.eeese.di.categories.Remote;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 /*
  * Implementation note:
@@ -50,13 +39,15 @@ class RemoteDataRepository implements BaseDataRepository {
 
     private final Context mContext;
     private final BaseSchedulerProvider mSchedulerProvider;
-    private final int PROJECTS_FILE_ID = R.raw.projects;
+    private final ApiWrapper mApi;
 
     @Inject
     RemoteDataRepository(@NonNull Context context,
-                         @NonNull BaseSchedulerProvider schedulerProvider) {
+                         @NonNull BaseSchedulerProvider schedulerProvider,
+                         @NonNull BackendApi backendApi) {
         mContext = context;
         mSchedulerProvider = schedulerProvider;
+        mApi = new ApiWrapper(backendApi);
     }
 
     @Override
@@ -91,103 +82,20 @@ class RemoteDataRepository implements BaseDataRepository {
 
     @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
-        // Parse the json file containing the projects data, instead of querying an API
-        return
-                Single.just(PROJECTS_FILE_ID)
-                        .map(new Function<Integer, InputStream>() {
-                            @Override
-                            public InputStream apply(Integer projectsFileId) throws Exception {
-                                return mContext.getResources().openRawResource(projectsFileId);
-                            }
-                        })
-                        .map(new Function<InputStream, List<ProjectJSON>>() {
-                            @Override
-                            public List<ProjectJSON> apply(InputStream inputStream)
-                                    throws Exception {
-
-                                Gson gson = new GsonBuilder().create();
-                                // Gson's way of reading a json list as a java List object
-                                Type type = new TypeToken<List<ProjectJSON>>() {
-                                }.getType();
-
-                                return gson.fromJson(
-                                        new BufferedReader(
-                                                new InputStreamReader(
-                                                        inputStream,
-                                                        Charset.forName("UTF8")
-                                                )
-                                        ),
-                                        type
-                                );
-                            }
-                        }).flatMap(new Function<List<ProjectJSON>, Single<List<Project>>>() {
-                    @Override
-                    public Single<List<Project>> apply(List<ProjectJSON> projectJSONs)
-                            throws Exception {
-                        return Observable.fromIterable(projectJSONs)
-                                .map(new Function<ProjectJSON, Project>() {
-                                    @Override
-                                    public Project apply(ProjectJSON projectJSON) throws Exception {
-                                        //use the name as an ID
-                                        String id = projectJSON.name;
-                                        String name = projectJSON.name;
-                                        String head = projectJSON.head;
-                                        String desc = projectJSON.desc;
-                                        List<String> prereq = projectJSON.prereq;
-                                        @Project.ProjectCategory
-                                        int category = -1;
-                                        switch (projectJSON.category) {
-                                            case ELECTRONICS_CONTROL:
-                                                category = Project.ELECTRONICS_CONTROL;
-                                                break;
-                                            case POWER:
-                                                category = Project.POWER;
-                                                break;
-                                            case TELECOM:
-                                                category = Project.TELECOM;
-                                                break;
-                                            case SOFTWARE:
-                                                category = Project.SOFTWARE;
-                                                break;
-                                        }
-                                        return new Project.Builder(id, name, head, category)
-                                                .withDesc(desc)
-                                                .withPrerequisites(prereq)
-                                                .build();
-                                    }
-                                })
-                                .toList();
-                    }
-                }).subscribeOn(mSchedulerProvider.io());
+        return mApi.projects()
+                .subscribeOn(mSchedulerProvider.io());
 
     }
 
     @Override
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
-        // Get all projects, and filter the wanted category
-        return getProjects(forceUpdate)
-                .flatMapObservable(new Function<List<Project>, Observable<Project>>() {
-                    @Override
-                    public Observable<Project> apply(List<Project> projects) throws Exception {
-                        return Observable.fromIterable(projects);
-                    }
-                }).filter(new Predicate<Project>() {
-                    @Override
-                    public boolean test(Project project) throws Exception {
-                        return project.getCategory() == category;
-                    }
-                }).toList();
+        return mApi.projects(category);
     }
 
-    /**
-     * Technically it should be possible to get a single project,
-     * however, under the mentioned circumstances, its just inefficient and useless to do that
-     */
+
     @Override
     public Single<Project> getProject(String projectId, boolean forceUpdate) {
-        return Single.error(
-                new UnsupportedOperationException(
-                        "Cannot get a single project for this implementation"));
+        return mApi.project(projectId);
     }
 
     /**
@@ -199,20 +107,5 @@ class RemoteDataRepository implements BaseDataRepository {
         return Single.error(
                 new UnsupportedOperationException(
                         "cannot get a gallery image for this implementation"));
-    }
-
-    private static class ProjectJSON {
-        /**
-         * The model of the json file
-         */
-        String name;
-        String desc;
-        String head;
-        List<String> prereq;
-        CategoryJSON category;
-    }
-
-    private enum CategoryJSON {
-        POWER, TELECOM, ELECTRONICS_CONTROL, SOFTWARE
     }
 }

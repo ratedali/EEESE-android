@@ -79,7 +79,7 @@ public final class ActivityUtils {
      * Inflates the given transition resource and sets it as the enter transition for the activity
      *
      * @param activity     the transition target activity
-     * @param transitionId the resource id of the enter transition xml file
+     * @param transitionId the resource ID of the enter transition xml file
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void setEnterTransition(@NonNull Activity activity, @TransitionRes int transitionId) {
@@ -108,7 +108,7 @@ public final class ActivityUtils {
      * Inflates the given transition resource and sets it as the exit transition for the activity
      *
      * @param activity     the transition target activity
-     * @param transitionId the resource id of the exit transition xml file
+     * @param transitionId the resource ID of the exit transition xml file
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void setExitTransition(@NonNull Activity activity, @TransitionRes int transitionId) {
@@ -138,7 +138,7 @@ public final class ActivityUtils {
      * the activity
      *
      * @param activity     the transition target activity
-     * @param transitionId the resource id of the shared element enter transition xml file
+     * @param transitionId the resource ID of the shared element enter transition xml file
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void setSharedElementEnterTransition(@NonNull Activity activity, @TransitionRes int transitionId) {
@@ -168,7 +168,7 @@ public final class ActivityUtils {
      * the activity
      *
      * @param activity     the transition target activity
-     * @param transitionId the resource id of the shared element exit transition xml file
+     * @param transitionId the resource ID of the shared element exit transition xml file
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void setSharedElementExitTransition(@NonNull Activity activity, @TransitionRes int transitionId) {
