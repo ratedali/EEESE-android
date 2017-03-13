@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese;
 import dagger.Component;
 import edu.uofk.eeese.eeese.about.AboutComponent;
 import edu.uofk.eeese.eeese.about.AboutModule;
+import edu.uofk.eeese.eeese.data.backend.BackendModule;
 import edu.uofk.eeese.eeese.data.database.DatabaseModule;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
 import edu.uofk.eeese.eeese.details.DetailsComponent;
@@ -25,6 +26,7 @@ import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 @ApplicationScope
 @Component(modules = {AppModule.class,
         SchedulerProviderModule.class,
+        BackendModule.class,
         DatabaseModule.class,
         DataRepositoryModule.class})
 

@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.data.backend.BackendApi;
 import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.categories.Remote;
@@ -36,8 +37,9 @@ public class DataRepositoryModule {
     @ApplicationScope
     @Remote
     BaseDataRepository provideRemoteSource(Context context,
-                                           BaseSchedulerProvider schedulerProvider) {
-        return new RemoteDataRepository(context, schedulerProvider);
+                                           BaseSchedulerProvider schedulerProvider,
+                                           BackendApi backendApi) {
+        return new RemoteDataRepository(context, schedulerProvider, backendApi);
     }
 
     @Provides

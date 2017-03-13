@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,9 +23,6 @@ import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 public class ProjectsPresenter implements ProjectsContract.Presenter {
 
@@ -66,46 +62,30 @@ public class ProjectsPresenter implements ProjectsContract.Presenter {
                 mSource.getProjectsWithCategory(force, mCategory)
                         .subscribeOn(mSchedulerProvider.io())
                         // sort by name
-                        .map(new Function<List<Project>, List<Project>>() {
-                            @Override
-                            public List<Project> apply(List<Project> projects) throws Exception {
-                                List<Project> sortedProjects = new ArrayList<>(projects);
-                                Collections.sort(sortedProjects, new Comparator<Project>() {
-                                    @Override
-                                    public int compare(Project lhs, Project rhs) {
-                                        return lhs.getName().compareToIgnoreCase(rhs.getName());
-                                    }
-                                });
-                                return sortedProjects;
-                            }
+                        .map(projects -> {
+                            List<Project> sortedProjects = new ArrayList<>(projects);
+                            Collections.sort(
+                                    sortedProjects,
+                                    (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName())
+                            );
+                            return sortedProjects;
                         })
                         .subscribeOn(mSchedulerProvider.computation())
                         .observeOn(mSchedulerProvider.ui())
-                        .doFinally(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                mView.setLoadingIndicator(false);
-                            }
-                        })
+                        .doFinally(() -> mView.setLoadingIndicator(false))
                         .subscribe(
                                 // OnSuccess
-                                new Consumer<List<Project>>() {
-                                    @Override
-                                    public void accept(List<Project> projects) throws Exception {
-                                        if (projects.size() > 0) {
-                                            mView.showProjects(projects);
-                                        } else {
-                                            mView.showNoProjects();
-                                        }
+                                projects -> {
+                                    if (projects.size() > 0) {
+                                        mView.showProjects(projects);
+                                    } else {
+                                        mView.showNoProjects();
                                     }
                                 },
                                 // OnError
-                                new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(Throwable throwable) throws Exception {
-                                        mView.showNoConnectionError();
-                                        mView.showNoProjects();
-                                    }
+                                throwable -> {
+                                    mView.showNoConnectionError();
+                                    mView.showNoProjects();
                                 }
                         );
         mSubscriptions.add(subscription);

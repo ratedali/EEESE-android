@@ -137,20 +137,17 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
         navView.setCheckedItem(R.id.nav_projects);
         drawer.closeDrawers();
         final Activity source = this;
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                drawer.closeDrawers();
-                Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
-                if (targetActivity != null && !targetActivity.equals(source.getClass())) {
-                    Intent intent = new Intent(source, targetActivity);
-                    ActivityUtils.startActivityWithTransition(source, intent,
-                            new Pair<View, String>(mAppBar, toolbarTransitionName));
-                    mExit = true;
-                }
-                return true;
+        navView.setNavigationItemSelectedListener(item -> {
+            item.setChecked(true);
+            drawer.closeDrawers();
+            Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
+            if (targetActivity != null && !targetActivity.equals(source.getClass())) {
+                Intent intent = new Intent(source, targetActivity);
+                ActivityUtils.startActivityWithTransition(source, intent,
+                        new Pair<>(mAppBar, toolbarTransitionName));
+                mExit = true;
             }
+            return true;
         });
     }
 
@@ -160,7 +157,7 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivity.PROJECT_ID_KEY, projectId);
         ActivityUtils.startActivityWithTransition(this, intent,
-                new Pair<View, String>(mAppBar, toolbarTransitionName),
+                new Pair<>(mAppBar, toolbarTransitionName),
                 new Pair<>(projectView, projectCardTransitionName));
     }
 
@@ -182,8 +179,8 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
                                     @Nullable List<String> categories) {
             super(fm);
             mProjectsFragments = projectsFragments != null ?
-                    projectsFragments : Collections.<ProjectsFragment>emptyList();
-            mCategories = categories != null ? categories : Collections.<String>emptyList();
+                    projectsFragments : Collections.emptyList();
+            mCategories = categories != null ? categories : Collections.emptyList();
             // use empty categories for unspecified ones
             for (int i = 0; i < mProjectsFragments.size() - mCategories.size(); ++i) {
                 mCategories.add("");

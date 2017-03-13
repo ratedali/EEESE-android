@@ -61,8 +61,6 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
     public int mProjectHorizontalOffset;
     @BindDimen(R.dimen.project_margin_vertical)
     public int mProjectVerticalOffset;
-    @BindInt(R.integer.short_duration)
-    public int mProjectsAnimationDuration;
 
     //  Control
     private ProjectsAdapter mAdapter;

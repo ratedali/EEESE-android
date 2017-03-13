@@ -23,8 +23,6 @@ import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 @ActivityScope
 public class AboutPresenter implements AboutContract.Presenter {
@@ -48,29 +46,15 @@ public class AboutPresenter implements AboutContract.Presenter {
 
     private Single<Bitmap> galleryBitmap() {
         return mView.getGalleryViewSize().subscribeOn(mSchedulerProvider.ui())
-                .flatMap(new Function<Pair<Integer, Integer>, Single<Bitmap>>() {
-                    @Override
-                    public Single<Bitmap> apply(Pair<Integer, Integer> widthHeightPair) throws Exception {
-                        int width = widthHeightPair.first;
-                        int height = widthHeightPair.second;
-                        return mSource.getGalleryImageBitmap(width, height);
-                    }
-                }).subscribeOn(mSchedulerProvider.io());
+                .flatMap(widthHeightPair ->
+                        mSource.getGalleryImageBitmap(widthHeightPair.first, widthHeightPair.second)
+                ).subscribeOn(mSchedulerProvider.io());
     }
 
     private Single<Pair<Bitmap, Palette>> galleryBitmapWithPalette() {
         return galleryBitmap()
-                .map(new Function<Bitmap, Pair<Bitmap, Palette>>() {
-                    @Override
-                    public Pair<Bitmap, Palette> apply(Bitmap bitmap) throws Exception {
-                        return new Pair<>(
-                                bitmap,
-                                Palette
-                                        .from(bitmap)
-                                        .generate()
-                        );
-                    }
-                }).subscribeOn(
+                .map(bitmap -> new Pair<>(bitmap, Palette.from(bitmap).generate()))
+                .subscribeOn(
                         mSchedulerProvider.computation()
                 );
 
@@ -90,14 +74,10 @@ public class AboutPresenter implements AboutContract.Presenter {
                         .observeOn(mSchedulerProvider.ui())
                         .subscribe(
                                 // OnSuccess, show the image on the view
-                                new Consumer<Pair<Bitmap, Palette>>() {
-                                    @Override
-                                    public void accept(Pair<Bitmap, Palette> bitmapSwatchPair) throws Exception {
-                                        Bitmap bitmap = bitmapSwatchPair.first;
-                                        Palette palette = bitmapSwatchPair.second;
-                                        mView.showGalleryImage(bitmap, palette);
-                                    }
-                                }
+                                bitmapPalettePair ->
+                                        mView.showGalleryImage(bitmapPalettePair.first,
+                                                bitmapPalettePair.second)
+
                         );
         mSubscriptions.add(subscription);
     }

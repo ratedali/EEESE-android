@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -39,8 +38,6 @@ import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Function;
 
 @ApplicationScope
 @Local
@@ -68,49 +65,7 @@ public class LocalDataRepository implements BaseDataRepository {
             ProjectEntry.COLUMN_PROJECT_HEAD,
             ProjectEntry.COLUMN_PROJECT_DESC,
     };
-    /*
-     * The following "mapper" objects are used to translate
-     * data read from the database to our Project model.
-     *
-     * They take a database in addition to a cursor inorder to close the database
-     * after reading the data needed.
-     *
-     * I know, the syntax is really terrible, I would really love to use python here!
-     * (Maybe kotlin?)
-     */
-    private final Function<Pair<Cursor, SQLiteDatabase>, List<Project>> projectsMapper =
-            new Function<Pair<Cursor, SQLiteDatabase>, List<Project>>() {
-                @Override
-                public List<Project> apply(Pair<Cursor, SQLiteDatabase> cursorDbPair) throws Exception {
-                    Cursor cursor = cursorDbPair.first;
-                    SQLiteDatabase db = cursorDbPair.second;
-                    List<Project> projects = new LinkedList<>();
-                    if (cursor.moveToFirst()) {
-                        do {
-                            projects.add(projectFromCursor(cursor));
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                    db.close();
-                    return projects;
-                }
-            };
 
-    private final Function<Pair<Cursor, SQLiteDatabase>, Project> singleProjectMapper =
-            new Function<Pair<Cursor, SQLiteDatabase>, Project>() {
-                @Override
-                public Project apply(Pair<Cursor, SQLiteDatabase> cursorDbPair) throws Exception {
-                    Cursor cursor = cursorDbPair.first;
-                    SQLiteDatabase db = cursorDbPair.second;
-                    if (!cursor.moveToFirst()) {
-                        throw new RuntimeException("No project exists");
-                    }
-                    Project project = projectFromCursor(cursor);
-                    cursor.close();
-                    db.close();
-                    return project;
-                }
-            };
 
     @Inject
     public LocalDataRepository(@NonNull Context context,
@@ -124,17 +79,14 @@ public class LocalDataRepository implements BaseDataRepository {
     @Override
     public Completable insertProject(final Project project) {
 
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                long id = db.insert(ProjectEntry.TABLE_NAME, null, projectValues(project));
-                db.close();
-                if (id < 0) {
-                    // The database returns a negative ID if the insertion failed
-                    // in that case, an error is indicated using an exception
-                    throw new IOException("Cannot insert a project to database");
-                }
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            long id = db.insert(ProjectEntry.TABLE_NAME, null, projectValues(project));
+            db.close();
+            if (id < 0) {
+                // The database returns a negative ID if the insertion failed
+                // in that case, an error is indicated using an exception
+                throw new IOException("Cannot insert a project to database");
             }
         });
 
@@ -142,141 +94,113 @@ public class LocalDataRepository implements BaseDataRepository {
 
     @Override
     public Completable setProjects(final List<Project> projects) {
-        return clearProjects().andThen(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                insertProjects(projects);
-            }
-        }));
+        return clearProjects()
+                .andThen(Completable.fromAction(() -> insertProjects(projects)));
     }
 
     @Override
     public Completable insertProjects(final List<Project> projects) {
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                db.beginTransaction();
-                try {
-                    for (Project project : projects) {
-                        ContentValues values = projectValues(project);
-                        long id = db.insert(ProjectEntry.TABLE_NAME, null, values);
-                        if (id < 0) {
-                            // The database returns a negative ID if the insertion failed
-                            // in that case, the transaction is aborted by throwing an exception
-                            throw new IOException("Cannot insert projects to database");
-                        }
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            db.beginTransaction();
+            try {
+                for (Project project : projects) {
+                    ContentValues values = projectValues(project);
+                    long id = db.insert(ProjectEntry.TABLE_NAME, null, values);
+                    if (id < 0) {
+                        // The database returns a negative ID if the insertion failed
+                        // in that case, the transaction is aborted by throwing an exception
+                        throw new IOException("Cannot insert projects to database");
                     }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                    db.close();
                 }
-            }
-        });
-    }
-
-    @Override
-    public Completable clearProjects() {
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                // Delete all projects and close the database
-                db.delete(ProjectEntry.TABLE_NAME, null, null);
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
                 db.close();
             }
         });
     }
 
     @Override
-    public Single<List<Project>> getProjects(boolean forceUpdate) {
-        return Single.fromCallable(new Callable<SQLiteDatabase>() {
-            @Override
-            public SQLiteDatabase call() throws Exception {
-                return mDbHelper.getReadableDatabase();
-            }
-        }).map(new Function<SQLiteDatabase, Pair<Cursor, SQLiteDatabase>>() {
-            @Override
-            public Pair<Cursor, SQLiteDatabase> apply(SQLiteDatabase db) throws Exception {
-                // The cursor will be closed along with the database by the mapper
-                @SuppressLint("Recycle")
-                Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
-                        PROJECTION, null, null,
-                        null, null, null);
-                return new Pair<>(cursor, db);
-            }
-        }).map(projectsMapper).subscribeOn(mSchedulerProvider.io());
+    public Completable clearProjects() {
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            // Delete all projects and close the database
+            db.delete(ProjectEntry.TABLE_NAME, null, null);
+            db.close();
+        });
     }
 
     @Override
-    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
-        return Single.fromCallable(new Callable<SQLiteDatabase>() {
-            @Override
-            public SQLiteDatabase call() throws Exception {
-                return mDbHelper.getReadableDatabase();
-            }
-        }).map(new Function<SQLiteDatabase, Pair<Cursor, SQLiteDatabase>>() {
-            @Override
-            public Pair<Cursor, SQLiteDatabase> apply(SQLiteDatabase db) throws Exception {
-                // The cursor will be closed along with the database by the mapper
-                @SuppressLint("Recycle")
-                Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
-                        PROJECTION,
-                        ProjectEntry.COLUMN_PROJECT_CATEGORY + " = " + category, // filter using the category
-                        null,
-                        null, null, null);
-                return new Pair<>(cursor, db);
-            }
-        }).map(projectsMapper).subscribeOn(mSchedulerProvider.io());
+    public Single<List<Project>> getProjects(boolean forceUpdate) {
+        return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
+                .map(db -> {
+                    // The cursor will be closed along with the database by the mapper
+                    @SuppressLint("Recycle")
+                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                            PROJECTION, null, null,
+                            null, null, null);
+                    return new Pair<>(cursor, db);
+                })
+                .map(LocalDataRepository::projects)
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
+                                                         @Project.ProjectCategory
+                                                         final int category) {
+        return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
+                .map(db -> {
+                    // The cursor will be closed along with the database by the mapper
+                    @SuppressLint("Recycle")
+                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                            PROJECTION,
+                            ProjectEntry.COLUMN_PROJECT_CATEGORY + " = " + category, // filter using the category
+                            null,
+                            null, null, null);
+                    return new Pair<>(cursor, db);
+                })
+                .map(LocalDataRepository::projects)
+                .subscribeOn(mSchedulerProvider.io());
     }
 
     @Override
     public Single<Project> getProject(final String projectId, boolean forceUpdate) {
-        return Single.fromCallable(new Callable<SQLiteDatabase>() {
-            @Override
-            public SQLiteDatabase call() throws Exception {
-                return mDbHelper.getReadableDatabase();
-            }
-        }).map(new Function<SQLiteDatabase, Pair<Cursor, SQLiteDatabase>>() {
-            @Override
-            public Pair<Cursor, SQLiteDatabase> apply(SQLiteDatabase db) throws Exception {
-                // The cursor will be closed along with the database by the mapper
-                @SuppressLint("Recycle")
-                Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
-                        PROJECTION, ProjectEntry.COLUMN_PROJECT_ID + " = ?", new String[]{projectId},
-                        null, null, null);
-                return new Pair<>(cursor, db);
-            }
-        }).map(singleProjectMapper).subscribeOn(mSchedulerProvider.io());
+        return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
+                .map(db -> {
+                    // The cursor will be closed along with the database by the mapper
+                    @SuppressLint("Recycle")
+                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                            PROJECTION,
+                            ProjectEntry.COLUMN_PROJECT_ID + " = ?",
+                            new String[]{projectId},
+                            null, null, null);
+                    return new Pair<>(cursor, db);
+                }).map(LocalDataRepository::project)
+                .subscribeOn(mSchedulerProvider.io());
     }
 
     @Override
     public Single<Bitmap> getGalleryImageBitmap(final int width, final int height) {
         @DrawableRes final int galleryRes = mGalleryRes[new Random().nextInt(mGalleryRes.length)];
-        return Single.fromCallable(new Callable<BitmapFactory.Options>() {
-            @Override
-            public BitmapFactory.Options call() throws Exception {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
-                return options;
-            }
-        }).map(new Function<BitmapFactory.Options, Bitmap>() {
-            @Override
-            public Bitmap apply(BitmapFactory.Options options) throws Exception {
-                options.inSampleSize = 1;
-                if (options.outHeight > height || options.outWidth > width) {
-                    int halfHeight = options.outHeight / 2;
-                    int halfWidth = options.outWidth / 2;
-                    while ((halfHeight / options.inSampleSize) > height &&
-                            (halfWidth / options.inSampleSize) > width) {
-                        options.inSampleSize *= 2;
-                    }
+        return Single.fromCallable(() -> {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
+            return options;
+        }).map(options -> {
+            options.inSampleSize = 1;
+            if (options.outHeight > height || options.outWidth > width) {
+                int halfHeight = options.outHeight / 2;
+                int halfWidth = options.outWidth / 2;
+                while ((halfHeight / options.inSampleSize) > height &&
+                        (halfWidth / options.inSampleSize) > width) {
+                    options.inSampleSize *= 2;
                 }
-                options.inJustDecodeBounds = false;
-                return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
             }
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
         });
     }
 
@@ -302,7 +226,7 @@ public class LocalDataRepository implements BaseDataRepository {
      */
     // category will always be a legal value because its always saved as one
     @SuppressWarnings("WrongConstant")
-    private Project projectFromCursor(Cursor cursor) {
+    private static Project projectFromCursor(Cursor cursor) {
         String id = cursor.getString(
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
         String name = cursor.getString(
@@ -323,5 +247,35 @@ public class LocalDataRepository implements BaseDataRepository {
                 .withDesc(desc)
                 .withPrerequisites(prereqs)
                 .build();
+    }
+
+    private static List<Project> projects(Pair<Cursor, SQLiteDatabase> cursorDbPair) {
+        Cursor cursor = cursorDbPair.first;
+        SQLiteDatabase db = cursorDbPair.second;
+
+        List<Project> projects = new LinkedList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                projects.add(projectFromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return projects;
+    }
+
+    private static Project project(Pair<Cursor, SQLiteDatabase> cursorDbPair) {
+        Cursor cursor = cursorDbPair.first;
+        SQLiteDatabase db = cursorDbPair.second;
+
+        if (!cursor.moveToFirst()) {
+            throw new RuntimeException("No project exists");
+        }
+        Project project = projectFromCursor(cursor);
+
+        cursor.close();
+        db.close();
+        return project;
     }
 }

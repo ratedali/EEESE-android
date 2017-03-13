@@ -28,8 +28,6 @@ import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 
 @ApplicationScope
 @Cache
@@ -84,19 +82,11 @@ class DataRepository implements BaseDataRepository {
             return getAndSaveRemoteProjects();
         } else if (checkCacheDirty()) {
             return mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
-                    .filter(new Predicate<List<Project>>() {
-                        @Override
-                        public boolean test(List<Project> projects) throws Exception {
-                            return !projects.isEmpty();
-                        }
-                    })
+                    .filter(projects -> !projects.isEmpty())
                     .firstOrError()
-                    .doOnSuccess(new Consumer<List<Project>>() {
-                        @Override
-                        public void accept(List<Project> projects) throws Exception {
-                            cacheProjects(projects);
-                            markCacheValid();
-                        }
+                    .doOnSuccess(projects -> {
+                        cacheProjects(projects);
+                        markCacheValid();
                     });
         } else {
             List<Project> projects = new ArrayList<>(mCache.values());
@@ -108,23 +98,17 @@ class DataRepository implements BaseDataRepository {
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
         if (forceUpdate) {
             return getAndSaveRemoteProjects(category);
+
         } else if (checkCacheDirty(category)) {
-            return getAndCacheLocalProjects(category).mergeWith(getAndSaveRemoteProjects(category))
-                    .filter(new Predicate<List<Project>>() {
-                        @Override
-                        public boolean test(List<Project> projects) throws Exception {
-                            return !projects.isEmpty();
-                        }
-                    }).firstOrError();
+            return getAndCacheLocalProjects(category)
+                    .mergeWith(getAndSaveRemoteProjects(category))
+                    .filter(projects -> !projects.isEmpty())
+                    .firstOrError();
         } else {
             // filter the current cache
             return Observable.fromIterable(mCache.values())
-                    .filter(new Predicate<Project>() {
-                        @Override
-                        public boolean test(Project project) throws Exception {
-                            return project.getCategory() == category;
-                        }
-                    }).toList();
+                    .filter(project -> project.getCategory() == category)
+                    .toList();
         }
     }
 
@@ -139,12 +123,9 @@ class DataRepository implements BaseDataRepository {
             // if the cache is dirty but an update is not forced, fetched from local
             syncJob = Completable
                     .fromSingle(mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
-                            .firstOrError().doOnSuccess(new Consumer<List<Project>>() {
-                                @Override
-                                public void accept(List<Project> projects) throws Exception {
-                                    cacheProjects(projects);
-                                    markCacheValid();
-                                }
+                            .firstOrError().doOnSuccess(projects -> {
+                                cacheProjects(projects);
+                                markCacheValid();
                             }));
         }
         // after the sync completes, return from cache
@@ -158,34 +139,23 @@ class DataRepository implements BaseDataRepository {
 
     private Single<List<Project>> getAndSaveRemoteProjects() {
         return mRemoteRepo.getProjects(true)
-                .doOnSuccess(new Consumer<List<Project>>() {
-                    @Override
-                    public void accept(List<Project> projects) throws Exception {
-                        mLocalRepo.setProjects(projects);
-                    }
-                });
+                .doOnSuccess(projects -> mLocalRepo.setProjects(projects));
     }
 
     private Single<List<Project>> getAndSaveRemoteProjects(@Project.ProjectCategory final int category) {
         return mRemoteRepo.getProjectsWithCategory(true, category)
-                .doOnSuccess(new Consumer<List<Project>>() {
-                    @Override
-                    public void accept(List<Project> projects) throws Exception {
-                        mLocalRepo.setProjects(projects);
-                        cacheProjects(projects);
-                        markCacheValid(category);
-                    }
+                .doOnSuccess(projects -> {
+                    mLocalRepo.setProjects(projects);
+                    cacheProjects(projects);
+                    markCacheValid(category);
                 });
     }
 
     private Single<List<Project>> getAndCacheLocalProjects(@Project.ProjectCategory final int category) {
         return mLocalRepo.getProjectsWithCategory(true, category)
-                .doOnSuccess(new Consumer<List<Project>>() {
-                    @Override
-                    public void accept(List<Project> projects) throws Exception {
-                        cacheProjects(projects);
-                        markCacheValid(category);
-                    }
+                .doOnSuccess(projects -> {
+                    cacheProjects(projects);
+                    markCacheValid(category);
                 });
     }
 

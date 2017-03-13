@@ -14,13 +14,11 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 @ActivityScope
 public class DetailsPresenter implements DetailsContract.Presenter {
@@ -58,19 +56,10 @@ public class DetailsPresenter implements DetailsContract.Presenter {
                 .observeOn(mScheduler.ui())
                 .subscribe(
                         // onSuccess
-                        new Consumer<Project>() {
-                            @Override
-                            public void accept(Project project) throws Exception {
-                                mView.showProjectInfo(project);
-                            }
-                        },
+                        mView::showProjectInfo,
                         // onError
-                        new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                mView.showInvalidProject();
-                            }
-                        });
+                        throwable -> mView.showInvalidProject()
+                );
         mSubscriptions.add(subscription);
     }
 

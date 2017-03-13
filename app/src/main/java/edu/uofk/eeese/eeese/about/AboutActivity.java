@@ -44,8 +44,6 @@ import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.util.ActivityUtils;
 import edu.uofk.eeese.eeese.util.ViewUtils;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 public class AboutActivity extends AppCompatActivity implements AboutContract.View {
 
@@ -170,39 +168,30 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
 
     @Override
     public Single<android.support.v4.util.Pair<Integer, Integer>> getGalleryViewSize() {
-        return Single.create(new SingleOnSubscribe<android.support.v4.util.Pair<Integer, Integer>>() {
-            @Override
-            public void subscribe(final SingleEmitter<android.support.v4.util.Pair<Integer, Integer>> e) throws Exception {
-                mGalleryImage.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int width = mGalleryImage.getMeasuredWidth();
-                        int height = mGalleryImage.getMeasuredHeight();
-                        e.onSuccess(new android.support.v4.util.Pair<>(width, height));
-                    }
-                });
-            }
-        });
+        return Single.create(emitter ->
+                mGalleryImage.post(() -> {
+                    int width = mGalleryImage.getMeasuredWidth();
+                    int height = mGalleryImage.getMeasuredHeight();
+                    emitter.onSuccess(new android.support.v4.util.Pair<>(width, height));
+                })
+        );
     }
 
     private void setupDrawer(@NonNull NavigationView navView,
                              @NonNull final DrawerLayout drawer) {
         navView.setCheckedItem(R.id.nav_home);
         final Activity source = this;
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                drawer.closeDrawers();
-                Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
-                if (targetActivity != null && !targetActivity.equals(source.getClass())) {
-                    Intent intent = new Intent(source, targetActivity);
-                    ActivityUtils.startActivityWithTransition(source, intent,
-                            new Pair<View, String>(appBar, toolbarTransitionName));
-                    mExit = true;
-                }
-                return true;
+        navView.setNavigationItemSelectedListener(item -> {
+            item.setChecked(true);
+            drawer.closeDrawers();
+            Class<? extends Activity> targetActivity = ActivityUtils.getTargetActivity(item);
+            if (targetActivity != null && !targetActivity.equals(source.getClass())) {
+                Intent intent = new Intent(source, targetActivity);
+                ActivityUtils.startActivityWithTransition(source, intent,
+                        new Pair<>(appBar, toolbarTransitionName));
+                mExit = true;
             }
+            return true;
         });
     }
 
