@@ -10,6 +10,7 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -21,15 +22,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        // jackOptions {
-        //     enabled true
-        // }
+
+        buildConfigField 'String', 'BACKEND_API_URI', BACKEND_API_URI
     }
 
-    // compileOptions {
-    //     sourceCompatibility JavaVersion.VERSION_1_8
-    //     targetCompatibility JavaVersion.VERSION_1_8
-    // }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     lintOptions {
         lintConfig file("lint.xml")
@@ -89,11 +89,12 @@ dependencies {
 
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     provided "org.glassfish:javax.annotation:$rootProject.annotationVersion"
-    compile "com.google.code.gson:gson:$rootProject.gsonVersion"
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
-    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
     compile "com.andkulikov:transitionseverywhere:$rootProject.transitionseverywhereVersion"
 
     // Local Unit Tests

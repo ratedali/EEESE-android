@@ -3,10 +3,12 @@
 
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath "com.jakewharton:butterknife-gradle-plugin:8.4.0"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -16,6 +18,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
     }
 }
@@ -32,14 +35,12 @@ ext {
 
     supportLibraryVersion = '25.1.0'
     daggerVersion = '2.8'
-    gsonVersion = '2.8.0'
     annotationVersion = '10.0-b28'
     butterknifeVersion = '8.4.0'
     rxJavaVersion = '2.0.3'
     rxAndroidVersion = '2.0.1'
     okHttpVersion = '3.5.0'
-    retrofitVersion = '2.1.0'
-    picassoVersion = '2.5.2'
+    retrofitVersion = '2.2.0'
     transitionseverywhereVersion = '1.7.0'
 
     runnerVersion = '0.5'
