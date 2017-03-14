@@ -17,11 +17,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
+import edu.uofk.eeese.eeese.data.database.DatabaseContract.EventEntry;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
 @ApplicationScope
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "projects.db";
+    private static final String DATABASE_NAME = "eeese.db";
     private static final int DATABASE_VERSION = 1;
 
     @Inject
@@ -30,8 +31,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String CREATE_TABLE_QUERY = "CREATE TABLE " + ProjectEntry.TABLE_NAME + " ( "
+    public void onCreate(SQLiteDatabase db) {
+        String CREATE_PROJECTS_TABLE_QUERY = "CREATE TABLE " + ProjectEntry.TABLE_NAME + " ( "
                 + ProjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ProjectEntry.COLUMN_PROJECT_ID + " TEXT UNIQUE ON CONFLICT REPLACE, "
                 + ProjectEntry.COLUMN_PROJECT_NAME + " TEXT NOT NULL, "
@@ -39,13 +40,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ProjectEntry.COLUMN_PROJECT_DESC + " TEXT, "
                 + ProjectEntry.COLUMN_PROJECT_CATEGORY + " INTEGER, "
                 + ProjectEntry.COLUMN_PROJECT_PREREQS + " TEXT)";
-        sqLiteDatabase.execSQL(CREATE_TABLE_QUERY);
+        String CREATE_EVENTS_TABLE_QUERY = "CREATE TABLE " + EventEntry.TABLE_NAME + " ( "
+                + EventEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + EventEntry.COLUMN_EVENT_ID + " TEXT UNIQUE ON CONFLICT REPLACE, "
+                + EventEntry.COLUMN_EVENT_NAME + " TEXT NOT NULL, "
+                + EventEntry.COLUMN_EVENT_DESC + " TEXT,"
+                + EventEntry.COLUMN_EVENT_IMAGE_URI + " TEXT, "
+                + EventEntry.COLUMN_EVENT_LOCATION  + " TEXT, "
+                + EventEntry.COLUMN_EVENT_START_DATE + " DATE, "
+                + EventEntry.COLUMN_EVENT_END_DATE + " DATE)";
+
+        db.execSQL(CREATE_PROJECTS_TABLE_QUERY);
+        db.execSQL(CREATE_EVENTS_TABLE_QUERY);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        String DROP_TABLE_QUERY = "DROP TABLE IF EXISTS " + ProjectEntry.TABLE_NAME;
-        sqLiteDatabase.execSQL(DROP_TABLE_QUERY);
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+        String DROP_PROJECTS_TABLE_QUERY = "DROP TABLE IF EXISTS " + ProjectEntry.TABLE_NAME;
+        String DROP_EVENTS_TABLE_QUERY = "DROP TABLE IF EXISTS " + EventEntry.TABLE_NAME;
+        db.execSQL(DROP_PROJECTS_TABLE_QUERY);
+        db.execSQL(DROP_EVENTS_TABLE_QUERY);
+        onCreate(db);
     }
 }

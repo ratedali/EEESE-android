@@ -63,17 +63,12 @@ public class Project {
     }
 
     public static class Builder {
-        @NonNull
         private String projectId;
-        @NonNull
         private String projectName;
-        @Nullable
         private String projectDesc;
-        @NonNull
         private String projectHead;
         @ProjectCategory
         private int projectCategory;
-        @Nullable
         private List<String> projectPrereqs;
 
         public Builder(@NonNull String id, @NonNull String name,

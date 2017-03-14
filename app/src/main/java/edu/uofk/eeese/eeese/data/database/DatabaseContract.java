@@ -19,6 +19,17 @@ public final class DatabaseContract {
         public static final String COLUMN_PROJECT_PREREQS = "prereqs";
     }
 
+    public static abstract class EventEntry implements BaseColumns {
+        public static final String TABLE_NAME = "events";
+        public static final String COLUMN_EVENT_ID = "eventid";
+        public static final String COLUMN_EVENT_NAME = "name";
+        public static final String COLUMN_EVENT_DESC = "desc";
+        public static final String COLUMN_EVENT_IMAGE_URI = "imageuri";
+        public static final String COLUMN_EVENT_LOCATION = "location";
+        public static final String COLUMN_EVENT_START_DATE = "start";
+        public static final String COLUMN_EVENT_END_DATE = "end";
+    }
+
     /**
      * The database representation of the prerequisites list
      *
