@@ -58,6 +58,11 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
     @BindView(R.id.prereq_list)
     public RecyclerView mPrereqList;
 
+    @BindView(R.id.desc_card)
+    public View mDescCard;
+    @BindView(R.id.prereq_card)
+    public View mPrereqCard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,8 +108,16 @@ public class DetailsActivity extends AppCompatActivity implements DetailsContrac
     public void showProjectInfo(@NonNull Project project) {
         mProjectName.setText(project.getName());
         mProjectHead.setText(project.getProjectHead());
-        mProjectDesc.setText(project.getDesc());
-        mPrereqList.swapAdapter(new PrereqAdapter(project.getPrerequisites()), false);
+        if (project.getDesc() != null && !project.getDesc().isEmpty()) {
+            mProjectDesc.setText(project.getDesc());
+        } else {
+            mDescCard.setVisibility(View.GONE);
+        }
+        if (!project.getPrerequisites().isEmpty()) {
+            mPrereqList.swapAdapter(new PrereqAdapter(project.getPrerequisites()), false);
+        } else {
+            mPrereqList.setVisibility(View.GONE);
+        }
     }
 
     @Override
