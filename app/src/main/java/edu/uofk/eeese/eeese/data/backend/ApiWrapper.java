@@ -44,7 +44,8 @@ public class ApiWrapper {
 
     private static Project projectFromJson(JSONContract.ProjectJSON projectJSON) {
         int category = JSONContract.getCategory(projectJSON.category);
-        return new Project.Builder(projectJSON.id, projectJSON.name, projectJSON.head, category)
+        String head = projectJSON.head == null ? "" : projectJSON.head;
+        return new Project.Builder(projectJSON.id, projectJSON.name, head, category)
                 .withPrerequisites(projectJSON.prereq)
                 .withDesc(projectJSON.desc)
                 .build();

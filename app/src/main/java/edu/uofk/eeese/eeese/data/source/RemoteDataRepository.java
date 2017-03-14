@@ -74,7 +74,21 @@ class RemoteDataRepository implements BaseDataRepository {
     }
 
     @Override
+    public Completable setProjects(List<Project> projects, @Project.ProjectCategory int category) {
+        return Completable.error(
+                new UnsupportedOperationException("cannot set projects for a remote repository")
+        );
+    }
+
+    @Override
     public Completable clearProjects() {
+        return Completable.error(
+                new UnsupportedOperationException("cannot clear projects for a remote repository")
+        );
+    }
+
+    @Override
+    public Completable clearProjects(@Project.ProjectCategory int category) {
         return Completable.error(
                 new UnsupportedOperationException("cannot clear projects for a remote repository")
         );
@@ -89,13 +103,15 @@ class RemoteDataRepository implements BaseDataRepository {
 
     @Override
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
-        return mApi.projects(category);
+        return mApi.projects(category)
+                .subscribeOn(mSchedulerProvider.io());
     }
 
 
     @Override
     public Single<Project> getProject(String projectId, boolean forceUpdate) {
-        return mApi.project(projectId);
+        return mApi.project(projectId)
+                .subscribeOn(mSchedulerProvider.io());
     }
 
     /**

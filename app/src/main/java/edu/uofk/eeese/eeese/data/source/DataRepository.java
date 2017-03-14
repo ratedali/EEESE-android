@@ -70,6 +70,12 @@ class DataRepository implements BaseDataRepository {
     }
 
     @Override
+    public Completable setProjects(List<Project> projects, @Project.ProjectCategory int category) {
+        markCacheDirty(category);
+        return mLocalRepo.setProjects(projects, category);
+    }
+
+    @Override
     public Completable clearProjects() {
         mCache.clear();
         markCacheDirty();
@@ -77,14 +83,32 @@ class DataRepository implements BaseDataRepository {
     }
 
     @Override
+    public Completable clearProjects(@Project.ProjectCategory int category) {
+        Map<String, Project> projects = Observable
+                .fromIterable(mCache.values())
+                .filter(project -> project.getCategory() != category)
+                .reduce(new HashMap<String, Project>(),
+                        (map, project) -> {
+                            map.put(project.getId(), project);
+                            return map;
+                        }
+                )
+                .blockingGet();
+        mCache.clear();
+        mCache.putAll(projects);
+        return mLocalRepo.clearProjects(category);
+    }
+
+    @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
         if (forceUpdate) {
             return getAndSaveRemoteProjects();
         } else if (checkCacheDirty()) {
-            return mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
-                    .filter(projects -> !projects.isEmpty())
-                    .firstOrError()
+            return fastestSource(
+                    mLocalRepo.getProjects(true),
+                    getAndSaveRemoteProjects())
                     .doOnSuccess(projects -> {
+                        mLocalRepo.setProjects(projects);
                         cacheProjects(projects);
                         markCacheValid();
                     });
@@ -95,15 +119,24 @@ class DataRepository implements BaseDataRepository {
     }
 
     @Override
-    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
+    public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
+                                                         @Project.ProjectCategory int category) {
         if (forceUpdate) {
-            return getAndSaveRemoteProjects(category);
+            return mRemoteRepo.getProjectsWithCategory(true, category)
+                    .doOnSuccess(projects -> {
+                        cacheProjects(projects);
+                        markCacheValid(category);
+                    });
 
         } else if (checkCacheDirty(category)) {
-            return getAndCacheLocalProjects(category)
-                    .mergeWith(getAndSaveRemoteProjects(category))
-                    .filter(projects -> !projects.isEmpty())
-                    .firstOrError();
+            return fastestSource(
+                    mLocalRepo.getProjectsWithCategory(false, category),
+                    getAndSaveRemoteProjects(category))
+                    .doOnSuccess(projects -> {
+                        mLocalRepo.setProjects(projects, category).subscribe();
+                        cacheProjects(projects);
+                        markCacheValid(category);
+                    });
         } else {
             // filter the current cache
             return Observable.fromIterable(mCache.values())
@@ -118,18 +151,24 @@ class DataRepository implements BaseDataRepository {
         Completable syncJob = Completable.complete();
         if (forceUpdate) {
             // if an update is forced, fetch from remote
-            syncJob = Completable.fromSingle(getAndSaveRemoteProjects());
+            syncJob = getAndSaveRemoteProjects().toCompletable();
         } else if (checkCacheDirty()) {
             // if the cache is dirty but an update is not forced, fetched from local
-            syncJob = Completable
-                    .fromSingle(mLocalRepo.getProjects(true).mergeWith(getAndSaveRemoteProjects())
-                            .firstOrError().doOnSuccess(projects -> {
-                                cacheProjects(projects);
-                                markCacheValid();
-                            }));
+            syncJob = fastestSource(
+                    mLocalRepo.getProjects(true),
+                    getAndSaveRemoteProjects())
+                    .doOnSuccess(projects -> {
+                        mLocalRepo.setProjects(projects).subscribe();
+                        cacheProjects(projects);
+                        markCacheValid();
+                    })
+                    .toCompletable();
         }
         // after the sync completes, return from cache
-        return syncJob.andThen(Single.just(mCache.get(projectId)));
+        return syncJob
+                .andThen(Single.defer(
+                        () -> Single.just(mCache.get(projectId))
+                ));
     }
 
     @Override
@@ -139,24 +178,23 @@ class DataRepository implements BaseDataRepository {
 
     private Single<List<Project>> getAndSaveRemoteProjects() {
         return mRemoteRepo.getProjects(true)
-                .doOnSuccess(projects -> mLocalRepo.setProjects(projects));
+                .doOnSuccess(projects ->
+                        mLocalRepo.setProjects(projects).subscribe());
     }
 
-    private Single<List<Project>> getAndSaveRemoteProjects(@Project.ProjectCategory final int category) {
+    private Single<List<Project>> getAndSaveRemoteProjects(@Project.ProjectCategory int category) {
         return mRemoteRepo.getProjectsWithCategory(true, category)
-                .doOnSuccess(projects -> {
-                    mLocalRepo.setProjects(projects);
-                    cacheProjects(projects);
-                    markCacheValid(category);
-                });
+                .doOnSuccess(projects ->
+                        mLocalRepo.setProjects(projects, category).subscribe());
     }
 
-    private Single<List<Project>> getAndCacheLocalProjects(@Project.ProjectCategory final int category) {
-        return mLocalRepo.getProjectsWithCategory(true, category)
-                .doOnSuccess(projects -> {
-                    cacheProjects(projects);
-                    markCacheValid(category);
-                });
+    @SafeVarargs
+    private final Single<List<Project>> fastestSource(Single<List<Project>>... sources) {
+        Observable<Single<List<Project>>> singles =
+                Observable.fromArray(sources);
+        return Single.concat(singles)
+                .filter(projects -> !projects.isEmpty())
+                .firstOrError();
     }
 
     private void cacheProjects(List<Project> projects) {

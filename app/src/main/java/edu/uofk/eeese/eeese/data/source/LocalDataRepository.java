@@ -10,7 +10,6 @@
 
 package edu.uofk.eeese.eeese.data.source;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,9 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -63,7 +60,9 @@ public class LocalDataRepository implements BaseDataRepository {
             ProjectEntry.COLUMN_PROJECT_ID,
             ProjectEntry.COLUMN_PROJECT_NAME,
             ProjectEntry.COLUMN_PROJECT_HEAD,
+            ProjectEntry.COLUMN_PROJECT_CATEGORY,
             ProjectEntry.COLUMN_PROJECT_DESC,
+            ProjectEntry.COLUMN_PROJECT_PREREQS
     };
 
 
@@ -81,21 +80,9 @@ public class LocalDataRepository implements BaseDataRepository {
 
         return Completable.fromAction(() -> {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            long id = db.insert(ProjectEntry.TABLE_NAME, null, projectValues(project));
-            db.close();
-            if (id < 0) {
-                // The database returns a negative ID if the insertion failed
-                // in that case, an error is indicated using an exception
-                throw new IOException("Cannot insert a project to database");
-            }
-        });
+            db.insertOrThrow(ProjectEntry.TABLE_NAME, null, projectValues(project));
+        }).subscribeOn(mSchedulerProvider.io());
 
-    }
-
-    @Override
-    public Completable setProjects(final List<Project> projects) {
-        return clearProjects()
-                .andThen(Completable.fromAction(() -> insertProjects(projects)));
     }
 
     @Override
@@ -106,19 +93,28 @@ public class LocalDataRepository implements BaseDataRepository {
             try {
                 for (Project project : projects) {
                     ContentValues values = projectValues(project);
-                    long id = db.insert(ProjectEntry.TABLE_NAME, null, values);
-                    if (id < 0) {
-                        // The database returns a negative ID if the insertion failed
-                        // in that case, the transaction is aborted by throwing an exception
-                        throw new IOException("Cannot insert projects to database");
-                    }
+                    db.insertOrThrow(ProjectEntry.TABLE_NAME, null, values);
                 }
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
-                db.close();
             }
-        });
+        }).subscribeOn(mSchedulerProvider.io());
+    }
+
+
+    @Override
+    public Completable setProjects(final List<Project> projects) {
+        return clearProjects()
+                .andThen(Completable.fromAction(() -> insertProjects(projects)))
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Completable setProjects(List<Project> projects, @Project.ProjectCategory int category) {
+        return clearProjects(category)
+                .andThen(insertProjects(projects))
+                .subscribeOn(mSchedulerProvider.io());
     }
 
     @Override
@@ -127,20 +123,29 @@ public class LocalDataRepository implements BaseDataRepository {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             // Delete all projects and close the database
             db.delete(ProjectEntry.TABLE_NAME, null, null);
-            db.close();
-        });
+        }).subscribeOn(mSchedulerProvider.io());
+    }
+
+
+    @Override
+    public Completable clearProjects(@Project.ProjectCategory int category) {
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            db.delete(ProjectEntry.TABLE_NAME,
+                    ProjectEntry.COLUMN_PROJECT_CATEGORY + " = ?",
+                    new String[]{String.valueOf(category)});
+        }).subscribeOn(mSchedulerProvider.io());
+
     }
 
     @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
         return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
                 .map(db -> {
-                    // The cursor will be closed along with the database by the mapper
-                    @SuppressLint("Recycle")
-                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                    // The cursor will be closed by the mapper
+                    return db.query(ProjectEntry.TABLE_NAME,
                             PROJECTION, null, null,
                             null, null, null);
-                    return new Pair<>(cursor, db);
                 })
                 .map(LocalDataRepository::projects)
                 .subscribeOn(mSchedulerProvider.io());
@@ -152,14 +157,12 @@ public class LocalDataRepository implements BaseDataRepository {
                                                          final int category) {
         return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
                 .map(db -> {
-                    // The cursor will be closed along with the database by the mapper
-                    @SuppressLint("Recycle")
-                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                    // The cursor will be closed by the mapper
+                    return db.query(ProjectEntry.TABLE_NAME,
                             PROJECTION,
-                            ProjectEntry.COLUMN_PROJECT_CATEGORY + " = " + category, // filter using the category
-                            null,
+                            ProjectEntry.COLUMN_PROJECT_CATEGORY + " = ?", // filter using the category
+                            new String[]{String.valueOf(category)},
                             null, null, null);
-                    return new Pair<>(cursor, db);
                 })
                 .map(LocalDataRepository::projects)
                 .subscribeOn(mSchedulerProvider.io());
@@ -169,14 +172,12 @@ public class LocalDataRepository implements BaseDataRepository {
     public Single<Project> getProject(final String projectId, boolean forceUpdate) {
         return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
                 .map(db -> {
-                    // The cursor will be closed along with the database by the mapper
-                    @SuppressLint("Recycle")
-                    Cursor cursor = db.query(ProjectEntry.TABLE_NAME,
+                    // The cursor will be closed by the mapper
+                    return db.query(ProjectEntry.TABLE_NAME,
                             PROJECTION,
                             ProjectEntry.COLUMN_PROJECT_ID + " = ?",
                             new String[]{projectId},
                             null, null, null);
-                    return new Pair<>(cursor, db);
                 }).map(LocalDataRepository::project)
                 .subscribeOn(mSchedulerProvider.io());
     }
@@ -236,8 +237,7 @@ public class LocalDataRepository implements BaseDataRepository {
         String desc = cursor.getString(
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
         int category = cursor.getInt(
-                cursor.getColumnIndexOrThrow(
-                        ProjectEntry.COLUMN_PROJECT_CATEGORY));
+                cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_CATEGORY));
         List<String> prereqs = DatabaseContract.databasePrerequisitesToList(
                 cursor.getString(
                         cursor.getColumnIndexOrThrow(
@@ -249,10 +249,7 @@ public class LocalDataRepository implements BaseDataRepository {
                 .build();
     }
 
-    private static List<Project> projects(Pair<Cursor, SQLiteDatabase> cursorDbPair) {
-        Cursor cursor = cursorDbPair.first;
-        SQLiteDatabase db = cursorDbPair.second;
-
+    private static List<Project> projects(Cursor cursor) {
         List<Project> projects = new LinkedList<>();
         if (cursor.moveToFirst()) {
             do {
@@ -261,21 +258,16 @@ public class LocalDataRepository implements BaseDataRepository {
         }
 
         cursor.close();
-        db.close();
         return projects;
     }
 
-    private static Project project(Pair<Cursor, SQLiteDatabase> cursorDbPair) {
-        Cursor cursor = cursorDbPair.first;
-        SQLiteDatabase db = cursorDbPair.second;
-
+    private static Project project(Cursor cursor) {
         if (!cursor.moveToFirst()) {
             throw new RuntimeException("No project exists");
         }
         Project project = projectFromCursor(cursor);
 
         cursor.close();
-        db.close();
         return project;
     }
 }

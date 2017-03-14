@@ -23,11 +23,15 @@ public interface BaseDataRepository {
 
     Completable insertProject(Project project);
 
+    Completable setProjects(List<Project> projects, @Project.ProjectCategory int category);
+
     Completable insertProjects(List<Project> projects);
 
     Completable setProjects(List<Project> projects);
 
     Completable clearProjects();
+
+    Completable clearProjects(@Project.ProjectCategory int category);
 
     Single<List<Project>> getProjects(boolean forceUpdate);
 

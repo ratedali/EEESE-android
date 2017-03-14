@@ -33,12 +33,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String CREATE_TABLE_QUERY = "CREATE TABLE " + ProjectEntry.TABLE_NAME + " ( "
                 + ProjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ProjectEntry.COLUMN_PROJECT_ID + " TEXT UNIQUE  ON CONFLICT REPLACE, "
+                + ProjectEntry.COLUMN_PROJECT_ID + " TEXT UNIQUE ON CONFLICT REPLACE, "
                 + ProjectEntry.COLUMN_PROJECT_NAME + " TEXT NOT NULL, "
                 + ProjectEntry.COLUMN_PROJECT_HEAD + " TEXT NOT NULL, "
                 + ProjectEntry.COLUMN_PROJECT_DESC + " TEXT, "
-                + ProjectEntry.COLUMN_PROJECT_CATEGORY + " INTEGER NOT NULL, "
-                + ProjectEntry.COLUMN_PROJECT_PREREQS + "TEXT )";
+                + ProjectEntry.COLUMN_PROJECT_CATEGORY + " INTEGER, "
+                + ProjectEntry.COLUMN_PROJECT_PREREQS + " TEXT)";
         sqLiteDatabase.execSQL(CREATE_TABLE_QUERY);
     }
 
