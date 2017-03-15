@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -32,8 +31,6 @@ import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 @ApplicationScope
 class FakeDataRepository implements BaseDataRepository {
@@ -100,8 +97,27 @@ class FakeDataRepository implements BaseDataRepository {
     }
 
     @Override
+    public Completable setProjects(List<Project> projects, @Project.ProjectCategory int category) {
+        mProjects = Observable.fromIterable(mProjects)
+                .filter(project -> project.getCategory() != category)
+                .concatWith(Observable.fromIterable(projects))
+                .toList()
+                .blockingGet();
+        return Completable.complete();
+    }
+
+    @Override
     public Completable clearProjects() {
         mProjects.clear();
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable clearProjects(@Project.ProjectCategory int category) {
+        mProjects = Observable.fromIterable(mProjects)
+                .filter(project -> project.getCategory() != category)
+                .toList()
+                .blockingGet();
         return Completable.complete();
     }
 
@@ -120,12 +136,7 @@ class FakeDataRepository implements BaseDataRepository {
                                                          @Project.ProjectCategory
                                                          final int category) {
         return Observable.fromIterable(mProjects)
-                .filter(new Predicate<Project>() {
-                    @Override
-                    public boolean test(Project project) throws Exception {
-                        return project.getCategory() == category;
-                    }
-                }).toList();
+                .filter(project -> project.getCategory() == category).toList();
     }
 
     @Override
@@ -136,29 +147,23 @@ class FakeDataRepository implements BaseDataRepository {
     @Override
     public Single<Bitmap> getGalleryImageBitmap(final int width, final int height) {
         @DrawableRes final int galleryRes = mGalleryRes[new Random().nextInt(mGalleryRes.length)];
-        return Single.fromCallable(new Callable<BitmapFactory.Options>() {
-            @Override
-            public BitmapFactory.Options call() throws Exception {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
-                return options;
-            }
-        }).map(new Function<BitmapFactory.Options, Bitmap>() {
-            @Override
-            public Bitmap apply(BitmapFactory.Options options) throws Exception {
-                options.inSampleSize = 1;
-                if (options.outHeight > height || options.outWidth > width) {
-                    int halfHeight = options.outHeight / 2;
-                    int halfWidth = options.outWidth / 2;
-                    while ((halfHeight / options.inSampleSize) > height &&
-                            (halfWidth / options.inSampleSize) > width) {
-                        options.inSampleSize *= 2;
-                    }
+        return Single.fromCallable(() -> {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
+            return options;
+        }).map(options -> {
+            options.inSampleSize = 1;
+            if (options.outHeight > height || options.outWidth > width) {
+                int halfHeight = options.outHeight / 2;
+                int halfWidth = options.outWidth / 2;
+                while ((halfHeight / options.inSampleSize) > height &&
+                        (halfWidth / options.inSampleSize) > width) {
+                    options.inSampleSize *= 2;
                 }
-                options.inJustDecodeBounds = false;
-                return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
             }
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeResource(mContext.getResources(), galleryRes, options);
         });
     }
 }
