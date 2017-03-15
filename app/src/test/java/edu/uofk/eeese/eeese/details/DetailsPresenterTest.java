@@ -13,8 +13,9 @@ package edu.uofk.eeese.eeese.details;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
@@ -23,12 +24,13 @@ import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DetailsPresenterTest {
     @Mock
     private BaseDataRepository source;
@@ -55,7 +57,6 @@ public class DetailsPresenterTest {
 
     @Before
     public void setupPresenter() {
-        MockitoAnnotations.initMocks(this);
         presenter = new DetailsPresenter(source, view, schedulerProvider, projectId);
     }
 

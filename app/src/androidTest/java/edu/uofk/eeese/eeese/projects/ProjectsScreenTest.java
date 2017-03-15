@@ -44,8 +44,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +64,7 @@ public class ProjectsScreenTest {
 
     private final Matcher<View> targetRoot = withTagKey(
             R.string.tag_projectslist,
-            Matchers.<Object>equalTo(Project.POWER));
+            Matchers.equalTo(Project.POWER));
 
     @Before
     public void registerIdlingResource() {
@@ -82,27 +82,25 @@ public class ProjectsScreenTest {
     }
 
     @Test
-    public void emptyListShowsNoProjectsScreen() {
-        when(source.getProjectsWithCategory(anyBoolean(), anyInt())).thenReturn(Single.just(Collections.<Project>emptyList()));
+    public void givenThatSourceReturnsAnEmptyProjectList_thenShowNoProjectsScreen() {
+        when(source.getProjectsWithCategory(anyBoolean(), anyInt()))
+                .thenReturn(Single.just(Collections.emptyList()));
 
         testRule.launchActivity(null);
 
         onView(allOf(withId(R.id.error_view), isDescendantOfA(targetRoot)))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
         onView(allOf(withId(R.id.error_image), isDescendantOfA(targetRoot)))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
         onView(allOf(withText(R.string.no_project_available), isDescendantOfA(targetRoot)))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
     @Test
-    public void shouldShowListOfProjects() {
+    public void givenThatSourceReturnsANonEmptyProjectList_thenShowTheProjectList() {
         Project project = new Project.Builder("1", "Project 1", "head", Project.POWER).build();
         List<Project> projects = new ArrayList<>();
         projects.add(project);
-
         when(source.getProjectsWithCategory(anyBoolean(), anyInt()))
                 .thenReturn(Single.just(projects));
 
@@ -110,8 +108,7 @@ public class ProjectsScreenTest {
 
         onView(allOf(withId(R.id.projects_list), isDescendantOfA(targetRoot)))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
         onView(allOf(withId(R.id.project_name), isDescendantOfA(targetRoot)))
-                .check(matches(withText(projects.get(0).getName())));
+                .check(matches(withText(project.getName())));
     }
 }

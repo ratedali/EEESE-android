@@ -22,7 +22,7 @@ public class ObjectUtilsTest {
     }
 
     @Test
-    public void nullIsNotEqualsToAnythingElse() {
+    public void nullIsNotEqualToAnythingElse() {
         assertFalse(ObjectUtils.equals(null, new Object()));
         assertFalse(ObjectUtils.equals(new Object(), null));
     }

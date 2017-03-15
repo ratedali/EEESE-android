@@ -24,19 +24,18 @@ import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.categories.Remote;
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -54,9 +53,12 @@ public class DataRepositoryTest {
     private final Project project = new Project.Builder("ID", "name", "head", Project.POWER).build();
 
     @Before
-    public void setupSource() {
+    public void setupMocks() {
         MockitoAnnotations.initMocks(this);
         source = new DataRepository(local, remote);
+
+        when(local.setProjects(anyList())).thenReturn(Completable.complete());
+        when(local.setProjects(anyList(), anyInt())).thenReturn(Completable.complete());
     }
 
     @After
@@ -65,7 +67,7 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void singleInsertIsOnlyLocal() {
+    public void whenInsertProjectCalled_thenOnlyUseLocal() {
         when(local.insertProject(any(Project.class))).thenReturn(Completable.complete());
         source.insertProject(project)
                 .test()
@@ -75,38 +77,42 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void multipleInsertIsOnlyLocal() {
-        when(local.insertProjects(anyListOf(Project.class))).thenReturn(Completable.complete());
+    public void whenInsertProjectsCalled_thenOnlyUseLocal() {
+        when(local.insertProjects(anyList())).thenReturn(Completable.complete());
+
         List<Project> projects = Collections.emptyList();
         source.insertProjects(projects)
                 .test()
                 .assertComplete();
+
         verify(local).insertProjects(projects);
+        verifyNoMoreInteractions(local);
         verifyZeroInteractions(remote);
     }
 
     @Test
-    public void clearIsOnlyLocal() {
+    public void whenClearProjectsCalled_thenOnlyUseLocal() {
         when(local.clearProjects()).thenReturn(Completable.complete());
+
         source.clearProjects()
                 .test()
                 .assertComplete();
+
         verify(local).clearProjects();
+        verifyNoMoreInteractions(local);
         verifyZeroInteractions(remote);
     }
 
     @Test
-    public void useRemote_whenForced() {
+    public void whenGetProjectsForced_thenOnlyUseRemote() {
         final List<Project> projects = Collections.emptyList();
         when(remote.getProjects(true)).thenReturn(Single.just(projects));
+
         source.getProjects(true)
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> returnedProjects) throws Exception {
-                        return returnedProjects == projects;
-                    }
-                }).assertComplete();
+                .assertValue(returnedProjects -> returnedProjects == projects)
+                .assertComplete();
+
         verify(remote).getProjects(true);
         verify(local, never()).getProjects(anyBoolean());
         verify(local, never()).getProjectsWithCategory(anyBoolean(), anyInt());
@@ -114,28 +120,49 @@ public class DataRepositoryTest {
     }
 
     @Test
-    public void useBoth_whenNotForced() {
-        final List<Project> localProjects = Collections.singletonList(project);
-        final List<Project> remoteProjects = Collections.singletonList(project);
-        when(remote.getProjects(anyBoolean())).thenReturn(Single.just(remoteProjects));
-        when(local.getProjects(anyBoolean())).thenReturn(Single.just(localProjects));
+    public void givenLocalContainsData_whenGetProjectsNotForces_thenUseLocal() {
+        List<Project> localProjects = Collections.singletonList(project);
+        when(
+                local.getProjects(anyBoolean())
+        ).thenReturn(
+                Single.just(localProjects)
+        );
+        when(
+                remote.getProjects(anyBoolean())
+        ).thenReturn(
+                Single.error(new Exception("The remote repo is not expected to be used"))
+        );
 
         source.getProjects(false)
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> returnedProjects) throws Exception {
-                        return returnedProjects == localProjects ||
-                                returnedProjects == remoteProjects;
-                    }
-                }).assertComplete();
+                .assertValue(returnedProjects ->
+                        returnedProjects == localProjects)
+                .assertComplete();
 
-        verify(remote).getProjects(anyBoolean());
-        verify(local).getProjects(anyBoolean());
+        verify(local).getProjects(eq(false));
+        verifyNoMoreInteractions(local);
     }
 
     @Test
-    public void useCache_onConsecutiveCalls() {
+    public void givenLocalDoesNotContainData_WhenGetProjectsNotForces_thenUseRemoteAndSaveToLocal() {
+        List<Project> remoteProjects = Collections.singletonList(project);
+        when(local.getProjects(anyBoolean())).thenReturn(Single.just(Collections.emptyList()));
+        when(remote.getProjects(anyBoolean())).thenReturn(Single.just(remoteProjects));
+
+        source.getProjects(false)
+                .test()
+                .assertValue(returnedProjects -> returnedProjects == remoteProjects)
+                .assertComplete();
+
+        verify(local).getProjects(eq(false));
+        verify(local).setProjects(eq(remoteProjects));
+        verifyNoMoreInteractions(local);
+        verify(remote).getProjects(anyBoolean());
+        verifyNoMoreInteractions(remote);
+    }
+
+    @Test
+    public void whenGetProjectsCalledMultipleTimes_thenUseCache() {
         final List<Project> localProjects = Collections.singletonList(project);
         final List<Project> remoteProjects = Collections.singletonList(project);
 
@@ -143,109 +170,83 @@ public class DataRepositoryTest {
         when(local.getProjects(anyBoolean())).thenReturn(Single.just(localProjects));
 
         source.getProjects(false)
-                .flatMap(new Function<List<Project>, Single<List<Project>>>() {
-                    @Override
-                    public Single<List<Project>> apply(List<Project> projects) throws Exception {
-                        return source.getProjects(false);
-                    }
-                })
+                .flatMap(projects -> source.getProjects(false))
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> projects) throws Exception {
-                        return projects.size() == 1;
-                    }
-                })
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> projects) throws Exception {
-                        return projects.get(0).equals(project);
-                    }
+                .assertValue(projects -> projects.size() == 1)
+                .assertValue(projects -> {
+                    return projects.get(0).equals(project);
                 })
                 .assertComplete();
 
-        verify(local, times(1)).getProjects(anyBoolean());
-        verify(remote, times(1)).getProjects(anyBoolean());
+        verify(local, atMost(1)).getProjects(anyBoolean());
+        verify(remote, atMost(1)).getProjects(anyBoolean());
     }
 
 
     @Test
-    public void useRemoteForCategory_whenForced() {
-        final List<Project> projects = Collections.emptyList();
-        when(remote.getProjectsWithCategory(eq(true), anyInt())).thenReturn(Single.just(projects));
+    public void whenGetProjectsWithCategoryForced_thenOnlyUseRemote() {
+        final List<Project> remoteProjects = Collections.singletonList(project);
+        when(remote.getProjectsWithCategory(eq(true), eq(project.getCategory())))
+                .thenReturn(Single.just(remoteProjects));
 
-        source.getProjectsWithCategory(true, Project.POWER)
+        source.getProjectsWithCategory(true, project.getCategory())
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> returnedProjects) throws Exception {
-                        return returnedProjects == projects;
-                    }
-                }).assertComplete();
+                .assertValue(returnedProjects -> returnedProjects == remoteProjects)
+                .assertComplete();
 
-        verify(remote).getProjectsWithCategory(true, Project.POWER);
+        verify(remote).getProjectsWithCategory(true, project.getCategory());
+        verifyNoMoreInteractions(remote);
         verify(local, never()).getProjects(anyBoolean());
         verify(local, never()).getProjectsWithCategory(anyBoolean(), anyInt());
         verify(local, never()).getProject(anyString(), anyBoolean());
     }
 
     @Test
-    public void useBothForCategory_whenNotForced() {
+    public void givenLocalContainsData_whenGetProjectsWithCategoryNotForced_thenUseLocal() {
         final List<Project> localProjects = Collections.singletonList(project);
-        final List<Project> remoteProjects = Collections.singletonList(project);
-        when(remote.getProjectsWithCategory(anyBoolean(), anyInt()))
-                .thenReturn(Single.just(remoteProjects));
-        when(local.getProjectsWithCategory(anyBoolean(), anyInt()))
-                .thenReturn(Single.just(localProjects));
+        when(
+                local.getProjectsWithCategory(anyBoolean(), eq(project.getCategory()))
+        ).thenReturn(Single.just(localProjects));
+        when(
+                remote.getProjectsWithCategory(anyBoolean(), anyInt())
+        ).thenReturn(
+                Single.error(new Exception("The remote repo is not expected to be used"))
+        );
 
-        source.getProjectsWithCategory(false, Project.POWER)
+        source.getProjectsWithCategory(false, project.getCategory())
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> returnedProjects) throws Exception {
-                        return returnedProjects == localProjects ||
-                                returnedProjects == remoteProjects;
-                    }
-                }).assertComplete();
+                .assertValue(returnedProjects -> returnedProjects == localProjects)
+                .assertComplete();
 
-        verify(remote).getProjectsWithCategory(anyBoolean(), eq(Project.POWER));
-        verify(local).getProjectsWithCategory(anyBoolean(), eq(Project.POWER));
+        verify(local).getProjectsWithCategory(anyBoolean(), eq(project.getCategory()));
     }
 
     @Test
-    public void useCacheForCategory_onConsecutiveCalls() {
+    public void whenGetProjectsWithCategoryCalledMultipleTimes_thenUseCache() {
         final List<Project> localProjects = Collections.singletonList(project);
         final List<Project> remoteProjects = Collections.singletonList(project);
 
-        when(remote.getProjectsWithCategory(anyBoolean(), anyInt()))
-                .thenReturn(Single.just(remoteProjects));
-        when(local.getProjectsWithCategory(anyBoolean(), anyInt()))
-                .thenReturn(Single.just(localProjects));
+        when(
+                remote.getProjectsWithCategory(anyBoolean(), eq(project.getCategory()))
+        ).thenReturn(Single.just(remoteProjects));
+
+        when(
+                local.getProjectsWithCategory(anyBoolean(), eq(project.getCategory()))
+        ).thenReturn(Single.just(localProjects));
 
         source.getProjectsWithCategory(false, project.getCategory())
-                .flatMap(new Function<List<Project>, Single<List<Project>>>() {
-                    @Override
-                    public Single<List<Project>> apply(List<Project> projects) throws Exception {
-                        return source.getProjectsWithCategory(false, project.getCategory());
-                    }
-                })
+                .flatMap(projects -> source.getProjectsWithCategory(false, project.getCategory()))
                 .test()
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> projects) throws Exception {
-                        return projects.size() == 1;
-                    }
-                })
-                .assertValue(new Predicate<List<Project>>() {
-                    @Override
-                    public boolean test(List<Project> projects) throws Exception {
-                        return projects.get(0).equals(project);
-                    }
+                .assertValue(projects -> projects.size() == 1)
+                .assertValue(projects -> {
+                    return projects.get(0).equals(project);
                 })
                 .assertComplete();
 
-        verify(local, times(1)).getProjectsWithCategory(anyBoolean(), eq(project.getCategory()));
-        verify(remote, times(1)).getProjectsWithCategory(anyBoolean(), eq(project.getCategory()));
+        verify(local, atMost(1))
+                .getProjectsWithCategory(anyBoolean(), eq(project.getCategory()));
+        verify(remote, atMost(1))
+                .getProjectsWithCategory(anyBoolean(), eq(project.getCategory()));
     }
 
 

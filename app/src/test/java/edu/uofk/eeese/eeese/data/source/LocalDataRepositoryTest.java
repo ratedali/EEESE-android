@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
@@ -32,13 +32,12 @@ import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
 import edu.uofk.eeese.eeese.util.TestUtils;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Single;
-import io.reactivex.functions.Predicate;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -61,21 +60,22 @@ public class LocalDataRepositoryTest {
     Cursor cursor;
 
     @Before
-    public void setupSchedulerProvider() {
+    public void setupMocks() {
+        // scheduler provider
         TestUtils.setupMockSchedulerProvider(schedulerProvider, Schedulers.trampoline());
-    }
-
-    @Before
-    public void setupDatabaseHelper() {
+        // database helper
         when(dbHelper.getReadableDatabase()).thenReturn(database);
         when(dbHelper.getWritableDatabase()).thenReturn(database);
+        // database
+        when(database.query(anyString(),
+                nullable(String[].class), nullable(String.class), nullable(String[].class),
+                nullable(String.class), nullable(String.class), nullable(String.class))
+        ).thenReturn(cursor);
     }
 
     @Before
-    public void setupDatabase() {
-        when(database.query(anyString(),
-                any(String[].class), anyString(), any(String[].class),
-                anyString(), anyString(), anyString())).thenReturn(cursor);
+    public void setupSource() {
+        source = new LocalDataRepository(context, dbHelper, schedulerProvider);
     }
 
     @After
@@ -85,9 +85,6 @@ public class LocalDataRepositoryTest {
 
     @Test
     public void usesIOScheduler() {
-        when(cursor.moveToFirst()).thenReturn(false);
-        when(cursor.moveToNext()).thenReturn(false);
-
         source.getProjects(false);
 
         verify(schedulerProvider, only()).io();
@@ -127,16 +124,11 @@ public class LocalDataRepositoryTest {
                 .getReadableDatabase();
         verify(database)
                 .query(eq(ProjectEntry.TABLE_NAME),
-                        any(String[].class), anyString(), any(String[].class),
-                        anyString(), anyString(), anyString());
+                        nullable(String[].class), nullable(String.class), nullable(String[].class),
+                        nullable(String.class), nullable(String.class), nullable(String.class));
 
         // only one value returned
-        testObserver.assertValue(new Predicate<List<Project>>() {
-            @Override
-            public boolean test(List<Project> projects) throws Exception {
-                return projects.size() == 1;
-            }
-        });
+        testObserver.assertValue(projects -> projects.size() == 1);
 
         // the same values from the database
         Project project = testObserver.values().get(0).get(0);
@@ -149,21 +141,15 @@ public class LocalDataRepositoryTest {
     @Test
     public void returnsEmptyList_ifDatabaseIsEmpty() {
         when(cursor.moveToFirst()).thenReturn(false);
-        when(cursor.moveToNext()).thenReturn(false);
 
         Single<List<Project>> answer = source.getProjects(false);
 
-        answer.test().assertValue(new Predicate<List<Project>>() {
-            @Override
-            public boolean test(List<Project> projects) throws Exception {
-                return projects.isEmpty();
-            }
-        });
+        answer.test().assertValue(List::isEmpty);
     }
 
     @Test
     public void clearAlwaysCompletes() {
-        // On the assumption that SQLiteDatabase.delete never throws
+        // On the assumption that SQLiteDatabase.delete() never throws
         source.clearProjects().test().assertComplete();
     }
 

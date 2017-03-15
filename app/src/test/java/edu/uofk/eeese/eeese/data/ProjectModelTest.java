@@ -13,7 +13,7 @@ package edu.uofk.eeese.eeese.data;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -30,7 +30,7 @@ public class ProjectModelTest {
         project1 = new Project
                 .Builder("1", "Project 1", "Mr. Head", Project.POWER)
                 .withDesc("desc")
-                .withPrerequisites(Collections.<String>emptyList())
+                .withPrerequisites(Collections.emptyList())
                 .build();
     }
 

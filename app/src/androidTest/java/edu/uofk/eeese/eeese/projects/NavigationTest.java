@@ -49,9 +49,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -107,7 +107,7 @@ public class NavigationTest {
     }
 
     @Test
-    public void OpensHome_onHomeItemClick() {
+    public void whenHomeItemIsClicked_theOpenTheAboutActivity() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
 
@@ -115,24 +115,25 @@ public class NavigationTest {
     }
 
     @Test
-    public void OpensDetails_onProjectClick() {
+    public void whenAProjectIsClicked_thenOpenTheProjectDetailsActivity() {
         onView(allOf(withId(R.id.projects_list),
                 isDescendantOfA(
                         withTagKey(R.string.tag_projectslist,
-                                Matchers.<Object>equalTo(project.getCategory()))
+                                Matchers.equalTo(project.getCategory()))
                 )
         )).perform(RecyclerViewActions.actionOnItemAtPosition(
                 0,
                 click()));
+
         intended(hasComponent(hasClassName(DetailsActivity.class.getName())));
     }
 
     @Test
-    public void OpensCorrectProjectDetails_onProjectClick() {
+    public void whenAProjectIsClicked_thenOpenThatProjectDetails() {
         onView(allOf(withId(R.id.projects_list),
                 isDescendantOfA(
                         withTagKey(R.string.tag_projectslist,
-                                Matchers.<Object>equalTo(project.getCategory()))
+                                Matchers.equalTo(project.getCategory()))
                 )
         )).perform(RecyclerViewActions.actionOnItemAtPosition(
                 0,
@@ -143,5 +144,4 @@ public class NavigationTest {
         onView(withId(R.id.project_head)).check(matches(withText(project.getProjectHead())));
         onView(withId(R.id.project_desc)).check(matches(withText(project.getDesc())));
     }
-
 }

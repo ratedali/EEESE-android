@@ -105,10 +105,9 @@ class DataRepository implements BaseDataRepository {
             return getAndSaveRemoteProjects();
         } else if (checkCacheDirty()) {
             return fastestSource(
-                    mLocalRepo.getProjects(true),
+                    mLocalRepo.getProjects(false),
                     getAndSaveRemoteProjects())
                     .doOnSuccess(projects -> {
-                        mLocalRepo.setProjects(projects);
                         cacheProjects(projects);
                         markCacheValid();
                     });

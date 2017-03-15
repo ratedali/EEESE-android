@@ -144,7 +144,8 @@ public class LocalDataRepository implements BaseDataRepository {
                 .map(db -> {
                     // The cursor will be closed by the mapper
                     return db.query(ProjectEntry.TABLE_NAME,
-                            PROJECTION, null, null,
+                            PROJECTION,
+                            null, null,
                             null, null, null);
                 })
                 .map(LocalDataRepository::projects)
@@ -178,7 +179,7 @@ public class LocalDataRepository implements BaseDataRepository {
                             ProjectEntry.COLUMN_PROJECT_ID + " = ?",
                             new String[]{projectId},
                             null, null, null);
-                }).map(LocalDataRepository::project)
+                }).map(LocalDataRepository::singleProject)
                 .subscribeOn(mSchedulerProvider.io());
     }
 
@@ -218,7 +219,7 @@ public class LocalDataRepository implements BaseDataRepository {
     }
 
     /**
-     * Reads project data from the current row in the cursor and returns it as a Project object
+     * Reads singleProject data from the current row in the cursor and returns it as a Project object
      * The method expects the cursor to be pointing to an appropriate row,
      * and it does not close the cursor after it it reads the data
      *
@@ -227,7 +228,7 @@ public class LocalDataRepository implements BaseDataRepository {
      */
     // category will always be a legal value because its always saved as one
     @SuppressWarnings("WrongConstant")
-    private static Project projectFromCursor(Cursor cursor) {
+    private static Project project(Cursor cursor) {
         String id = cursor.getString(
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
         String name = cursor.getString(
@@ -253,7 +254,7 @@ public class LocalDataRepository implements BaseDataRepository {
         List<Project> projects = new LinkedList<>();
         if (cursor.moveToFirst()) {
             do {
-                projects.add(projectFromCursor(cursor));
+                projects.add(project(cursor));
             } while (cursor.moveToNext());
         }
 
@@ -261,11 +262,11 @@ public class LocalDataRepository implements BaseDataRepository {
         return projects;
     }
 
-    private static Project project(Cursor cursor) {
+    private static Project singleProject(Cursor cursor) {
         if (!cursor.moveToFirst()) {
-            throw new RuntimeException("No project exists");
+            throw new RuntimeException("No singleProject exists");
         }
-        Project project = projectFromCursor(cursor);
+        Project project = project(cursor);
 
         cursor.close();
         return project;

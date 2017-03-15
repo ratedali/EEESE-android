@@ -69,7 +69,7 @@ public class ProjectsPresenterTest {
     @Test
     public void shouldCallNoProjects_OnEmptyList() {
         when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
-                .thenReturn(Single.just(Collections.<Project>emptyList()));
+                .thenReturn(Single.just(Collections.emptyList()));
         presenter.loadProjects(anyBoolean());
         verify(view).showNoProjects();
     }
@@ -85,7 +85,7 @@ public class ProjectsPresenterTest {
     @Test
     public void shouldCallConnectionError_OnException() {
         when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
-                .thenReturn(Single.<List<Project>>error(new Exception()));
+                .thenReturn(Single.error(new Exception()));
         presenter.loadProjects(anyBoolean());
         verify(view).showNoConnectionError();
     }
