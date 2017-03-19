@@ -17,12 +17,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="edu.uofk.eeese.eeese.about.AboutActivity">
+    tools:context="edu.uofk.eeese.eeese.events.EventsActivity">
 
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/content_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:showIn="@layout/activity_home">
+        android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
@@ -36,12 +36,11 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                android:minHeight="?actionBarSize"/>
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/home_content"/>
+        <include layout="@layout/events_content"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

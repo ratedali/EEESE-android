@@ -11,13 +11,16 @@
 package edu.uofk.eeese.eeese.data.source;
 
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +28,7 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.data.Event;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
@@ -39,7 +43,10 @@ class FakeDataRepository implements BaseDataRepository {
     private Context mContext;
 
     private List<Project> mProjects;
-    private boolean thrown;
+    private boolean thrownForProjects;
+
+    private List<Event> mEvents;
+    private boolean thrownForEvents;
 
     @DrawableRes
     private static final int[] mGalleryRes = {
@@ -74,8 +81,38 @@ class FakeDataRepository implements BaseDataRepository {
                                         Arrays.asList("Prereq1", "Prereq2", "Prereq3", "Prereq5")
                                 ).build());
         }
+        thrownForProjects = false;
 
-        thrown = false;
+        mEvents = new LinkedList<>();
+        for (int i = 0; i < 10; ++i) {
+            Event.Builder builder = new Event.Builder(String.valueOf(i), "Event " + i)
+                    .description("Event Description");
+            if (i < 3) {
+                builder.endDate(new Date());
+            }
+            if (i < 5) {
+                builder.startDate(new Date());
+            }
+            if (i < 7) {
+                builder.location("1123123", "21131231");
+            }
+            if (i < 9) {
+                builder.imageUri(new Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                        .authority(mContext
+                                .getResources()
+                                .getResourcePackageName(R.drawable.gallery_4))
+                        .appendPath(mContext
+                                .getResources()
+                                .getResourceTypeName(R.drawable.gallery_4))
+                        .appendPath(mContext
+                                .getResources()
+                                .getResourceEntryName(R.drawable.gallery_4))
+                        .build());
+            }
+            mEvents.add(builder.build());
+        }
+        thrownForEvents = false;
     }
 
     @Override
@@ -121,16 +158,18 @@ class FakeDataRepository implements BaseDataRepository {
         return Completable.complete();
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
-        if (!thrown) {
-            thrown = true;
+        if (!thrownForProjects) {
+            thrownForProjects = true;
             return Single.error(new Exception());
         } else {
             return Single.just(mProjects);
         }
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
                                                          @Project.ProjectCategory
@@ -142,6 +181,44 @@ class FakeDataRepository implements BaseDataRepository {
     @Override
     public Single<Project> getProject(String projectId, boolean forceUpdate) {
         return Single.just(mProjects.get(Integer.parseInt(projectId) - 1));
+    }
+
+    @Override
+    public Completable insertEvent(Event event) {
+        mEvents.add(event);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable insertEvents(List<Event> events) {
+        mEvents.addAll(events);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable setEvents(List<Event> events) {
+        mEvents.clear();
+        mEvents.addAll(events);
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable clearEvents() {
+        mEvents.clear();
+        return Completable.complete();
+    }
+
+    @Override
+    public Single<Event> getEvent(String eventId, boolean forceUpdate) {
+        return Single.just(mEvents)
+                .flattenAsObservable(events -> events)
+                .filter(event -> event.getId() == eventId)
+                .firstOrError();
+    }
+
+    @Override
+    public Single<List<Event>> getEvents(boolean forceUpdate) {
+        return Single.just(mEvents);
     }
 
     @Override

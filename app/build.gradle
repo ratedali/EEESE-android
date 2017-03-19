@@ -56,8 +56,8 @@ android {
     }
 
     android.variantFilter { variant ->
-        if (variant.buildType.name.equals('release')
-                && variant.getFlavors().get(0).name.equals('mock')) {
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
             variant.setIgnore(true);
         }
     }
@@ -89,13 +89,24 @@ dependencies {
 
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     provided "org.glassfish:javax.annotation:$rootProject.annotationVersion"
+
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rootProject.rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-design:$rootProject.rxBindingVersion"
+
+    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
+    compile "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
+
     compile "com.andkulikov:transitionseverywhere:$rootProject.transitionseverywhereVersion"
+    compile "joda-time:joda-time:$rootProject.jodatimeVersion"
 
     // Local Unit Tests
     testCompile "junit:junit:$rootProject.junitVersion"

@@ -109,7 +109,7 @@ public class NavigationTest {
     @Test
     public void whenHomeItemIsClicked_theOpenTheAboutActivity() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_home));
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_about));
 
         intended(hasComponent(hasClassName(AboutActivity.class.getName())));
     }

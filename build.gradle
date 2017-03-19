@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath "com.jakewharton:butterknife-gradle-plugin:8.4.0"
 
@@ -29,18 +29,22 @@ task clean(type: Delete) {
 
 ext {
     buildToolsVersion = '25.0.1'
-    minSdkVersion = 10
+    minSdkVersion = 14
     compileSdkVersion = 25
     targetSdkVersion = 25
 
-    supportLibraryVersion = '25.1.0'
+    supportLibraryVersion = '25.3.0'
     daggerVersion = '2.9'
     annotationVersion = '10.0-b28'
     butterknifeVersion = '8.5.1'
     rxJavaVersion = '2.0.7'
     rxAndroidVersion = '2.0.1'
+    rxBindingVersion = '2.0.0'
+    picassoVersion = '2.5.2'
+    okhttpVersion = '3.6.0'
     retrofitVersion = '2.2.0'
     transitionseverywhereVersion = '1.7.0'
+    jodatimeVersion = '2.9.7'
 
     runnerVersion = '0.5'
     rulesVersion = '0.5'

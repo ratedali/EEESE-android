@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import edu.uofk.eeese.eeese.util.ObjectUtils;
 
@@ -28,24 +28,28 @@ public class Event {
     @Nullable
     private Uri mImageUri;
     @Nullable
-    private String mLocation;
+    private String mLongitude;
     @Nullable
-    private Date mStartDate;
+    private String mLatitude;
     @Nullable
-    private Date mEndDate;
+    private DateTime mStartDate;
+    @Nullable
+    private DateTime mEndDate;
 
     private Event(String id,
                   String name,
                   String desc,
                   Uri imageUri,
-                  String location,
-                  Date startDate,
-                  Date endDate) {
+                  String longitude,
+                  String latitude,
+                  DateTime startDate,
+                  DateTime endDate) {
         mId = id;
         mName = name;
         mDesc = desc;
         mImageUri = imageUri;
-        mLocation = location;
+        mLongitude = longitude;
+        mLatitude = latitude;
         mStartDate = startDate;
         mEndDate = endDate;
     }
@@ -56,9 +60,10 @@ public class Event {
         private String eventName;
         private String eventDesc;
         private Uri imageUri;
-        private String eventLocation;
-        private Date eventStart;
-        private Date eventEnd;
+        private String eventLongitude;
+        private String eventLatitude;
+        private DateTime eventStart;
+        private DateTime eventEnd;
         public Builder(@NonNull String id, @NonNull String name) {
             eventId = id;
             eventName = name;
@@ -67,7 +72,7 @@ public class Event {
 
         public Event build() {
             return new Event(eventId, eventName, eventDesc,
-                    imageUri, eventLocation,
+                    imageUri, eventLongitude, eventLatitude,
                     eventStart, eventEnd);
         }
 
@@ -81,22 +86,27 @@ public class Event {
             return this;
         }
 
-        public Builder imageUri(@NonNull String uri) {
-            imageUri = Uri.parse(uri);
+        public Builder imageUri(@Nullable String uri) {
+            if (uri != null) {
+                imageUri = Uri.parse(uri);
+            }
             return this;
         }
 
-        public Builder location(@NonNull String longitude, @NonNull String latitude) {
-            eventLocation = longitude + "," + latitude;
+        public Builder location(@Nullable String longitude, @Nullable String latitude) {
+            if (longitude != null && latitude != null) {
+                eventLongitude = longitude;
+                eventLatitude = latitude;
+            }
             return this;
         }
 
-        public Builder startDate(@NonNull Date date) {
+        public Builder startDate(@Nullable DateTime date) {
             eventStart = date;
             return this;
         }
 
-        public Builder endDate(@NonNull Date date) {
+        public Builder endDate(@Nullable DateTime date) {
             eventEnd = date;
             return this;
         }
@@ -124,27 +134,21 @@ public class Event {
 
     @Nullable
     public String getLongitude() {
-        if (mLocation != null) {
-            return mLocation.split(",")[0];
-        }
-        return null;
+        return mLongitude;
     }
 
     @Nullable
     public String getLatitude() {
-        if (mLocation != null) {
-            return mLocation.split(",")[1];
-        }
-        return null;
+        return mLatitude;
     }
 
     @Nullable
-    public Date getStartDate() {
+    public DateTime getStartDate() {
         return mStartDate;
     }
 
     @Nullable
-    public Date getEndDate() {
+    public DateTime getEndDate() {
         return mEndDate;
     }
 
@@ -155,12 +159,13 @@ public class Event {
         if (rhs == null || getClass() != rhs.getClass())
             return false;
         Event event = (Event) rhs;
-        return ObjectUtils.equals(mId, event.mId) &&
-                ObjectUtils.equals(mName, event.mName) &&
-                ObjectUtils.equals(mDesc, event.mDesc) &&
-                ObjectUtils.equals(mImageUri, event.mImageUri) &&
-                ObjectUtils.equals(mLocation, event.mLocation) &&
-                ObjectUtils.equals(mStartDate, event.mStartDate) &&
-                ObjectUtils.equals(mEndDate, event.mEndDate);
+        return ObjectUtils.equals(getId(), event.getId()) &&
+                ObjectUtils.equals(getName(), event.getName()) &&
+                ObjectUtils.equals(getDesc(), event.getDesc()) &&
+                ObjectUtils.equals(getImageUri(), event.getImageUri()) &&
+                ObjectUtils.equals(getLongitude(), event.getLongitude()) &&
+                ObjectUtils.equals(getLatitude(), event.getLatitude()) &&
+                ObjectUtils.equals(getStartDate(), event.getStartDate()) &&
+                ObjectUtils.equals(getEndDate(), event.getEndDate());
     }
 }

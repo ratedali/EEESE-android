@@ -12,6 +12,7 @@ package edu.uofk.eeese.eeese.data.backend;
 
 import java.util.List;
 
+import edu.uofk.eeese.eeese.data.Event;
 import edu.uofk.eeese.eeese.data.Project;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -26,28 +27,62 @@ public class ApiWrapper {
     public Single<List<Project>> projects() {
         return mApi.projects()
                 .flatMapObservable(Observable::fromIterable)
-                .map(ApiWrapper::projectFromJson)
+                .map(ApiWrapper::projectFromJSON)
                 .toList();
     }
 
     public Single<Project> project(String id) {
         return mApi.project(id)
-                .map(ApiWrapper::projectFromJson);
+                .map(ApiWrapper::projectFromJSON);
     }
 
     public Single<List<Project>> projects(@Project.ProjectCategory int category) {
-        return mApi.projects(JSONContract.getJsonCategory(category))
+        return mApi.projects(ProjectsJSONContract.getJSONCategory(category))
                 .flatMapObservable(Observable::fromIterable)
-                .map(ApiWrapper::projectFromJson)
+                .map(ApiWrapper::projectFromJSON)
                 .toList();
     }
 
-    private static Project projectFromJson(JSONContract.ProjectJSON projectJSON) {
-        int category = JSONContract.getCategory(projectJSON.category);
+    public Single<Event> event(String id) {
+        return mApi.event(id)
+                .map(ApiWrapper::eventFromJSON);
+    }
+
+    public Single<List<Event>> events() {
+        return mApi.events()
+                .flatMapObservable(Observable::fromIterable)
+                .map(ApiWrapper::eventFromJSON)
+                .toList();
+    }
+
+    private static Project projectFromJSON(ProjectsJSONContract.ProjectJSON projectJSON) {
+        int category = ProjectsJSONContract.getCategory(projectJSON.category);
         String head = projectJSON.head == null ? "" : projectJSON.head;
         return new Project.Builder(projectJSON.id, projectJSON.name, head, category)
                 .withPrerequisites(projectJSON.prereq)
                 .withDesc(projectJSON.desc)
                 .build();
+    }
+
+    private static Event eventFromJSON(EventsJSONContract.EventJSON eventJSON) {
+        Event.Builder eventBuilder = new Event.Builder(eventJSON.id, eventJSON.name);
+        eventBuilder.description(eventJSON.desc);
+
+        if (eventJSON.location != null && !eventJSON.location.isEmpty()) {
+            String[] coords = eventJSON.location.split(",");
+            String longitude = coords[0];
+            String latitude = coords[1];
+            eventBuilder.location(longitude, latitude);
+        }
+        if (eventJSON.imageuri != null) {
+            eventBuilder.imageUri(eventJSON.imageuri);
+        }
+        if (eventJSON.start != null) {
+            eventBuilder.startDate(eventJSON.start);
+        }
+        if (eventJSON.end != null) {
+            eventBuilder.endDate(eventJSON.end);
+        }
+        return eventBuilder.build();
     }
 }

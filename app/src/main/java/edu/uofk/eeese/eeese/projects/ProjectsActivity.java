@@ -71,7 +71,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
     public ViewPager mViewPager;
 
     // Control
-    private boolean mExit;
     @BindString(R.string.transitionname_projectcard)
     public String projectCardTransitionName;
 
@@ -128,8 +127,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
     @Override
     protected void onStop() {
         super.onStop();
-        if (mExit)
-            finish();
     }
 
     private void setupDrawer(@NonNull NavigationView navView,
@@ -145,7 +142,6 @@ public class ProjectsActivity extends AppCompatActivity implements ProjectsFragm
                 Intent intent = new Intent(source, targetActivity);
                 ActivityUtils.startActivityWithTransition(source, intent,
                         new Pair<>(mAppBar, toolbarTransitionName));
-                mExit = true;
             }
             return true;
         });

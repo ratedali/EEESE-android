@@ -17,9 +17,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -27,14 +31,16 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import edu.uofk.eeese.eeese.R;
+import edu.uofk.eeese.eeese.data.Event;
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.database.DatabaseContract;
+import edu.uofk.eeese.eeese.data.database.DatabaseContract.EventEntry;
 import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
 import edu.uofk.eeese.eeese.di.categories.Local;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.disposables.Disposables;
 
 @ApplicationScope
 @Local
@@ -56,14 +62,6 @@ public class LocalDataRepository implements BaseDataRepository {
     private SQLiteOpenHelper mDbHelper;
     @NonNull
     private BaseSchedulerProvider mSchedulerProvider;
-    private final String[] PROJECTION = {
-            ProjectEntry.COLUMN_PROJECT_ID,
-            ProjectEntry.COLUMN_PROJECT_NAME,
-            ProjectEntry.COLUMN_PROJECT_HEAD,
-            ProjectEntry.COLUMN_PROJECT_CATEGORY,
-            ProjectEntry.COLUMN_PROJECT_DESC,
-            ProjectEntry.COLUMN_PROJECT_PREREQS
-    };
 
 
     @Inject
@@ -121,7 +119,6 @@ public class LocalDataRepository implements BaseDataRepository {
     public Completable clearProjects() {
         return Completable.fromAction(() -> {
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            // Delete all projects and close the database
             db.delete(ProjectEntry.TABLE_NAME, null, null);
         }).subscribeOn(mSchedulerProvider.io());
     }
@@ -138,13 +135,14 @@ public class LocalDataRepository implements BaseDataRepository {
 
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
-        return Single.fromCallable(() -> mDbHelper.getReadableDatabase())
+        return Single.fromCallable(mDbHelper::getReadableDatabase)
                 .map(db -> {
                     // The cursor will be closed by the mapper
                     return db.query(ProjectEntry.TABLE_NAME,
-                            PROJECTION,
+                            null,
                             null, null,
                             null, null, null);
                 })
@@ -152,6 +150,7 @@ public class LocalDataRepository implements BaseDataRepository {
                 .subscribeOn(mSchedulerProvider.io());
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate,
                                                          @Project.ProjectCategory
@@ -160,7 +159,7 @@ public class LocalDataRepository implements BaseDataRepository {
                 .map(db -> {
                     // The cursor will be closed by the mapper
                     return db.query(ProjectEntry.TABLE_NAME,
-                            PROJECTION,
+                            null,
                             ProjectEntry.COLUMN_PROJECT_CATEGORY + " = ?", // filter using the category
                             new String[]{String.valueOf(category)},
                             null, null, null);
@@ -175,11 +174,69 @@ public class LocalDataRepository implements BaseDataRepository {
                 .map(db -> {
                     // The cursor will be closed by the mapper
                     return db.query(ProjectEntry.TABLE_NAME,
-                            PROJECTION,
+                            null,
                             ProjectEntry.COLUMN_PROJECT_ID + " = ?",
                             new String[]{projectId},
                             null, null, null);
-                }).map(LocalDataRepository::singleProject)
+                }).map(LocalDataRepository::project)
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Completable insertEvent(Event event) {
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            db.insertOrThrow(EventEntry.TABLE_NAME, null, eventValues(event));
+        }).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Completable insertEvents(List<Event> events) {
+        return Completable.create(emitter -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            emitter.setDisposable(Disposables.fromAction(db::endTransaction));
+            db.beginTransaction();
+            for (Event event : events) {
+                db.insertOrThrow(EventEntry.TABLE_NAME, null, eventValues(event));
+            }
+            db.setTransactionSuccessful();
+            emitter.onComplete();
+        }).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Completable setEvents(List<Event> events) {
+        return clearEvents()
+                .andThen(Completable.defer(() -> insertEvents(events)))
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Completable clearEvents() {
+        return Completable.fromAction(() -> {
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            db.delete(EventEntry.TABLE_NAME, null, null);
+        }).subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Single<Event> getEvent(String eventId, boolean forceUpdate) {
+        return Single.fromCallable(mDbHelper::getReadableDatabase)
+                .map(db -> db.query(EventEntry.TABLE_NAME, null,
+                        EventEntry.COLUMN_EVENT_ID + " = ?",
+                        new String[]{eventId},
+                        null, null, null))
+                .map(LocalDataRepository::event)
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Single<List<Event>> getEvents(boolean forceUpdate) {
+        return Single.fromCallable(mDbHelper::getReadableDatabase)
+                .map(db -> db.query(EventEntry.TABLE_NAME, null,
+                        null, null,
+                        null, null, null))
+                .map(LocalDataRepository::events)
                 .subscribeOn(mSchedulerProvider.io());
     }
 
@@ -214,21 +271,38 @@ public class LocalDataRepository implements BaseDataRepository {
         values.put(ProjectEntry.COLUMN_PROJECT_DESC, project.getDesc());
         values.put(ProjectEntry.COLUMN_PROJECT_CATEGORY, project.getCategory());
         values.put(ProjectEntry.COLUMN_PROJECT_PREREQS,
-                DatabaseContract.databasePrerequistes(project.getPrerequisites()));
+                ProjectEntry.dbPrereq(project.getPrerequisites()));
         return values;
     }
 
+    private ContentValues eventValues(Event event) {
+        ContentValues values = new ContentValues();
+        values.put(EventEntry.COLUMN_EVENT_ID, event.getId());
+        values.put(EventEntry.COLUMN_EVENT_NAME, event.getName());
+        values.put(EventEntry.COLUMN_EVENT_DESC, event.getDesc());
+        values.put(EventEntry.COLUMN_EVENT_LOCATION,
+                EventEntry.dbLocation(event.getLongitude(), event.getLatitude()));
+        values.put(EventEntry.COLUMN_EVENT_IMAGE_URI,
+                EventEntry.dbUri(event.getImageUri()));
+        values.put(EventEntry.COLUMN_EVENT_START_DATE,
+                EventEntry.dbDate(event.getStartDate()));
+        values.put(EventEntry.COLUMN_EVENT_END_DATE,
+                EventEntry.dbDate(event.getEndDate()));
+        return values;
+
+    }
+
     /**
-     * Reads singleProject data from the current row in the cursor and returns it as a Project object
+     * Reads project data from the current row in the cursor and returns it as a {@link Project}.
      * The method expects the cursor to be pointing to an appropriate row,
      * and it does not close the cursor after it it reads the data
      *
      * @param cursor the cursor to read the data from
-     * @return a Project object representing the data read from the cursor row
+     * @return a {@link Project} object representing the data read from the cursor row
      */
     // category will always be a legal value because its always saved as one
     @SuppressWarnings("WrongConstant")
-    private static Project project(Cursor cursor) {
+    private static Project projectFromRow(Cursor cursor) {
         String id = cursor.getString(
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_ID));
         String name = cursor.getString(
@@ -239,7 +313,7 @@ public class LocalDataRepository implements BaseDataRepository {
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_DESC));
         int category = cursor.getInt(
                 cursor.getColumnIndexOrThrow(ProjectEntry.COLUMN_PROJECT_CATEGORY));
-        List<String> prereqs = DatabaseContract.databasePrerequisitesToList(
+        List<String> prereqs = ProjectEntry.prereqListFromDBPrereq(
                 cursor.getString(
                         cursor.getColumnIndexOrThrow(
                                 ProjectEntry.COLUMN_PROJECT_PREREQS)));
@@ -250,11 +324,59 @@ public class LocalDataRepository implements BaseDataRepository {
                 .build();
     }
 
+    /**
+     * Reads project data from the current row in the cursor and returns it as a {@link Event}.
+     * The method expects the cursor to be pointing to an appropriate row,
+     * and it does not close the cursor after it it reads the data
+     *
+     * @param cursor the cursor to read the data from
+     * @return a {@link Event} object representing the data read from the cursor row
+     */
+    private static Event eventFromRow(Cursor cursor) {
+        String id = cursor.getString(
+                cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_ID));
+        String name = cursor.getString(
+                cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_NAME));
+        String desc = cursor.getString(
+                cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_DESC));
+        String location = cursor.getString(
+                cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_LOCATION));
+        String longitude = EventEntry.longitudeFromDBLocation(location);
+        String latitude = EventEntry.latitudeFromDBLocation(location);
+        Uri imageUri = EventEntry.imageUriFromDBUri(
+                cursor.getString(
+                        cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_IMAGE_URI)));
+
+        DateTime startDate = null;
+        try {
+            startDate = EventEntry.dateFromDBDate(
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_START_DATE)));
+        } catch (ParseException ignored) {
+        }
+
+        DateTime endDate = null;
+        try {
+            endDate = EventEntry.dateFromDBDate(
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventEntry.COLUMN_EVENT_END_DATE)));
+        } catch (ParseException ignored) {
+        }
+
+        return new Event.Builder(id, name)
+                .description(desc)
+                .location(longitude, latitude)
+                .imageUri(imageUri)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+    }
+
     private static List<Project> projects(Cursor cursor) {
         List<Project> projects = new LinkedList<>();
         if (cursor.moveToFirst()) {
             do {
-                projects.add(project(cursor));
+                projects.add(projectFromRow(cursor));
             } while (cursor.moveToNext());
         }
 
@@ -262,13 +384,33 @@ public class LocalDataRepository implements BaseDataRepository {
         return projects;
     }
 
-    private static Project singleProject(Cursor cursor) {
+    private static Project project(Cursor cursor) {
         if (!cursor.moveToFirst()) {
-            throw new RuntimeException("No singleProject exists");
+            throw new RuntimeException("No project exists");
         }
-        Project project = project(cursor);
+        Project project = projectFromRow(cursor);
 
         cursor.close();
         return project;
+    }
+
+    private static List<Event> events(Cursor cursor) {
+        List<Event> events = new LinkedList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                events.add(eventFromRow(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return events;
+    }
+
+    private static Event event(Cursor cursor) {
+        if (!cursor.moveToFirst()) {
+            throw new RuntimeException("No Event Exist");
+        }
+        Event event = eventFromRow(cursor);
+        cursor.close();
+        return event;
     }
 }

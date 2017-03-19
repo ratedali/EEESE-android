@@ -13,12 +13,15 @@ package edu.uofk.eeese.eeese;
 import dagger.Component;
 import edu.uofk.eeese.eeese.about.AboutComponent;
 import edu.uofk.eeese.eeese.about.AboutModule;
+import edu.uofk.eeese.eeese.data.HTTPModule;
 import edu.uofk.eeese.eeese.data.backend.BackendModule;
 import edu.uofk.eeese.eeese.data.database.DatabaseModule;
 import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
 import edu.uofk.eeese.eeese.details.DetailsComponent;
 import edu.uofk.eeese.eeese.details.DetailsModule;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
+import edu.uofk.eeese.eeese.events.EventsComponent;
+import edu.uofk.eeese.eeese.events.EventsModule;
 import edu.uofk.eeese.eeese.projects.ProjectsComponent;
 import edu.uofk.eeese.eeese.projects.ProjectsModule;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
@@ -26,6 +29,7 @@ import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 @ApplicationScope
 @Component(modules = {AppModule.class,
         SchedulerProviderModule.class,
+        HTTPModule.class,
         BackendModule.class,
         DatabaseModule.class,
         DataRepositoryModule.class})
@@ -36,4 +40,6 @@ public interface AppComponent {
     DetailsComponent detailsComponent(DetailsModule module);
 
     AboutComponent aboutComponent(AboutModule module);
+
+    EventsComponent eventsComponent(EventsModule module);
 }

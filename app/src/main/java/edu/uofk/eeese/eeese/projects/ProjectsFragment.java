@@ -29,7 +29,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindColor;
 import butterknife.BindDimen;
 import butterknife.BindInt;
 import butterknife.BindView;
@@ -43,13 +42,13 @@ import edu.uofk.eeese.eeese.util.OffsetItemDecorator;
  * A fragment that displays a list of projects with a specific ProjectCategory
  * {@link OnProjectSelectedListener} interface to handle project clicks
  */
-public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ProjectsContract.View {
+public class ProjectsFragment extends Fragment implements
+        SwipeRefreshLayout.OnRefreshListener,
+        ProjectsContract.View {
 
     // Content
     @BindView(R.id.swipe_refresh)
     public SwipeRefreshLayout mSwipeRefresh;
-    @BindColor(R.color.colorAccent)
-    public int refreshColor;
     @BindView(R.id.projects_list)
     public RecyclerView mProjectsList;
     @BindView(R.id.error_view)
@@ -122,7 +121,7 @@ public class ProjectsFragment extends Fragment implements SwipeRefreshLayout.OnR
         ButterKnife.bind(this, rootView);
 
         mSwipeRefresh.setOnRefreshListener(this);
-        mSwipeRefresh.setColorSchemeColors(refreshColor);
+        mSwipeRefresh.setColorSchemeResources(R.color.colorAccent);
 
         mAdapter = new ProjectsAdapter(getContext(), projectSelectedListener);
         mProjectsList.setLayoutManager(

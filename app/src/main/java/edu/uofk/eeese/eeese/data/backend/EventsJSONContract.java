@@ -10,25 +10,35 @@
 
 package edu.uofk.eeese.eeese.data.backend;
 
-import java.util.List;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+import org.joda.time.DateTime;
 
-public interface BackendApi {
-    @GET("/projects")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects();
+import java.lang.reflect.Type;
 
-    @GET("/project/{id}")
-    Single<ProjectsJSONContract.ProjectJSON> project(@Path("id") String id);
+public final class EventsJSONContract {
+    private EventsJSONContract() {
+    }
 
-    @GET("/projects/{category}")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects(@Path("category") String category);
+    static class EventJSON {
+        public String id;
+        public String name;
+        public String desc;
+        public String location;
+        public String imageuri;
+        public DateTime start;
+        public DateTime end;
+    }
 
-    @GET("/events")
-    Single<List<EventsJSONContract.EventJSON>> events();
-
-    @GET("/event/{id}")
-    Single<EventsJSONContract.EventJSON> event(@Path("id") String id);
+    public static class EventDateDeserializer implements JsonDeserializer<DateTime> {
+        @Override
+        public DateTime deserialize(JsonElement json, Type typeOfT,
+                                    JsonDeserializationContext context) throws JsonParseException {
+            String dateString = json.getAsString();
+            return DateTime.parse(dateString);
+        }
+    }
 }

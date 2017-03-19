@@ -77,7 +77,6 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
     // Control Objects
     @Inject
     public AboutContract.Presenter mPresenter;
-    private boolean mExit;
 
     private static final String PROJECT_GALLERY_URL = "http://eeese.uofk.edu#project";
 
@@ -128,8 +127,6 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
             mGalleryBitmap = null;
             mGalleryImage.setImageBitmap(null);
         }
-        if (mExit)
-            finish();
     }
 
     @Override
@@ -179,7 +176,7 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
 
     private void setupDrawer(@NonNull NavigationView navView,
                              @NonNull final DrawerLayout drawer) {
-        navView.setCheckedItem(R.id.nav_home);
+        navView.setCheckedItem(R.id.nav_about);
         final Activity source = this;
         navView.setNavigationItemSelectedListener(item -> {
             item.setChecked(true);
@@ -189,7 +186,6 @@ public class AboutActivity extends AppCompatActivity implements AboutContract.Vi
                 Intent intent = new Intent(source, targetActivity);
                 ActivityUtils.startActivityWithTransition(source, intent,
                         new Pair<>(appBar, toolbarTransitionName));
-                mExit = true;
             }
             return true;
         });

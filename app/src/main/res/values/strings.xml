@@ -11,10 +11,10 @@
 <resources>
     <string name="app_name">EEESE</string>
 
-    <string name="menu_item_home">Home</string>
-    <string name="menu_item_info">Event Information</string>
+    <string name="menu_item_about">Home</string>
+    <string name="menu_item_events">Events</string>
     <string name="menu_item_projects">Projects</string>
-    <string name="menu_item_about">About The App</string>
+    <string name="menu_item_about_the_app">About The App</string>
 
     <string name="about_eeese_title">About EEESE</string>
     <string name="about_eeese_acronym">
@@ -78,5 +78,10 @@
     <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
     <string name="transitionname_projectname" translatable="false">projectname</string>
     <string name="tag_projectslist" translatable="false">projects-category</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="location_button">Event Location</string>
+    <string name="unspecified">Unspecified</string>
+    <string name="events_title">EEESE Events</string>
 
 </resources>

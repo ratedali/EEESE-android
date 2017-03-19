@@ -8,27 +8,33 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.data.backend;
+package edu.uofk.eeese.eeese.events;
 
-import java.util.List;
+import dagger.Module;
+import dagger.Provides;
+import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
+import edu.uofk.eeese.eeese.di.categories.Cache;
+import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
+import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+@Module
+public class EventsModule {
+    private EventsContract.View mView;
 
-public interface BackendApi {
-    @GET("/projects")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects();
+    public EventsModule(EventsContract.View view) {
+        mView = view;
+    }
 
-    @GET("/project/{id}")
-    Single<ProjectsJSONContract.ProjectJSON> project(@Path("id") String id);
+    @Provides
+    EventsContract.View provideView() {
+        return mView;
+    }
 
-    @GET("/projects/{category}")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects(@Path("category") String category);
-
-    @GET("/events")
-    Single<List<EventsJSONContract.EventJSON>> events();
-
-    @GET("/event/{id}")
-    Single<EventsJSONContract.EventJSON> event(@Path("id") String id);
+    @Provides
+    @ActivityScope
+    EventsContract.Presenter providePresenter(EventsContract.View view,
+                                              @Cache BaseDataRepository source,
+                                              BaseSchedulerProvider schedulerProvider) {
+        return new EventsPresenter(view, source, schedulerProvider);
+    }
 }

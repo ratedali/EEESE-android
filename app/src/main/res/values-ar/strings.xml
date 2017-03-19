@@ -12,10 +12,10 @@
 <resources>
     <string name="app_name">إيزي</string>
 
-    <string name="menu_item_home">الشاشه الرئيسه</string>
-    <string name="menu_item_info">الفعاليات</string>
+    <string name="menu_item_about">الشاشه الرئيسه</string>
+    <string name="menu_item_events">الفعاليات</string>
     <string name="menu_item_projects">المشاريع</string>
-    <string name="menu_item_about">عن التطبيق</string>
+    <string name="menu_item_about_the_app">عن التطبيق</string>
 
     <string name="about_eeese_title">عن إيزي</string>
     <string name="about_eeese_acronym">

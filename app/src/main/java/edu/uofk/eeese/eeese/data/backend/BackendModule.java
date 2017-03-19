@@ -10,10 +10,17 @@
 
 package edu.uofk.eeese.eeese.data.backend;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.joda.time.DateTime;
+
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.BuildConfig;
 import edu.uofk.eeese.eeese.di.categories.BackendApiUrl;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -28,11 +35,22 @@ public class BackendModule {
     }
 
     @Provides
-    Retrofit provideRetrofit(@BackendApiUrl String backendApiUri) {
+    Gson provideJSONParser() {
+        return new GsonBuilder()
+                .registerTypeAdapter(DateTime.class, new EventsJSONContract.EventDateDeserializer())
+                .create();
+    }
+
+    @Provides
+    @ApplicationScope
+    Retrofit provideRetrofit(OkHttpClient httpClient,
+                             Gson jsonParser,
+                             @BackendApiUrl String backendApiUri) {
         return new Retrofit.Builder()
                 .baseUrl(backendApiUri)
+                .client(httpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(jsonParser))
                 .build();
     }
 

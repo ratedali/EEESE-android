@@ -51,9 +51,15 @@
         </item>
     </style>
 
-    <style name="AboutCardTitle">
+    <style name="CardTitle">
         <item name="android:layout_marginBottom">@dimen/title_margin</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
+    </style>
+
+    <style name="AboutCardTitle" parent="CardTitle">
+    </style>
+
+    <style name="EventCardTitle" parent="CardTitle">
     </style>
 
     <style name="ExpandedTitleText" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
@@ -71,6 +77,7 @@
     <style name="Prerequisite" parent="TextAppearance.AppCompat.Widget.Button">
         <item name="android:textSize">@dimen/prereq_item_size</item>
     </style>
+
 
     <dimen name="prereq_item_size">16sp</dimen>
 </resources>

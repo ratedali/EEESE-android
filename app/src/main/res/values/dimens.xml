@@ -40,4 +40,8 @@
     <dimen name="fab_size">64dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_elevation">8dp</dimen>
+
+    <dimen name="event_margin_vertical">16dp</dimen>
+    <dimen name="event_margin_horizontal">8dp</dimen>
+    <dimen name="event_extra_content_padding">16dp</dimen>
 </resources>

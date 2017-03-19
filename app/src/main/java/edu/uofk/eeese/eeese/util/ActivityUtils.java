@@ -26,6 +26,7 @@ import android.view.View;
 
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.about.AboutActivity;
+import edu.uofk.eeese.eeese.events.EventsActivity;
 import edu.uofk.eeese.eeese.projects.ProjectsActivity;
 
 public final class ActivityUtils {
@@ -38,14 +39,14 @@ public final class ActivityUtils {
     public static Class<? extends Activity> getTargetActivity(@NonNull MenuItem item) {
         Class<? extends Activity> targetActivity = null;
         switch (item.getItemId()) {
-            case R.id.nav_home:
+            case R.id.nav_about:
                 targetActivity = AboutActivity.class;
                 break;
             case R.id.nav_projects:
                 targetActivity = ProjectsActivity.class;
                 break;
-            case R.id.nav_info:
-                // TODO: 1/4/17 Add InfoActivity
+            case R.id.nav_events:
+                targetActivity = EventsActivity.class;
                 break;
         }
         return targetActivity;

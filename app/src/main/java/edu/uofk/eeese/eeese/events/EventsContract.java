@@ -8,27 +8,29 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.data.backend;
+package edu.uofk.eeese.eeese.events;
 
 import java.util.List;
 
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+import edu.uofk.eeese.eeese.BasePresenter;
+import edu.uofk.eeese.eeese.BaseView;
+import edu.uofk.eeese.eeese.data.Event;
 
-public interface BackendApi {
-    @GET("/projects")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects();
+public interface EventsContract {
 
-    @GET("/project/{id}")
-    Single<ProjectsJSONContract.ProjectJSON> project(@Path("id") String id);
+    interface View extends BaseView<Presenter> {
+        void showLoadingIndicator();
 
-    @GET("/projects/{category}")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects(@Path("category") String category);
+        void hideLoadingIndicator();
 
-    @GET("/events")
-    Single<List<EventsJSONContract.EventJSON>> events();
+        void showEvents(List<Event> events);
 
-    @GET("/event/{id}")
-    Single<EventsJSONContract.EventJSON> event(@Path("id") String id);
+        void showNoEvents();
+
+        void showConnectionError();
+    }
+
+    interface Presenter extends BasePresenter {
+        void loadEvents(boolean forceUpdate);
+    }
 }

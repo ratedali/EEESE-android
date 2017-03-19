@@ -8,27 +8,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.data.backend;
+package edu.uofk.eeese.eeese.data;
 
-import java.util.List;
+import dagger.Module;
+import dagger.Provides;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+@Module
+public class HTTPModule {
+    @Provides
+    @ApplicationScope
+    public OkHttpClient provideHttpClient() {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-public interface BackendApi {
-    @GET("/projects")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects();
-
-    @GET("/project/{id}")
-    Single<ProjectsJSONContract.ProjectJSON> project(@Path("id") String id);
-
-    @GET("/projects/{category}")
-    Single<List<ProjectsJSONContract.ProjectJSON>> projects(@Path("category") String category);
-
-    @GET("/events")
-    Single<List<EventsJSONContract.EventJSON>> events();
-
-    @GET("/event/{id}")
-    Single<EventsJSONContract.EventJSON> event(@Path("id") String id);
+        return new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+    }
 }

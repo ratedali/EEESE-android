@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.uofk.eeese.eeese.data.Event;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.backend.ApiWrapper;
 import edu.uofk.eeese.eeese.data.backend.BackendApi;
@@ -94,6 +95,7 @@ class RemoteDataRepository implements BaseDataRepository {
         );
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjects(boolean forceUpdate) {
         return mApi.projects()
@@ -101,6 +103,7 @@ class RemoteDataRepository implements BaseDataRepository {
 
     }
 
+    @NonNull
     @Override
     public Single<List<Project>> getProjectsWithCategory(boolean forceUpdate, @Project.ProjectCategory final int category) {
         return mApi.projects(category)
@@ -115,7 +118,7 @@ class RemoteDataRepository implements BaseDataRepository {
     }
 
     /**
-     * This function cannot be implemented without an API, so just use
+     * For now this is not supported in the remote repository, so just use
      * {@link LocalDataRepository}'s <code>getGalleryImageBitmap(int,int)</code> instead.
      */
     @Override
@@ -123,5 +126,47 @@ class RemoteDataRepository implements BaseDataRepository {
         return Single.error(
                 new UnsupportedOperationException(
                         "cannot get a gallery image for this implementation"));
+    }
+
+    @Override
+    public Completable insertEvent(Event event) {
+        // Cannot insert, so fail immediately
+        return Completable.error(
+                new UnsupportedOperationException("cannot insert to a remote repository")
+        );
+    }
+
+    @Override
+    public Completable insertEvents(List<Event> events) {
+        // Cannot insert, so fail immediately
+        return Completable.error(
+                new UnsupportedOperationException("cannot insert to a remote repository")
+        );
+    }
+
+    @Override
+    public Completable setEvents(List<Event> events) {
+        return Completable.error(
+                new UnsupportedOperationException("cannot set events for a remote repository")
+        );
+    }
+
+    @Override
+    public Completable clearEvents() {
+        return Completable.error(
+                new UnsupportedOperationException("cannot clear events for a remote repository")
+        );
+    }
+
+    @Override
+    public Single<Event> getEvent(String eventId, boolean forceUpdate) {
+        return mApi.event(eventId)
+                .subscribeOn(mSchedulerProvider.io());
+    }
+
+    @Override
+    public Single<List<Event>> getEvents(boolean forceUpdate) {
+        return mApi.events()
+                .subscribeOn(mSchedulerProvider.io());
     }
 }

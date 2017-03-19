@@ -14,8 +14,8 @@ import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
 
-public final class JSONContract {
-    private JSONContract() {
+public final class ProjectsJSONContract {
+    private ProjectsJSONContract() {
     }
 
     static class ProjectJSON {
@@ -38,7 +38,7 @@ public final class JSONContract {
     }
 
 
-    public static String getJsonCategory(@Project.ProjectCategory int category) {
+    public static String getJSONCategory(@Project.ProjectCategory int category) {
         switch (category) {
             case Project.POWER:
                 return CategoryJSON.POWER;
