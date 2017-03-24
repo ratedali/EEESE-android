@@ -11,12 +11,15 @@
 package edu.uofk.eeese.eeese.data.sync
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.content.*
 import android.os.Bundle
 import android.util.Log
 import edu.uofk.eeese.eeese.data.DataContract
 import edu.uofk.eeese.eeese.data.DataContract.EventEntry
 import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry
+import edu.uofk.eeese.eeese.data.DataUtils.Events
+import edu.uofk.eeese.eeese.data.DataUtils.Projects
 import edu.uofk.eeese.eeese.data.Event
 import edu.uofk.eeese.eeese.data.Project
 import edu.uofk.eeese.eeese.data.backend.ApiWrapper
@@ -47,6 +50,7 @@ class SyncAdapter(context: Context,
     private val resolver = context.contentResolver!!
 
 
+    @SuppressLint("Recycle")
     override fun onPerformSync(account: Account, extra: Bundle,
                                authority: String,
                                provider: ContentProviderClient,
@@ -72,7 +76,7 @@ class SyncAdapter(context: Context,
             val localProjects = Single
                     .just(dbHelper.readableDatabase)
                     .map { it.query(ProjectEntry.TABLE_NAME, null, null, null, null, null, null) }
-                    .map { ProjectEntry.projects(it) }
+                    .map { Projects.projects(it) }
                     .map { it.toList() }
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
@@ -107,7 +111,7 @@ class SyncAdapter(context: Context,
             val localEvents = Single
                     .just(dbHelper.readableDatabase)
                     .map { it.query(EventEntry.TABLE_NAME, null, null, null, null, null, null) }
-                    .map { EventEntry.events(it) }
+                    .map { Events.events(it) }
                     .map { it.toList() }
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
@@ -148,7 +152,7 @@ class SyncAdapter(context: Context,
                         .map { it.value }
                         .map {
                             Log.d(TAG, "project added ${it.name}'")
-                            ProjectEntry.values(it)
+                            Projects.values(it)
                         }
                         .map {
                             syncResult.stats.numInserts++
@@ -175,7 +179,7 @@ class SyncAdapter(context: Context,
                                 .withSelection(
                                         "${ProjectEntry.COLUMN_PROJECT_ID} = ?",
                                         arrayOf(project.id))
-                                .withValues(ProjectEntry.values(remoteProject))
+                                .withValues(Projects.values(remoteProject))
                                 .build()
                         projectOperations(newLocal, newRemote, syncResult, newOperations)
                     }
@@ -201,7 +205,7 @@ class SyncAdapter(context: Context,
                         .map { it.value }
                         .map {
                             Log.d(TAG, "event added ${it.name}'")
-                            EventEntry.values(it)
+                            Events.values(it)
                         }
                         .map {
                             syncResult.stats.numInserts++
@@ -228,7 +232,7 @@ class SyncAdapter(context: Context,
                                 .withSelection(
                                         "${EventEntry.COLUMN_EVENT_ID} = ?",
                                         arrayOf(event.id))
-                                .withValues(EventEntry.values(remoteEvent))
+                                .withValues(Events.values(remoteEvent))
                                 .build()
                         eventOperations(newLocal, newRemote, syncResult, newOperations)
                     }

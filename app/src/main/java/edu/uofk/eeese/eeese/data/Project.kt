@@ -8,37 +8,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese.data.backend;
+package edu.uofk.eeese.eeese.data
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
-import org.joda.time.DateTime;
-
-import java.lang.reflect.Type;
-
-public final class EventsJSONContract {
-    private EventsJSONContract() {
-    }
-
-    static class EventJSON {
-        public String id;
-        public String name;
-        public String desc;
-        public String location;
-        public String imageuri;
-        public DateTime start;
-        public DateTime end;
-    }
-
-    public static class EventDateDeserializer implements JsonDeserializer<DateTime> {
-        @Override
-        public DateTime deserialize(JsonElement json, Type typeOfT,
-                                    JsonDeserializationContext context) throws JsonParseException {
-            String dateString = json.getAsString();
-            return DateTime.parse(dateString);
-        }
-    }
+enum class ProjectCategory {
+    SOFTWARE, POWER, TELECOM, ELECTRONICS_CONTROL
 }
+
+data class Project(val id: String, val name: String,
+                   val desc: String? = null, val head: String? = null,
+                   val category: ProjectCategory, val prerequisites: List<String>)

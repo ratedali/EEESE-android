@@ -13,17 +13,15 @@ package edu.uofk.eeese.eeese;
 import android.app.Application;
 import android.support.annotation.VisibleForTesting;
 
-import edu.uofk.eeese.eeese.data.source.RepositoryModule;
-
 public class EEESEapp extends Application {
 
-    private AppComponent mAppComponent = null;
+    private AppComponent appComponent = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if (mAppComponent == null) {
-            mAppComponent = DaggerAppComponent.builder()
+        if (appComponent == null) {
+            appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(getApplicationContext()))
                     .build();
         }
@@ -31,10 +29,10 @@ public class EEESEapp extends Application {
 
     @VisibleForTesting
     public void setAppComponent(AppComponent appComponent) {
-        mAppComponent = appComponent;
+        this.appComponent = appComponent;
     }
 
     public AppComponent getAppComponent() {
-        return mAppComponent;
+        return appComponent;
     }
 }

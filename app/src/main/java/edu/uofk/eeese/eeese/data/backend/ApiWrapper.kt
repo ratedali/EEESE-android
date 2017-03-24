@@ -10,9 +10,11 @@
 
 package edu.uofk.eeese.eeese.data.backend
 
-import android.text.TextUtils
 import edu.uofk.eeese.eeese.data.Event
 import edu.uofk.eeese.eeese.data.Project
+import edu.uofk.eeese.eeese.data.ProjectCategory
+import edu.uofk.eeese.eeese.data.backend.ServerContract.Events
+import edu.uofk.eeese.eeese.data.backend.ServerContract.Projects
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -20,56 +22,27 @@ class ApiWrapper(private val api: BackendApi) {
 
     fun projects(): Single<List<Project>> = api.projects()
             .flatMapObservable({ Observable.fromIterable(it) })
-            .map({ projectFromJSON(it) })
+            .map({ Projects.project(it) })
             .toList()
 
 
-    fun project(id: String): Single<Project> = api.project(id).map({ projectFromJSON(it) })
+    fun project(id: String): Single<Project> = api.project(id)
+            .map({ ServerContract.Projects.project(it) })
 
-    fun projects(category: Int): Single<List<Project>> =
-            api.projects(ProjectsJSONContract.getJSONCategory(category))
+    fun projects(category: ProjectCategory): Single<List<Project>> =
+            api.projects(Projects.category(category))
                     .flatMapObservable({ Observable.fromIterable(it) })
-                    .map({ projectFromJSON(it) })
+                    .map({ Projects.project(it) })
                     .toList()
 
 
-    fun event(id: String): Single<Event> = api.event(id).map({ eventFromJSON(it) })
+    fun event(id: String): Single<Event> = api.event(id)
+            .map({ Events.event(it) })
 
 
     fun events(): Single<List<Event>> = api.events()
             .flatMapObservable({ Observable.fromIterable(it) })
-            .map({ eventFromJSON(it) })
+            .map({ Events.event(it) })
             .toList()
 
-
-    private fun projectFromJSON(projectJSON: ProjectsJSONContract.ProjectJSON): Project {
-        val category = ProjectsJSONContract.getCategory(projectJSON.category)
-        val head = projectJSON.head ?: ""
-        return Project.Builder(projectJSON.id, projectJSON.name, head, category)
-                .withPrerequisites(projectJSON.prereq)
-                .withDesc(projectJSON.desc)
-                .build()
-    }
-
-    private fun eventFromJSON(eventJSON: EventsJSONContract.EventJSON): Event {
-        val eventBuilder = Event.Builder(eventJSON.id, eventJSON.name)
-        eventBuilder.description(eventJSON.desc)
-
-        if (!TextUtils.isEmpty(eventJSON.location)) {
-            val coords = eventJSON.location
-                    .split(",")
-            val (longitude,latitude) = coords
-            eventBuilder.location(longitude, latitude)
-        }
-        if (eventJSON.imageuri != null) {
-            eventBuilder.imageUri(eventJSON.imageuri)
-        }
-        if (eventJSON.start != null) {
-            eventBuilder.startDate(eventJSON.start)
-        }
-        if (eventJSON.end != null) {
-            eventBuilder.endDate(eventJSON.end)
-        }
-        return eventBuilder.build()
-    }
 }

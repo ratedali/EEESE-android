@@ -12,6 +12,8 @@ package edu.uofk.eeese.eeese.data.source
 
 import edu.uofk.eeese.eeese.data.DataContract
 import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry
+import edu.uofk.eeese.eeese.data.DataUtils
+import edu.uofk.eeese.eeese.data.ProjectCategory
 
 interface Specification
 
@@ -19,7 +21,7 @@ interface Specification
 data class ContentProviderSelection(val selection: String?,
                                     val selectionArgs: Array<String>?)
 
-interface ContentProviderSpecification: Specification {
+interface ContentProviderSpecification : Specification {
     fun toSelectionQuery(): ContentProviderSelection
 }
 
@@ -29,7 +31,8 @@ open class RowWithValue(private val row: String, private val value: String) :
 }
 
 class ProjectWithId(id: String) : RowWithValue(ProjectEntry.COLUMN_PROJECT_ID, id)
-class ProjectWithCategory(category: Int) :
-        RowWithValue(ProjectEntry.COLUMN_PROJECT_CATEGORY, category.toString())
+class ProjectWithCategory(category: ProjectCategory) :
+        RowWithValue(ProjectEntry.COLUMN_PROJECT_CATEGORY,
+                DataUtils.Projects.category(category).toString())
 
 class EventWithId(id: String) : RowWithValue(DataContract.EventEntry.COLUMN_EVENT_ID, id)

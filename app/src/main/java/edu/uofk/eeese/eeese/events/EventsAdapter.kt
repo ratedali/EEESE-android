@@ -48,8 +48,8 @@ class EventsAdapter constructor(events: List<Event>? = emptyList<Event>()) :
         val dateFormat = DateFormat.getDateInstance()
         val timeFormat = DateFormat.getTimeInstance()
 
-        if (event.startDate != null) {
-            val start = event.startDate!!.withZone(DateTimeZone.getDefault()).toDate()
+        if (event.start != null) {
+            val start = event.start.withZone(DateTimeZone.getDefault()).toDate()
             holder.startDate.text = dateFormat.format(start)
             holder.startTime.visibility = View.VISIBLE
             holder.startTime.text = timeFormat.format(start)
@@ -58,8 +58,8 @@ class EventsAdapter constructor(events: List<Event>? = emptyList<Event>()) :
             holder.startTime.visibility = View.INVISIBLE
         }
 
-        if (event.endDate != null) {
-            val end = event.endDate!!
+        if (event.end != null) {
+            val end = event.end
                     .withZone(DateTimeZone.getDefault())
                     .toDate()
             holder.endDate.text = dateFormat.format(end)

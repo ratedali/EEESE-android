@@ -28,12 +28,12 @@ import edu.uofk.eeese.eeese.projects.ProjectsComponent;
 import edu.uofk.eeese.eeese.projects.ProjectsModule;
 
 @ApplicationScope
-@Component(modules = {AppModule.class,
+@Component(modules = {
+        AppModule.class,
         HTTPModule.class,
         BackendModule.class,
         DatabaseModule.class,
         RepositoryModule.class})
-
 public interface AppComponent {
     ProjectsComponent projectsComponent(ProjectsModule module);
 

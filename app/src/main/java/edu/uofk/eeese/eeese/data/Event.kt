@@ -8,10 +8,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.data
 
-public interface BasePresenter {
-    void subscribe();
+import android.net.Uri
+import org.joda.time.DateTime
 
-    void unsubscribe();
-}
+data class Event(val id: String, val name: String,
+                 val desc: String, val imageUri: Uri? = null,
+                 val longitude: String? = null, val latitude: String? = null,
+                 val start: DateTime? = null, val end: DateTime? = null)

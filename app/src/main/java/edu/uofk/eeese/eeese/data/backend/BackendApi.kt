@@ -8,10 +8,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package edu.uofk.eeese.eeese;
+package edu.uofk.eeese.eeese.data.backend
 
-import android.support.annotation.NonNull;
+import edu.uofk.eeese.eeese.data.backend.ServerContract.Events
+import edu.uofk.eeese.eeese.data.backend.ServerContract.Projects
+import io.reactivex.Single
+import retrofit2.http.GET
+import retrofit2.http.Path
 
-public interface BaseView<T> {
-    void setPresenter(@NonNull T presenter);
+interface BackendApi {
+    @GET("/projects")
+    fun projects(): Single<List<Projects.JSON>>
+
+    @GET("/project/{id}")
+    fun project(@Path("id") id: String): Single<Projects.JSON>
+
+    @GET("/projects/{category}")
+    fun projects(@Path("category") category: String): Single<List<Projects.JSON>>
+
+    @GET("/events")
+    fun events(): Single<List<Events.JSON>>
+
+    @GET("/event/{id}")
+    fun event(@Path("id") id: String): Single<Events.JSON>
 }

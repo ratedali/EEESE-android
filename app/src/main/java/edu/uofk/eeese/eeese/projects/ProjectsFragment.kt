@@ -22,6 +22,7 @@ import com.transitionseverywhere.TransitionManager
 import edu.uofk.eeese.eeese.EEESEapp
 import edu.uofk.eeese.eeese.R
 import edu.uofk.eeese.eeese.data.Project
+import edu.uofk.eeese.eeese.data.ProjectCategory
 import edu.uofk.eeese.eeese.projects.ProjectsFragment.OnProjectSelectedListener
 import edu.uofk.eeese.eeese.util.OffsetItemDecorator
 import io.reactivex.disposables.Disposable
@@ -38,16 +39,35 @@ class ProjectsFragment : Fragment(), ProjectsContract.View {
     companion object {
         private val CATEGORY_KEY = "edu.uofk.eeese.eeese.ProjectsFragment.CATEGORY"
 
-        fun getInstance(category: Int): ProjectsFragment {
+        private const val CATEGORY_SOFTWARE = 0
+        private const val CATEGORY_POWER = 1
+        private const val CATEGORY_TELECOM = 2
+        private const val CATEGORY_ELECTRONICS_CONTROL = 3
+
+        fun getInstance(category: ProjectCategory): ProjectsFragment {
             val fragment = ProjectsFragment()
             val arguments = Bundle()
-            arguments.putInt(CATEGORY_KEY, category)
+            arguments.putInt(CATEGORY_KEY,
+                    when (category) {
+                        ProjectCategory.SOFTWARE -> CATEGORY_SOFTWARE
+                        ProjectCategory.POWER -> CATEGORY_POWER
+                        ProjectCategory.TELECOM -> CATEGORY_TELECOM
+                        ProjectCategory.ELECTRONICS_CONTROL -> CATEGORY_ELECTRONICS_CONTROL
+                    })
             fragment.arguments = arguments
             return fragment
         }
+
+        private fun category(category: Int) = when (category) {
+            CATEGORY_SOFTWARE -> ProjectCategory.SOFTWARE
+            CATEGORY_POWER -> ProjectCategory.POWER
+            CATEGORY_TELECOM -> ProjectCategory.TELECOM
+            CATEGORY_ELECTRONICS_CONTROL -> ProjectCategory.ELECTRONICS_CONTROL
+            else -> throw IllegalArgumentException("unknown category code '$category'")
+        }
     }
 
-    private var category: Int = 0
+    private lateinit var category: ProjectCategory
 
     private var projectClicks: Disposable = Disposables.disposed()
     private var selectedProject: View? = null
@@ -65,7 +85,7 @@ class ProjectsFragment : Fragment(), ProjectsContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            category = arguments.getInt(CATEGORY_KEY)
+            category = category(arguments.getInt(CATEGORY_KEY))
         }
         (activity.applicationContext as EEESEapp).appComponent
                 .projectsComponent(ProjectsModule(this, category))

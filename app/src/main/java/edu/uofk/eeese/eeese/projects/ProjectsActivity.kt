@@ -48,10 +48,10 @@ class ProjectsActivity : AppCompatActivity(), ProjectsFragment.OnProjectSelected
         supportActionBar?.title = getString(R.string.projects)
 
         val projects = listOf(
-                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.Project.POWER),
-                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.Project.TELECOM),
-                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.Project.SOFTWARE),
-                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.Project.ELECTRONICS_CONTROL))
+                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.ProjectCategory.POWER),
+                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.ProjectCategory.TELECOM),
+                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.ProjectCategory.SOFTWARE),
+                ProjectsFragment.getInstance(edu.uofk.eeese.eeese.data.ProjectCategory.ELECTRONICS_CONTROL))
         val categories = listOf(
                 getString(R.string.power_category),
                 getString(R.string.telecom_category),

@@ -77,7 +77,7 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
     override fun showProjectInfo(project: Project) {
         project_name.text = project.name
-        project_head.text = project.projectHead
+        project_head.text = project.head
         if (TextUtils.isEmpty(project.desc)) {
             project_desc.text = project.desc
         } else {
@@ -100,7 +100,7 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
 }
 /**
- * Adapter for the prerequisites list, simply puts the prerequisite prereq in a TextView
+ * Adapter for the prerequisites list, simply puts the prerequisite prerequisites in a TextView
  */
 internal class PrereqAdapter(private val mPrerequisites: List<String>) :
         RecyclerView.Adapter<ViewHolder>() {

@@ -13,13 +13,12 @@ package edu.uofk.eeese.eeese.data.source
 import android.content.Context
 import com.squareup.sqlbrite.SqlBrite
 import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry
+import edu.uofk.eeese.eeese.data.DataUtils.Projects
 import edu.uofk.eeese.eeese.data.Project
 import edu.uofk.eeese.eeese.data.sync.SyncManager
 import hu.akarnokd.rxjava.interop.RxJavaInterop
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.functions.Function
-import java.util.concurrent.TimeUnit
 import io.reactivex.schedulers.Schedulers as V2Schedulers
 import rx.schedulers.Schedulers as V1Schedulers
 
@@ -37,8 +36,8 @@ class ProjectsRepository(context: Context,
         return RxJavaInterop.toV2Observable(
                 briteResolver.createQuery(ProjectEntry.CONTENT_URI, null,
                         selection, selectionArgs, null, false))
-                .map { it.run() }
-                .map { ProjectEntry.project(it) }
+                .map { it.run()!! }
+                .map { Projects.project(it) }
     }
 
     override fun get(spec: Specification): Observable<List<Project>> {
@@ -47,21 +46,21 @@ class ProjectsRepository(context: Context,
         return RxJavaInterop.toV2Observable(
                 briteResolver.createQuery(ProjectEntry.CONTENT_URI, null,
                         selection, selectionArgs, null, false))
-                .map { it.run() }
-                .map { ProjectEntry.projects(it) }
+                .map { it.run()!! }
+                .map { Projects.projects(it) }
     }
 
     override fun get(): Observable<List<Project>> = RxJavaInterop.toV2Observable(
             briteResolver.createQuery(ProjectEntry.CONTENT_URI, null, null, null, null, false))
-            .map { it.run() }
-            .map { ProjectEntry.projects(it) }
+            .map { it.run()!! }
+            .map { Projects.projects(it) }
 
     override fun add(event: Project): Completable = Completable.fromAction {
-        resolver.insert(ProjectEntry.CONTENT_URI, ProjectEntry.values(event))
+        resolver.insert(ProjectEntry.CONTENT_URI, Projects.values(event))
     }
 
     override fun addAll(events: Iterable<Project>): Completable = Completable.fromAction {
-        val contentValues = events.map { ProjectEntry.values(it) }.toTypedArray()
+        val contentValues = events.map { Projects.values(it) }.toTypedArray()
         resolver.bulkInsert(ProjectEntry.CONTENT_URI, contentValues)
     }
 

@@ -38,7 +38,8 @@ public class BackendModule {
     @ApplicationScope
     Gson provideJSONParser() {
         return new GsonBuilder()
-                .registerTypeAdapter(DateTime.class, new EventsJSONContract.EventDateDeserializer())
+                .registerTypeAdapter(DateTime.class,
+                        new ServerContract.Events.EventDateDeserializer())
                 .create();
     }
 

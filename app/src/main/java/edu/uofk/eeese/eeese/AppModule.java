@@ -12,12 +12,10 @@ package edu.uofk.eeese.eeese;
 
 import android.content.Context;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
+import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
-@Singleton
 @Module
 public class AppModule {
     private Context mContext;
@@ -27,6 +25,7 @@ public class AppModule {
     }
 
     @Provides
+    @ApplicationScope
     Context provideContext() {
         return mContext;
     }

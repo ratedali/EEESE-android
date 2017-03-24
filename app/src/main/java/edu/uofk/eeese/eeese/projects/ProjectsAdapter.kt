@@ -46,7 +46,7 @@ constructor(private val projects: List<Project> = emptyList<Project>()) :
                 .subscribeWith(projectClicksSubject)
 
         holder.name.text = project.name
-        holder.head.text = project.projectHead
+        holder.head.text = project.head
     }
 
     override fun getItemCount(): Int {

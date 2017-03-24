@@ -13,6 +13,7 @@ package edu.uofk.eeese.eeese.projects
 import edu.uofk.eeese.eeese.BasePresenter
 import edu.uofk.eeese.eeese.BaseView
 import edu.uofk.eeese.eeese.data.Project
+import edu.uofk.eeese.eeese.data.ProjectCategory
 
 interface ProjectsContract {
     interface View : BaseView<Presenter> {
@@ -28,6 +29,6 @@ interface ProjectsContract {
 
         fun openProjectDetails(project: Project): Unit
 
-        fun getCategory(): Int
+        fun getCategory(): ProjectCategory
     }
 }

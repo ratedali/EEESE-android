@@ -13,15 +13,16 @@ package edu.uofk.eeese.eeese.projects;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.data.ProjectCategory;
 import edu.uofk.eeese.eeese.data.source.Repository;
 import edu.uofk.eeese.eeese.di.scopes.FragmentScope;
 
 @Module
 public class ProjectsModule {
     private ProjectsContract.View view;
-    private int category;
+    private ProjectCategory category;
 
-    public ProjectsModule(ProjectsContract.View view, int category) {
+    public ProjectsModule(ProjectsContract.View view, ProjectCategory category) {
         this.view = view;
         this.category = category;
     }

@@ -11,6 +11,7 @@
 package edu.uofk.eeese.eeese.projects
 
 import edu.uofk.eeese.eeese.data.Project
+import edu.uofk.eeese.eeese.data.ProjectCategory
 import edu.uofk.eeese.eeese.data.source.ProjectWithCategory
 import edu.uofk.eeese.eeese.data.source.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,11 +23,11 @@ import javax.inject.Inject
 class ProjectsPresenter @Inject
 constructor(private val source: Repository<Project>,
             private val view: ProjectsContract.View,
-            private val category: Int) : ProjectsContract.Presenter {
+            private val category: ProjectCategory) : ProjectsContract.Presenter {
 
     private val subscriptions: CompositeDisposable = CompositeDisposable()
 
-    override fun getCategory(): Int {
+    override fun getCategory(): ProjectCategory {
         return category
     }
 

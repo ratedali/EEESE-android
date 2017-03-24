@@ -13,22 +13,20 @@ package edu.uofk.eeese.eeese.data.source
 import android.content.Context
 import com.squareup.sqlbrite.SqlBrite
 import edu.uofk.eeese.eeese.data.DataContract.EventEntry
+import edu.uofk.eeese.eeese.data.DataUtils.Events
 import edu.uofk.eeese.eeese.data.Event
 import edu.uofk.eeese.eeese.data.sync.SyncManager
 import hu.akarnokd.rxjava.interop.RxJavaInterop
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.functions.Function
-import java.util.concurrent.TimeUnit
-import io.reactivex.schedulers.Schedulers as V2Schedulers
-import rx.schedulers.Schedulers as V1Schedulers
+import rx.schedulers.Schedulers
 
 class EventsRepository(context: Context,
                        private val syncManager: SyncManager) : Repository<Event> {
 
     private val resolver = context.contentResolver
     private val sqlBrite = SqlBrite.Builder().build()
-    private val briteResolver = sqlBrite.wrapContentProvider(resolver, V1Schedulers.io())
+    private val briteResolver = sqlBrite.wrapContentProvider(resolver, Schedulers.io())
 
     override fun getOne(spec: Specification): Observable<out Event> {
         val (selection, selectionArgs) =
@@ -36,8 +34,8 @@ class EventsRepository(context: Context,
         return RxJavaInterop.toV2Observable(
                 briteResolver.createQuery(EventEntry.CONTENT_URI, null,
                         selection, selectionArgs, null, false))
-                .map { it.run() }
-                .map { EventEntry.event(it) }
+                .map { it.run()!! }
+                .map { Events.event(it) }
     }
 
     override fun get(spec: Specification): Observable<out List<Event>> {
@@ -46,8 +44,8 @@ class EventsRepository(context: Context,
         return RxJavaInterop.toV2Observable(
                 briteResolver.createQuery(EventEntry.CONTENT_URI, null,
                         selection, selectionArgs, null, false))
-                .map { it.run() }
-                .map { EventEntry.events(it) }
+                .map { it.run()!! }
+                .map { Events.events(it) }
 
     }
 
@@ -55,15 +53,15 @@ class EventsRepository(context: Context,
             RxJavaInterop.toV2Observable(
                     briteResolver.createQuery(EventEntry.CONTENT_URI, null,
                             null, null, null, false))
-                    .map { it.run() }
-                    .map { EventEntry.events(it) }
+                    .map { it.run()!! }
+                    .map { Events.events(it) }
 
     override fun add(event: Event): Completable = Completable.fromAction {
-        resolver.insert(EventEntry.CONTENT_URI, EventEntry.values(event))
-    }.subscribeOn(V2Schedulers.io())
+        resolver.insert(EventEntry.CONTENT_URI, Events.values(event))
+    }
 
     override fun addAll(events: Iterable<Event>): Completable = Completable.fromAction {
-        val contentValues = events.map { EventEntry.values(it) }.toTypedArray()
+        val contentValues = events.map { Events.values(it) }.toTypedArray()
         resolver.bulkInsert(EventEntry.CONTENT_URI, contentValues)
     }
 
@@ -72,7 +70,7 @@ class EventsRepository(context: Context,
                 (spec as ContentProviderSpecification).toSelectionQuery()
         return Completable.fromAction {
             resolver.delete(EventEntry.CONTENT_URI, selection, selectionArgs)
-        }.subscribeOn(V2Schedulers.io())
+        }
     }
 
     override fun clear(): Completable = Completable.fromAction {
