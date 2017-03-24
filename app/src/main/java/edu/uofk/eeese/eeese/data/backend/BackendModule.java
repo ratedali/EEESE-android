@@ -35,6 +35,7 @@ public class BackendModule {
     }
 
     @Provides
+    @ApplicationScope
     Gson provideJSONParser() {
         return new GsonBuilder()
                 .registerTypeAdapter(DateTime.class, new EventsJSONContract.EventDateDeserializer())
@@ -57,5 +58,10 @@ public class BackendModule {
     @Provides
     BackendApi provideBackendApi(Retrofit retrofit) {
         return retrofit.create(BackendApi.class);
+    }
+
+    @Provides
+    ApiWrapper provideBackendApiWrapper(BackendApi api) {
+        return new ApiWrapper(api);
     }
 }

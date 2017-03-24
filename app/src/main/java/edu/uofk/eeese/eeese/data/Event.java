@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
 
-import edu.uofk.eeese.eeese.util.ObjectUtils;
+import edu.uofk.eeese.eeese.util.Utils;
 
 public class Event {
     @NonNull
@@ -159,13 +159,13 @@ public class Event {
         if (rhs == null || getClass() != rhs.getClass())
             return false;
         Event event = (Event) rhs;
-        return ObjectUtils.equals(getId(), event.getId()) &&
-                ObjectUtils.equals(getName(), event.getName()) &&
-                ObjectUtils.equals(getDesc(), event.getDesc()) &&
-                ObjectUtils.equals(getImageUri(), event.getImageUri()) &&
-                ObjectUtils.equals(getLongitude(), event.getLongitude()) &&
-                ObjectUtils.equals(getLatitude(), event.getLatitude()) &&
-                ObjectUtils.equals(getStartDate(), event.getStartDate()) &&
-                ObjectUtils.equals(getEndDate(), event.getEndDate());
+        return Utils.equals(getId(), event.getId()) &&
+                Utils.equals(getName(), event.getName()) &&
+                Utils.equals(getDesc(), event.getDesc()) &&
+                Utils.equals(getImageUri(), event.getImageUri()) &&
+                Utils.equals(getLongitude(), event.getLongitude()) &&
+                Utils.equals(getLatitude(), event.getLatitude()) &&
+                Utils.equals(getStartDate(), event.getStartDate()) &&
+                Utils.equals(getEndDate(), event.getEndDate());
     }
 }

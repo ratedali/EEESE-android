@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
 @Module
@@ -23,8 +22,13 @@ class MockDataRepositoryModule {
 
     @Provides
     @ApplicationScope
-    @Cache
     BaseDataRepository provideMockSource() {
+        return Mockito.mock(BaseDataRepository.class);
+    }
+
+    @Provides
+    @ApplicationScope
+    BaseDataRepository provideMockLocalSource() {
         return Mockito.mock(BaseDataRepository.class);
     }
 }

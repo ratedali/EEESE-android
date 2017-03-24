@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
+import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry;
 import edu.uofk.eeese.eeese.util.TestUtils;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 import io.reactivex.Single;
@@ -75,7 +75,7 @@ public class LocalDataRepositoryTest {
 
     @Before
     public void setupSource() {
-        source = new LocalDataRepository(context, dbHelper, schedulerProvider);
+        source = new LocalDataRepository(context, schedulerProvider);
     }
 
     @After

@@ -14,7 +14,6 @@ import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 

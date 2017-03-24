@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
-import edu.uofk.eeese.eeese.util.ObjectUtils;
+import edu.uofk.eeese.eeese.util.Utils;
 
 public class Project {
 
@@ -139,12 +139,12 @@ public class Project {
         if (rhs == null || getClass() != rhs.getClass())
             return false;
         Project project = (Project) rhs;
-        return ObjectUtils.equals(mId, project.mId)
-                && ObjectUtils.equals(mName, project.mName)
-                && ObjectUtils.equals(mProjectHead, project.mProjectHead)
-                && ObjectUtils.equals(mDesc, project.mDesc)
-                && ObjectUtils.equals(mCategory, project.mCategory)
-                && ObjectUtils.equals(mPrerequisites, project.mPrerequisites);
+        return Utils.equals(mId, project.mId)
+                && Utils.equals(mName, project.mName)
+                && Utils.equals(mProjectHead, project.mProjectHead)
+                && Utils.equals(mDesc, project.mDesc)
+                && Utils.equals(mCategory, project.mCategory)
+                && Utils.equals(mPrerequisites, project.mPrerequisites);
     }
 
     @Override

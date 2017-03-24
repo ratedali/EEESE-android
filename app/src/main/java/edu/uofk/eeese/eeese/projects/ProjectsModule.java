@@ -13,34 +13,29 @@ package edu.uofk.eeese.eeese.projects;
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.FragmentScope;
-import edu.uofk.eeese.eeese.di.categories.Cache;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import edu.uofk.eeese.eeese.data.source.Repository;
+import edu.uofk.eeese.eeese.di.scopes.FragmentScope;
 
 @Module
 public class ProjectsModule {
-    private ProjectsContract.View mHomeView;
-    private
-    @Project.ProjectCategory
-    int mCategory;
+    private ProjectsContract.View view;
+    private int category;
 
-    ProjectsModule(ProjectsContract.View view, @Project.ProjectCategory int category) {
-        mHomeView = view;
-        mCategory = category;
+    public ProjectsModule(ProjectsContract.View view, int category) {
+        this.view = view;
+        this.category = category;
     }
 
     @Provides
     @FragmentScope
     ProjectsContract.View provideHomeView() {
-        return mHomeView;
+        return view;
     }
 
     @Provides
     @FragmentScope
-    ProjectsContract.Presenter providePresenter(@Cache BaseDataRepository source,
-                                                ProjectsContract.View view,
-                                                BaseSchedulerProvider schedulerProvide) {
-        return new ProjectsPresenter(source, view, schedulerProvide, mCategory);
+    ProjectsContract.Presenter providePresenter(Repository<Project> source,
+                                                ProjectsContract.View view) {
+        return new ProjectsPresenter(source, view, category);
     }
 }

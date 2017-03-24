@@ -19,6 +19,8 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -46,7 +48,6 @@ class FakeDataRepository implements BaseDataRepository {
     private boolean thrownForProjects;
 
     private List<Event> mEvents;
-    private boolean thrownForEvents;
 
     @DrawableRes
     private static final int[] mGalleryRes = {
@@ -88,10 +89,10 @@ class FakeDataRepository implements BaseDataRepository {
             Event.Builder builder = new Event.Builder(String.valueOf(i), "Event " + i)
                     .description("Event Description");
             if (i < 3) {
-                builder.endDate(new Date());
+                builder.endDate(new DateTime());
             }
             if (i < 5) {
-                builder.startDate(new Date());
+                builder.startDate(new DateTime());
             }
             if (i < 7) {
                 builder.location("1123123", "21131231");
@@ -112,7 +113,6 @@ class FakeDataRepository implements BaseDataRepository {
             }
             mEvents.add(builder.build());
         }
-        thrownForEvents = false;
     }
 
     @Override

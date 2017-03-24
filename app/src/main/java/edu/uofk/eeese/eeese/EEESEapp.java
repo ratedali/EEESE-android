@@ -13,8 +13,7 @@ package edu.uofk.eeese.eeese;
 import android.app.Application;
 import android.support.annotation.VisibleForTesting;
 
-import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
+import edu.uofk.eeese.eeese.data.source.RepositoryModule;
 
 public class EEESEapp extends Application {
 
@@ -26,8 +25,6 @@ public class EEESEapp extends Application {
         if (mAppComponent == null) {
             mAppComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(getApplicationContext()))
-                    .schedulerProviderModule(new SchedulerProviderModule())
-                    .dataRepositoryModule(new DataRepositoryModule())
                     .build();
         }
     }

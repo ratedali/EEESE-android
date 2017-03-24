@@ -9,8 +9,8 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.butterknife'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -24,11 +24,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'BACKEND_API_URI', BACKEND_API_URI
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     lintOptions {
@@ -68,17 +63,22 @@ android {
             events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
 }
 
 dependencies {
 
-    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
+    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
@@ -90,16 +90,18 @@ dependencies {
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     provided "org.glassfish:javax.annotation:$rootProject.annotationVersion"
 
-    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
-    compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
+    compile "io.reactivex.rxjava2:rxkotlin:$rootProject.rxKotlinVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    compile "com.github.akarnokd:rxjava2-interop:$rootProject.rxJava2InteropVersion"
+    compile "com.squareup.sqlbrite:sqlbrite:$rootProject.sqlBriteVersion"
     compile "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBindingVersion"
-    compile "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rootProject.rxBindingVersion"
-    compile "com.jakewharton.rxbinding2:rxbinding-design:$rootProject.rxBindingVersion"
 
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "com.github.florent37:picassopalette:$rootProject.picassoPaletteVersion"
 
     compile "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
+    debugCompile "com.readystatesoftware.chuck:library:$rootProject.chuckVersion"
+    releaseCompile "com.readystatesoftware.chuck:library-no-op:$rootProject.chuckVersion"
     compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
     compile "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
@@ -131,6 +133,6 @@ dependencies {
     androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
-
-    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
 }
+
+apply plugin: 'com.google.gms.google-services'

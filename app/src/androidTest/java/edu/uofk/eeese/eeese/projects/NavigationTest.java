@@ -11,6 +11,7 @@
 package edu.uofk.eeese.eeese.projects;
 
 import android.graphics.Bitmap;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.DrawerActions;
@@ -28,14 +29,18 @@ import org.junit.runner.RunWith;
 import java.util.Collections;
 import java.util.List;
 
+import edu.uofk.eeese.eeese.AppModule;
 import edu.uofk.eeese.eeese.DaggerTestAppComponent;
+import edu.uofk.eeese.eeese.MockApiModule;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
 import edu.uofk.eeese.eeese.about.AboutActivity;
 import edu.uofk.eeese.eeese.data.Project;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
 import edu.uofk.eeese.eeese.details.DetailsActivity;
+import edu.uofk.eeese.eeese.util.EspressoIdlingResourceModule;
 import edu.uofk.eeese.eeese.util.TestRule;
+import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 import io.reactivex.Single;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -58,7 +63,13 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class NavigationTest {
 
-    private static TestAppComponent mAppComponent = DaggerTestAppComponent.create();
+    private static TestAppComponent mAppComponent = DaggerTestAppComponent
+            .builder()
+            .appModule(new AppModule(InstrumentationRegistry.getTargetContext()))
+            .schedulerProviderModule(new SchedulerProviderModule())
+            .mockApiModule(new MockApiModule())
+            .espressoIdlingResourceModule(new EspressoIdlingResourceModule())
+            .build();
 
     @Rule
     public TestRule<ProjectsActivity> testRule =

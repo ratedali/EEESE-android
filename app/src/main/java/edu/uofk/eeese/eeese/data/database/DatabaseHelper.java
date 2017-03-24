@@ -16,8 +16,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import javax.inject.Inject;
 
-import edu.uofk.eeese.eeese.data.database.DatabaseContract.ProjectEntry;
-import edu.uofk.eeese.eeese.data.database.DatabaseContract.EventEntry;
+import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry;
+import edu.uofk.eeese.eeese.data.DataContract.EventEntry;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 
 @ApplicationScope

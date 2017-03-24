@@ -14,7 +14,6 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 
 import dagger.Component;
 import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.categories.Cache;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
 import edu.uofk.eeese.eeese.util.EspressoIdlingResourceModule;
 import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
@@ -22,10 +21,11 @@ import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 @ApplicationScope
 @Component(modules = {AppModule.class,
         SchedulerProviderModule.class,
+        MockApiModule.class,
         MockDataRepositoryModule.class,
         EspressoIdlingResourceModule.class})
 public interface TestAppComponent extends AppComponent {
-    @Cache
+
     BaseDataRepository dataRepository();
 
     CountingIdlingResource idlingResource();

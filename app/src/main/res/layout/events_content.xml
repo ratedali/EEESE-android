@@ -23,9 +23,49 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_events">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/events_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/events_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!-- Not using a compound drawable, because its size cannot be set in xml, so
+         it'll have to be done in code, and I want to minimize mixing code and UI -->
+        <LinearLayout
+            android:id="@+id/error_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/error_image"
+                android:layout_width="@dimen/error_image_size"
+                android:layout_height="@dimen/error_image_size"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_error"
+                android:tint="@color/errorIndicator"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:labelFor="@id/error_image"
+                android:text="@string/no_events_available"
+                android:textSize="@dimen/error_message_size"/>
+
+
+            <Button
+                android:id="@+id/reload_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/reload"/>
+        </LinearLayout>
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

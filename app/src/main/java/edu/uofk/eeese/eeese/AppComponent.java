@@ -16,7 +16,9 @@ import edu.uofk.eeese.eeese.about.AboutModule;
 import edu.uofk.eeese.eeese.data.HTTPModule;
 import edu.uofk.eeese.eeese.data.backend.BackendModule;
 import edu.uofk.eeese.eeese.data.database.DatabaseModule;
-import edu.uofk.eeese.eeese.data.source.DataRepositoryModule;
+import edu.uofk.eeese.eeese.data.source.RepositoryModule;
+import edu.uofk.eeese.eeese.data.sync.SyncComponent;
+import edu.uofk.eeese.eeese.data.sync.SyncModule;
 import edu.uofk.eeese.eeese.details.DetailsComponent;
 import edu.uofk.eeese.eeese.details.DetailsModule;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
@@ -24,15 +26,13 @@ import edu.uofk.eeese.eeese.events.EventsComponent;
 import edu.uofk.eeese.eeese.events.EventsModule;
 import edu.uofk.eeese.eeese.projects.ProjectsComponent;
 import edu.uofk.eeese.eeese.projects.ProjectsModule;
-import edu.uofk.eeese.eeese.util.schedulers.SchedulerProviderModule;
 
 @ApplicationScope
 @Component(modules = {AppModule.class,
-        SchedulerProviderModule.class,
         HTTPModule.class,
         BackendModule.class,
         DatabaseModule.class,
-        DataRepositoryModule.class})
+        RepositoryModule.class})
 
 public interface AppComponent {
     ProjectsComponent projectsComponent(ProjectsModule module);
@@ -42,4 +42,6 @@ public interface AppComponent {
     AboutComponent aboutComponent(AboutModule module);
 
     EventsComponent eventsComponent(EventsModule module);
+
+    SyncComponent syncComponent(SyncModule module);
 }

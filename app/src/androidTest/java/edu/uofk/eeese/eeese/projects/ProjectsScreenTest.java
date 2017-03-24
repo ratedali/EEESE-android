@@ -10,6 +10,7 @@
 
 package edu.uofk.eeese.eeese.projects;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.uofk.eeese.eeese.AppModule;
 import edu.uofk.eeese.eeese.DaggerTestAppComponent;
 import edu.uofk.eeese.eeese.R;
 import edu.uofk.eeese.eeese.TestAppComponent;
@@ -53,7 +55,9 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ProjectsScreenTest {
 
-    private TestAppComponent mAppComponent = DaggerTestAppComponent.create();
+    private TestAppComponent mAppComponent = DaggerTestAppComponent.builder()
+            .appModule(new AppModule(InstrumentationRegistry.getTargetContext()))
+            .build();
 
     @Rule
     public TestRule<ProjectsActivity> testRule =

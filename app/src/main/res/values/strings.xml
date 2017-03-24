@@ -59,12 +59,19 @@
     <string name="loading_projects">Loading the projects list</string>
     <string name="no_project_available">There are no projects available</string>
     <string name="connection_error">Cannot connect to the internet</string>
-    <string name="tap_to_reload">reload</string>
+    <string name="reload">reload</string>
     <string name="retry">retry</string>
     <string name="label_project_head">Project Head</string>
     <string name="label_project_description">Project Description</string>
-
     <string name="prerequisites_title">Prerequisites</string>
+
+
+    <string name="events_title">EEESE Events</string>
+    <string name="location_button">Location</string>
+    <string name="unspecified">Unspecified</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="no_location_app_available">There is no compatible locations app available</string>
 
     <!-- categories -->
     <string name="power_category">Power</string>
@@ -78,10 +85,10 @@
     <string name="transitionname_fab" translatable="false">floatingactionbutton</string>
     <string name="transitionname_projectname" translatable="false">projectname</string>
     <string name="tag_projectslist" translatable="false">projects-category</string>
-    <string name="start_date">Start Date</string>
-    <string name="end_date">End Date</string>
-    <string name="location_button">Event Location</string>
-    <string name="unspecified">Unspecified</string>
-    <string name="events_title">EEESE Events</string>
+    
+    <!-- content related constants -->
+    <string name="sync_account_type">eeese.uofk.edu</string>
+    <string name="content_authority">edu.uofk.eeese.eeese.provider</string>
+    <string name="no_events_available">No events are available</string>
 
 </resources>

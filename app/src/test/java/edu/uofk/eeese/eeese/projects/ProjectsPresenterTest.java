@@ -87,6 +87,6 @@ public class ProjectsPresenterTest {
         when(source.getProjectsWithCategory(anyBoolean(), eq(category)))
                 .thenReturn(Single.error(new Exception()));
         presenter.loadProjects(anyBoolean());
-        verify(view).showNoConnectionError();
+        verify(view).showConnectionError();
     }
 }

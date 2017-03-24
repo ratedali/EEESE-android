@@ -12,37 +12,31 @@ package edu.uofk.eeese.eeese.details;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.categories.Cache;
+import edu.uofk.eeese.eeese.data.Project;
+import edu.uofk.eeese.eeese.data.source.ProjectsRepository;
+import edu.uofk.eeese.eeese.data.source.Repository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
 public class DetailsModule {
-    private String mProjectId;
-    private DetailsContract.View mView;
 
-    public DetailsModule(String projectId, DetailsContract.View view) {
-        mProjectId = projectId;
-        mView = view;
+    private String projectId;
+    private DetailsContract.View view;
+
+    DetailsModule(String projectId, DetailsContract.View view) {
+        this.projectId = projectId;
+        this.view = view;
     }
 
     @Provides
-    DetailsContract.View provideView() {
-        return mView;
-    }
-
-    @Provides
-    String provideProjectId() {
-        return mProjectId;
+    DetailsContract.View provideDetailsView() {
+        return view;
     }
 
     @Provides
     @ActivityScope
-    DetailsContract.Presenter providePresenter(@Cache BaseDataRepository source,
-                                               BaseSchedulerProvider schedulerProvider,
-                                               DetailsContract.View view,
-                                               String projectId) {
-        return new DetailsPresenter(source, view, schedulerProvider, projectId);
+    DetailsContract.Presenter providePresenter(Repository<Project> source,
+                                               DetailsContract.View view) {
+        return new DetailsPresenter(source, view, projectId);
     }
 }

@@ -12,29 +12,26 @@ package edu.uofk.eeese.eeese.events;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.categories.Cache;
+import edu.uofk.eeese.eeese.data.Event;
+import edu.uofk.eeese.eeese.data.source.Repository;
 import edu.uofk.eeese.eeese.di.scopes.ActivityScope;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
 
 @Module
 public class EventsModule {
-    private EventsContract.View mView;
+    private EventsContract.View view;
 
     public EventsModule(EventsContract.View view) {
-        mView = view;
+        this.view = view;
     }
 
     @Provides
     EventsContract.View provideView() {
-        return mView;
+        return view;
     }
 
     @Provides
     @ActivityScope
-    EventsContract.Presenter providePresenter(EventsContract.View view,
-                                              @Cache BaseDataRepository source,
-                                              BaseSchedulerProvider schedulerProvider) {
-        return new EventsPresenter(view, source, schedulerProvider);
+    EventsContract.Presenter providePresenter(EventsContract.View view, Repository<Event> source) {
+        return new EventsPresenter(view, source);
     }
 }

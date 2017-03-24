@@ -10,32 +10,29 @@
 
 package edu.uofk.eeese.eeese.about;
 
+import android.content.Context;
+
 import dagger.Module;
 import dagger.Provides;
-import edu.uofk.eeese.eeese.data.source.BaseDataRepository;
-import edu.uofk.eeese.eeese.di.FragmentScope;
-import edu.uofk.eeese.eeese.di.categories.Cache;
-import edu.uofk.eeese.eeese.util.schedulers.BaseSchedulerProvider;
+import edu.uofk.eeese.eeese.di.scopes.FragmentScope;
+
 
 @Module
 public class AboutModule {
-
-    private AboutContract.View mHomeView;
+    private AboutContract.View view;
 
     AboutModule(AboutContract.View view) {
-        mHomeView = view;
+        this.view = view;
     }
 
     @Provides
     AboutContract.View provideHomeView() {
-        return mHomeView;
+        return view;
     }
 
     @Provides
     @FragmentScope
-    AboutContract.Presenter providePresenter(@Cache BaseDataRepository source,
-                                             AboutContract.View view,
-                                             BaseSchedulerProvider schedulerProvide) {
-        return new AboutPresenter(source, view, schedulerProvide);
+    AboutContract.Presenter providePresenter(Context context, AboutContract.View view) {
+        return new AboutPresenter(context, view);
     }
 }

@@ -46,3 +46,5 @@ captures/
 # Application Codes and API Keys
 gradle.properties
 
+# Google cloud settings
+app/google-services.json

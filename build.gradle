@@ -2,14 +2,17 @@
 
 
 buildscript {
+    ext.kotlin_version = '1.1.1'
+
     repositories {
-        mavenCentral()
         jcenter()
     }
     dependencies {
+        classpath 'com.google.gms:google-services:3.0.0'
         classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'me.tatarka:gradle-retrolambda:3.5.0'
-        classpath "com.jakewharton:butterknife-gradle-plugin:8.4.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -18,7 +21,6 @@ buildscript {
 
 allprojects {
     repositories {
-        mavenCentral()
         jcenter()
     }
 }
@@ -29,21 +31,30 @@ task clean(type: Delete) {
 
 ext {
     buildToolsVersion = '25.0.1'
-    minSdkVersion = 14
+    minSdkVersion = 16
     compileSdkVersion = 25
     targetSdkVersion = 25
 
     supportLibraryVersion = '25.3.0'
+
     daggerVersion = '2.9'
     annotationVersion = '10.0-b28'
-    butterknifeVersion = '8.5.1'
-    rxJavaVersion = '2.0.7'
+
+    rxKotlinVersion = '2.0.0'
     rxAndroidVersion = '2.0.1'
+    rxJava2InteropVersion = '0.9.3'
+    sqlBriteVersion = '1.1.1'
     rxBindingVersion = '2.0.0'
+
     picassoVersion = '2.5.2'
+    picassoPaletteVersion = '2.0.0'
+
     okhttpVersion = '3.6.0'
     retrofitVersion = '2.2.0'
+    chuckVersion = '1.0.4'
+
     transitionseverywhereVersion = '1.7.0'
+
     jodatimeVersion = '2.9.7'
 
     runnerVersion = '0.5'

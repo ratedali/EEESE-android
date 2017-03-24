@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.uofk.eeese.eeese.data.Project;
-import edu.uofk.eeese.eeese.di.categories.Local;
-import edu.uofk.eeese.eeese.di.categories.Remote;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
@@ -35,17 +33,13 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("WrongConstant")
 public class DataRepositoryTest {
-    @Local
     @Mock
     private BaseDataRepository local;
 
-    @Remote
     @Mock
     private BaseDataRepository remote;
 
