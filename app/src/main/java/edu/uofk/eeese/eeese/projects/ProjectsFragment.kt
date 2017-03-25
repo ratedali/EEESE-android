@@ -120,7 +120,6 @@ class ProjectsFragment : Fragment(), ProjectsContract.View {
 
 
         reload_button.setOnClickListener { reloadProjects() }
-        projectsPresenter.loadProjects(false)
 
     }
 
@@ -136,6 +135,7 @@ class ProjectsFragment : Fragment(), ProjectsContract.View {
     override fun onResume() {
         super.onResume()
         projectsPresenter.subscribe()
+        projectsPresenter.loadProjects(false)
         registerProjectClicks()
     }
 

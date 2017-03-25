@@ -12,11 +12,16 @@ package edu.uofk.eeese.eeese.data;
 
 import android.content.Context;
 
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.readystatesoftware.chuck.ChuckInterceptor;
+import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
 import dagger.Provides;
 import edu.uofk.eeese.eeese.di.scopes.ApplicationScope;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
 @Module
@@ -24,9 +29,21 @@ public class HTTPModule {
     @Provides
     @ApplicationScope
     OkHttpClient provideHttpClient(Context context) {
-
         return new OkHttpClient.Builder()
                 .addInterceptor(new ChuckInterceptor(context))
+                .connectTimeout(2, TimeUnit.SECONDS)
+                // 2 MB cache
+                .cache(new Cache(context.getCacheDir(), 2_000_000))
+                .build();
+    }
+
+    @Provides
+    @ApplicationScope
+    Picasso providePicassoInstance(Context context, OkHttpClient httpClient) {
+        return new Picasso.Builder(context)
+                .downloader(new OkHttp3Downloader(httpClient))
+                .indicatorsEnabled(true)
+                .loggingEnabled(true)
                 .build();
     }
 }

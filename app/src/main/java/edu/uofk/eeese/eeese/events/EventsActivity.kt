@@ -85,8 +85,6 @@ class EventsActivity : AppCompatActivity(), EventsContract.View {
         reload_button.setOnClickListener { reloadEvents() }
 
         setupDrawer(nav_view, drawer_layout)
-
-        eventsPresenter.loadEvents(false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -100,6 +98,7 @@ class EventsActivity : AppCompatActivity(), EventsContract.View {
     override fun onResume() {
         super.onResume()
         eventsPresenter.subscribe()
+        eventsPresenter.loadEvents(false)
         registerEventClicks()
     }
 

@@ -36,7 +36,7 @@ constructor(context: Context) : SQLiteOpenHelper(context, DatabaseHelper.DATABAS
                         "${DataContract.ProjectEntry.COLUMN_PROJECT_ID} " +
                         "TEXT UNIQUE ON CONFLICT REPLACE, " +
                         "${DataContract.ProjectEntry.COLUMN_PROJECT_NAME} TEXT NOT NULL, " +
-                        "${DataContract.ProjectEntry.COLUMN_PROJECT_HEAD} TEXT NOT NULL, " +
+                        "${DataContract.ProjectEntry.COLUMN_PROJECT_HEAD} TEXT, " +
                         "${DataContract.ProjectEntry.COLUMN_PROJECT_DESC} TEXT, " +
                         "${DataContract.ProjectEntry.COLUMN_PROJECT_CATEGORY} INTEGER, " +
                         "${DataContract.ProjectEntry.COLUMN_PROJECT_PREREQS} TEXT" +
@@ -49,11 +49,11 @@ constructor(context: Context) : SQLiteOpenHelper(context, DatabaseHelper.DATABAS
                         "${DataContract.EventEntry.COLUMN_EVENT_ID} " +
                         "TEXT UNIQUE ON CONFLICT REPLACE, " +
                         "${DataContract.EventEntry.COLUMN_EVENT_NAME} TEXT NOT NULL, " +
-                        "${DataContract.EventEntry.COLUMN_EVENT_DESC} TEXT," +
+                        "${DataContract.EventEntry.COLUMN_EVENT_DESC} TEXT, " +
                         "${DataContract.EventEntry.COLUMN_EVENT_IMAGE_URI} TEXT, " +
                         "${DataContract.EventEntry.COLUMN_EVENT_LOCATION} TEXT, " +
-                        "${DataContract.EventEntry.COLUMN_EVENT_START_DATE} DATE, " +
-                        "${DataContract.EventEntry.COLUMN_EVENT_END_DATE} DATE" +
+                        "${DataContract.EventEntry.COLUMN_EVENT_START_DATE} TEXT, " +
+                        "${DataContract.EventEntry.COLUMN_EVENT_END_DATE} TEXT" +
                         ")"
 
         db.execSQL(CREATE_PROJECTS_TABLE_QUERY)

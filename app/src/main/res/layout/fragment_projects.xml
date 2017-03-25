@@ -14,10 +14,8 @@
                                               android:id="@+id/swipe_refresh"
                                               android:layout_width="match_parent"
                                               android:layout_height="match_parent"
-                                              android:paddingBottom="@dimen/content_vertical_margin"
                                               android:paddingLeft="@dimen/content_horizontal_margin"
                                               android:paddingRight="@dimen/content_horizontal_margin"
-                                              android:paddingTop="@dimen/content_vertical_margin"
                                               app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <FrameLayout
@@ -38,13 +36,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
+            android:visibility="gone"
+            tools:ignore="UseCompoundDrawables"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/error_image"
                 android:layout_width="@dimen/error_image_size"
                 android:layout_height="@dimen/error_image_size"
                 android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/no_project_available"
                 android:src="@drawable/ic_error"
                 android:tint="@color/errorIndicator"/>
 
@@ -58,7 +59,7 @@
 
             <Button
                 android:id="@+id/reload_button"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

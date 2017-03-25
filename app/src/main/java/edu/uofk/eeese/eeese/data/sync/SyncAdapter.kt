@@ -13,9 +13,9 @@ package edu.uofk.eeese.eeese.data.sync
 import android.accounts.Account
 import android.annotation.SuppressLint
 import android.content.*
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import edu.uofk.eeese.eeese.data.DataContract
 import edu.uofk.eeese.eeese.data.DataContract.EventEntry
 import edu.uofk.eeese.eeese.data.DataContract.ProjectEntry
 import edu.uofk.eeese.eeese.data.DataUtils.Events
@@ -24,8 +24,8 @@ import edu.uofk.eeese.eeese.data.Event
 import edu.uofk.eeese.eeese.data.Project
 import edu.uofk.eeese.eeese.data.backend.ApiWrapper
 import edu.uofk.eeese.eeese.data.database.DatabaseHelper
+import edu.uofk.eeese.eeese.util.FrameworkUtils.atLeastMarshmallow
 import io.reactivex.Single
-import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -44,7 +44,7 @@ class SyncAdapter(context: Context,
             this(context, backendClient, dbHelper, autoInitialize, false)
 
     companion object {
-        val TAG = SyncAdapter::class.java.name
+        val TAG: String = SyncAdapter::class.java.name
     }
 
     private val resolver = context.contentResolver!!
@@ -65,13 +65,12 @@ class SyncAdapter(context: Context,
         try {
             //Projects Sync
             val remoteProjects = backendClient.projects()
-                    .onErrorResumeNext { emptyList<Project>().toSingle() }
                     .flattenAsObservable { it }
                     .toMap { it.id }
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
 
-            Log.d(TAG, "Got remote projects")
+            Log.d(TAG, "Got remote projects: ${remoteProjects.size} projects")
 
             val localProjects = Single
                     .just(dbHelper.readableDatabase)
@@ -81,10 +80,11 @@ class SyncAdapter(context: Context,
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
 
-            Log.d(TAG, "Got local projects")
+            Log.d(TAG, "Got local projects: ${localProjects.size} projects")
 
-            projectOps = projectOperations(localProjects, remoteProjects, syncResult)
-            Log.d(TAG, "Done with project changes")
+            projectOps = projectOperations(localProjects, remoteProjects)
+
+            Log.d(TAG, "finished projects calculations: ${projectOps.size} operations")
 
         } catch (e: SocketTimeoutException) {
             syncResult.stats.numIoExceptions++
@@ -92,6 +92,8 @@ class SyncAdapter(context: Context,
         } catch (e: IOException) {
             syncResult.stats.numIoExceptions++
             syncResult.databaseError = true
+        } catch (ignored: Exception) {
+            Log.e(TAG, "Unknown exception: $ignored")
         }
 
         //Events Sync
@@ -105,7 +107,7 @@ class SyncAdapter(context: Context,
                     .toMap { it.id }
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
-            Log.d(TAG, "Got remote events")
+            Log.d(TAG, "Got remote events: ${remoteEvents.size} events")
 
 
             val localEvents = Single
@@ -115,21 +117,39 @@ class SyncAdapter(context: Context,
                     .map { it.toList() }
                     .subscribeOn(Schedulers.trampoline())
                     .blockingGet()
-            Log.d(TAG, "Got local events")
+            Log.d(TAG, "Got local events: ${localEvents.size} events")
 
-            eventOps = eventOperations(localEvents, remoteEvents, syncResult)
-            Log.d(TAG, "Done with changes")
+            eventOps = eventOperations(localEvents, remoteEvents)
+
+            Log.d(TAG, "finished projects calculations: ${eventOps.size} operations")
         } catch (e: SocketTimeoutException) {
             syncResult.stats.numIoExceptions++
             syncResult.fullSyncRequested = true
+
         } catch (e: IOException) {
             syncResult.stats.numIoExceptions++
+
+        } catch (ignored: Exception) {
+            Log.e(TAG, "Unknown exception: $ignored")
         }
 
         //Apply changes
         val operations = ArrayList(projectOps + eventOps)
+
+        @SuppressLint("NewApi")
+        if (atLeastMarshmallow) {
+            syncResult.stats.numEntries = operations.count().toLong()
+            syncResult.stats.numInserts = operations.count { it.isInsert }.toLong()
+            syncResult.stats.numUpdates = operations.count { it.isUpdate }.toLong()
+            syncResult.stats.numDeletes = operations.count { it.isDelete }.toLong()
+
+            Log.d(TAG, "Total Number: ${syncResult.stats.numEntries}")
+            Log.d(TAG, "Insertions: ${syncResult.stats.numInserts}")
+            Log.d(TAG, "Updates: ${syncResult.stats.numUpdates}")
+            Log.d(TAG, "Deletions: ${syncResult.stats.numDeletes}")
+        }
         Log.d(TAG, "preforming updates")
-        resolver.applyBatch(DataContract.CONTENT_AUTHORITY, operations)
+        resolver.applyBatch(authority, operations)
 
         //Notify content observers
         if (projectOps.isNotEmpty()) {
@@ -138,112 +158,77 @@ class SyncAdapter(context: Context,
         if (eventOps.isNotEmpty()) {
             resolver.notifyChange(EventEntry.CONTENT_URI, null, false)
         }
-
-
     }
 
-    private tailrec fun projectOperations(local: List<Project>,
-                                          remote: Map<String, Project>,
-                                          syncResult: SyncResult,
-                                          operations: List<ContentProviderOperation> = emptyList()):
+    private fun projectOperations(local: List<Project>,
+                                  remote: Map<String, Project>): List<ContentProviderOperation> =
+            calculateOperations(uri = ProjectEntry.CONTENT_URI,
+                    idColumnName = ProjectEntry.COLUMN_PROJECT_ID,
+                    local = local, remote = remote,
+                    getId = Project::id,
+                    toContentValues = { Projects.values(it) })
+
+
+    private fun eventOperations(local: List<Event>,
+                                remote: Map<String, Event>): List<ContentProviderOperation> =
+            calculateOperations(uri = EventEntry.CONTENT_URI,
+                    idColumnName = EventEntry.COLUMN_EVENT_ID,
+                    local = local, remote = remote,
+                    getId = Event::id,
+                    toContentValues = { Events.values(it) })
+
+    private tailrec fun <Item, ID> calculateOperations(uri: Uri,
+                                                       idColumnName: String,
+                                                       local: List<Item>,
+                                                       remote: Map<in ID, Item>,
+                                                       getId: (Item) -> ID,
+                                                       toContentValues: (Item) -> ContentValues,
+                                                       operations: List<ContentProviderOperation>
+                                                       = emptyList()):
             List<ContentProviderOperation> =
             if (local.isEmpty()) {
+                // If there are no local items just add all the remote items
                 operations + remote
                         .map { it.value }
+                        .map { toContentValues(it) }
                         .map {
-                            Log.d(TAG, "project added ${it.name}'")
-                            Projects.values(it)
-                        }
-                        .map {
-                            syncResult.stats.numInserts++
-                            ContentProviderOperation
-                                    .newInsert(ProjectEntry.CONTENT_URI)
+                            ContentProviderOperation.newInsert(uri)
                                     .withValues(it)
                                     .build()
                         }
             } else {
-                val project = local.first()
+                // If there is a local item...
+                val item = local.first()
+                val id = getId(item)
                 val newLocal = local.drop(1)
-                val id = project.id
+
                 if (id in remote) {
-                    val remoteProject = remote[id]!!
+                    // and the same id exists in the remote list...
+                    val remoteItem = remote[id]!!
                     val newRemote = remote - id
-                    if (project == remoteProject) {
-                        Log.d(TAG, "project unchanged ${project.name}")
-                        projectOperations(newLocal, newRemote, syncResult, operations)
+                    if (item == remoteItem) {
+                        // and it was not changed, just skip it
+                        calculateOperations(uri, idColumnName,
+                                newLocal, newRemote, getId, toContentValues, operations)
                     } else {
-                        Log.d(TAG, "project updated ${remoteProject.name}")
-                        syncResult.stats.numUpdates++
+                        // and it was changed, update it
                         val newOperations = operations + ContentProviderOperation
-                                .newUpdate(ProjectEntry.CONTENT_URI)
-                                .withSelection(
-                                        "${ProjectEntry.COLUMN_PROJECT_ID} = ?",
-                                        arrayOf(project.id))
-                                .withValues(Projects.values(remoteProject))
+                                .newUpdate(uri)
+                                .withSelection("$idColumnName = ?", arrayOf(id.toString()))
+                                .withValues(toContentValues(remoteItem))
                                 .build()
-                        projectOperations(newLocal, newRemote, syncResult, newOperations)
+                        calculateOperations(uri, idColumnName,
+                                newLocal, newRemote, getId, toContentValues, newOperations)
                     }
                 } else {
-                    Log.d(TAG, "project removed ${project.name}")
-                    syncResult.stats.numDeletes++
+                    // but it doesn't exist in the remote list, delete it
                     val newOperations = operations + ContentProviderOperation
-                            .newDelete(ProjectEntry.CONTENT_URI)
-                            .withSelection("${ProjectEntry.COLUMN_PROJECT_ID} = ?", arrayOf(id))
+                            .newDelete(uri)
+                            .withSelection("$idColumnName = ?", arrayOf(id.toString()))
                             .build()
-                    projectOperations(newLocal, remote, syncResult, newOperations)
+                    calculateOperations(uri, idColumnName,
+                            newLocal, remote, getId, toContentValues, newOperations)
                 }
             }
 
-
-    private tailrec fun eventOperations(local: List<Event>,
-                                        remote: Map<String, Event>,
-                                        syncResult: SyncResult,
-                                        operations: List<ContentProviderOperation> = emptyList()):
-            List<ContentProviderOperation> =
-            if (local.isEmpty()) {
-                operations + remote
-                        .map { it.value }
-                        .map {
-                            Log.d(TAG, "event added ${it.name}'")
-                            Events.values(it)
-                        }
-                        .map {
-                            syncResult.stats.numInserts++
-                            ContentProviderOperation.newInsert(EventEntry.CONTENT_URI)
-                                    .withValues(it)
-                                    .build()
-                        }
-            } else {
-                val event = local.first()
-                val id = event.id
-
-                val newLocal = local.drop(1)
-                if (id in remote) {
-                    Log.d(TAG, "event unchanged ${event.name}")
-                    val remoteEvent = remote[id]!!
-                    val newRemote = remote - id
-                    if (event == remoteEvent) {
-                        eventOperations(newLocal, newRemote, syncResult, operations)
-                    } else {
-                        Log.d(TAG, "event updated ${remoteEvent.name}")
-                        syncResult.stats.numUpdates++
-                        val newOperations = operations + ContentProviderOperation
-                                .newUpdate(EventEntry.CONTENT_URI)
-                                .withSelection(
-                                        "${EventEntry.COLUMN_EVENT_ID} = ?",
-                                        arrayOf(event.id))
-                                .withValues(Events.values(remoteEvent))
-                                .build()
-                        eventOperations(newLocal, newRemote, syncResult, newOperations)
-                    }
-                } else {
-                    Log.d(TAG, "event removed ${event.name}")
-                    syncResult.stats.numDeletes++
-                    val newOperations = operations + ContentProviderOperation
-                            .newDelete(EventEntry.CONTENT_URI)
-                            .withSelection("${EventEntry.COLUMN_EVENT_ID} = ?", arrayOf(id))
-                            .build()
-                    eventOperations(newLocal, remote, syncResult, newOperations)
-                }
-            }
 }

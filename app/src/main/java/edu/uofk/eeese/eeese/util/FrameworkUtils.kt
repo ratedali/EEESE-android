@@ -8,20 +8,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("NOTHING_TO_INLINE")
+
 package edu.uofk.eeese.eeese.util
 
 import android.os.Build
 
-
 object FrameworkUtils {
-    fun atLeastApi(code: Int) = Build.VERSION.SDK_INT >= code
-    fun belowApi(code: Int) = !atLeastApi(code)
+    inline fun atLeastApi(code: Int) = Build.VERSION.SDK_INT >= code
+    inline fun belowApi(code: Int) = !atLeastApi(code)
 
     // short cuts
+    val atLeastMarshmallow = atLeastApi(Build.VERSION_CODES.M)
     val atLeastLollipop = atLeastApi(Build.VERSION_CODES.LOLLIPOP)
     val atLeastKitKat = atLeastApi(Build.VERSION_CODES.KITKAT)
     val atLeastHoneycomb = atLeastApi(Build.VERSION_CODES.HONEYCOMB)
 
+    val belowMarshmallow = belowApi(Build.VERSION_CODES.M)
     val belowLollipop = belowApi(Build.VERSION_CODES.LOLLIPOP)
     val belowKitKat = belowApi(Build.VERSION_CODES.KITKAT)
     val belowHoneycomb = belowApi(Build.VERSION_CODES.HONEYCOMB)

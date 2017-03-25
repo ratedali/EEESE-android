@@ -30,7 +30,7 @@ object ServerContract {
 
         data class JSON(var id: String?, var name: String?,
                         var desc: String?, var head: String?,
-                        var prerequisites: List<String>, var category: String)
+                        var prereq: List<String>, var category: String)
 
         fun category(category: ProjectCategory): String = when (category) {
             ProjectCategory.POWER -> CATEGORY_POWER
@@ -53,7 +53,7 @@ object ServerContract {
                 if (json.id != null && json.name != null) {
                     Project(id = json.id!!, name = json.name!!,
                             desc = json.desc, category = category(json.category),
-                            head = json.head, prerequisites = json.prerequisites)
+                            head = json.head, prerequisites = json.prereq)
                 } else {
                     throw IllegalArgumentException("either the project id or name is null")
                 }
@@ -61,7 +61,7 @@ object ServerContract {
 
     object Events {
         data class JSON(var id: String?, var name: String?,
-                        var desc: String?, var location: String?, var imageUri: String?,
+                        var desc: String?, var location: String?, var imageuri: String?,
                         var start: DateTime?, var end: DateTime?)
 
         class EventDateDeserializer : JsonDeserializer<DateTime> {
@@ -77,14 +77,14 @@ object ServerContract {
                     // Extract location form the server format "long,lat"
                     var longitude: String? = null
                     var latitude: String? = null
-                    if (json.location != null) {
+                    if (json.location != null && json.location!!.isNotBlank()) {
                         val location = json.location!!.split(",")
                         longitude = location.component1()
                         latitude = location.component2()
                     }
 
                     val imageUri =
-                            if (json.imageUri != null) Uri.parse(json.imageUri)
+                            if (json.imageuri != null) Uri.parse(json.imageuri)
                             else null
                     Event(id = json.id!!, name = json.name!!, desc = json.desc!!,
                             imageUri = imageUri, longitude = longitude, latitude = latitude,

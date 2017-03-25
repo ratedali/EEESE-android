@@ -13,6 +13,8 @@ package edu.uofk.eeese.eeese;
 import android.app.Application;
 import android.support.annotation.VisibleForTesting;
 
+import com.squareup.picasso.Picasso;
+
 public class EEESEapp extends Application {
 
     private AppComponent appComponent = null;
@@ -20,11 +22,14 @@ public class EEESEapp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         if (appComponent == null) {
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(getApplicationContext()))
                     .build();
         }
+
+        Picasso.setSingletonInstance(appComponent.picassoInstance());
     }
 
     @VisibleForTesting

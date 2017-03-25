@@ -45,6 +45,7 @@ ext {
     rxBindingVersion = '2.0.0'
 
     picassoVersion = '2.5.2'
+    picassoOkHttpVersion = '1.1.0'
     picassoPaletteVersion = '2.0.0'
 
     okhttpVersion = '3.6.0'

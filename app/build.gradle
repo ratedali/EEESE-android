@@ -97,6 +97,7 @@ dependencies {
     compile "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBindingVersion"
 
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:$rootProject.picassoOkHttpVersion"
     compile "com.github.florent37:picassopalette:$rootProject.picassoPaletteVersion"
 
     compile "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"

@@ -10,6 +10,8 @@
 
 package edu.uofk.eeese.eeese;
 
+import com.squareup.picasso.Picasso;
+
 import dagger.Component;
 import edu.uofk.eeese.eeese.about.AboutComponent;
 import edu.uofk.eeese.eeese.about.AboutModule;
@@ -44,4 +46,6 @@ public interface AppComponent {
     EventsComponent eventsComponent(EventsModule module);
 
     SyncComponent syncComponent(SyncModule module);
+
+    Picasso picassoInstance();
 }

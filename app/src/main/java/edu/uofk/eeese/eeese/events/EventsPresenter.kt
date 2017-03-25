@@ -36,15 +36,12 @@ constructor(private val view: EventsContract.View,
                 source.get()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .doOnEach { view.hideLoadingIndicator() }
                         .subscribe(
                                 //On Next
                                 {
-                                    if (it.isNotEmpty()) {
-                                        view.showEvents(it)
-                                    } else {
-                                        view.showNoEvents()
-                                    }
-                                    view.hideLoadingIndicator()
+                                    if (it.isNotEmpty()) view.showEvents(it)
+                                    else view.showNoEvents()
                                 },
                                 //OnError
                                 {

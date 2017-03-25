@@ -26,6 +26,10 @@ class ProjectsRepository(context: Context,
                          private val syncManager: SyncManager) :
         Repository<Project> {
 
+    companion object {
+        private val TAG = ProjectsRepository::class.java.name
+    }
+
     private val resolver = context.contentResolver
     private val sqlBrite = SqlBrite.Builder().build()
     private val briteResolver = sqlBrite.wrapContentProvider(resolver, V1Schedulers.io())

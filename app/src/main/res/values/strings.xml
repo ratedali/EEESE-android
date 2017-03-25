@@ -57,7 +57,7 @@
     <string name="projects">Projects</string>
     <string name="promo_desc">a project image</string>
     <string name="loading_projects">Loading the projects list</string>
-    <string name="no_project_available">There are no projects available</string>
+    <string name="no_project_available">No projects are available</string>
     <string name="connection_error">Cannot connect to the internet</string>
     <string name="reload">reload</string>
     <string name="retry">retry</string>

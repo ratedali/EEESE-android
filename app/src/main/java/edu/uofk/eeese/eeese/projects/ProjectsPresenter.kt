@@ -45,15 +45,12 @@ constructor(private val source: Repository<Project>,
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnEach { view.setLoadingIndicator(false) }
                 .subscribe(
                         // OnSuccess
                         {
-                            if (it.isNotEmpty()) {
-                                view.showProjects(it)
-                            } else {
-                                view.showNoProjects()
-                            }
-                            view.setLoadingIndicator(false)
+                            if (it.isNotEmpty()) view.showProjects(it)
+                            else view.showNoProjects()
                         },
                         // OnError
                         {
